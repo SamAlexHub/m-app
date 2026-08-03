@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { ChevronRight, Sparkles, Shield, Heart, ArrowLeft, Globe } from 'lucide-react-native';
+import { ChevronRight, Sparkles, Shield, Heart, ArrowLeft } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
@@ -11,8 +11,8 @@ export const OnboardingScreen: React.FC = () => {
   const slides = [
     {
       id: 1,
-      title: 'Curated Genuine Matches',
-      accentWord: 'Genuine',
+      titlePrefix: 'Curated ',
+      accentWord: 'Genuine Matches',
       subtitle: 'VERIFIED GLOBAL ELITE',
       description: 'Connect with accomplished individuals across London, NYC, Paris, Dubai, and Mumbai.',
       image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
@@ -21,7 +21,7 @@ export const OnboardingScreen: React.FC = () => {
     },
     {
       id: 2,
-      title: 'AI Soulmate Compatibility',
+      titlePrefix: 'AI Soulmate ',
       accentWord: 'Compatibility',
       subtitle: '36-GUNA ASTRO & VALUES SYNC',
       description: 'Our proprietary algorithm harmonizes core life values, career ambitions, and Vedic charts.',
@@ -31,8 +31,8 @@ export const OnboardingScreen: React.FC = () => {
     },
     {
       id: 3,
-      title: 'Uncompromised Trust & Privacy',
-      accentWord: 'Privacy',
+      titlePrefix: 'Uncompromised ',
+      accentWord: 'Trust & Privacy',
       subtitle: '256-BIT ENCRYPTED SHIELD',
       description: 'Enjoy Incognito mode, family-verified access shields, and confidential video invitations.',
       image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80',
@@ -85,7 +85,7 @@ export const OnboardingScreen: React.FC = () => {
           <Text style={styles.subtitleText}>{slide.subtitle}</Text>
           
           <Text style={styles.titleText}>
-            {slide.title.replace(slide.accentWord, '')}
+            {slide.titlePrefix}
             <Text style={styles.titleAccent}>{slide.accentWord}</Text>
           </Text>
 
