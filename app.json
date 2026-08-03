@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "Éternité Matrimony",
+    "slug": "eternite-matrimony",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./public/assets/3d/splash_hero_3d.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./public/assets/3d/splash_hero_3d.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#062E2A"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.eternite.matrimony"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./public/assets/3d/splash_hero_3d.png",
+        "backgroundColor": "#062E2A"
+      },
+      "package": "com.eternite.matrimony"
+    },
+    "web": {
+      "favicon": "./public/assets/3d/splash_hero_3d.png"
+    },
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "auto-generated-on-eas-build"
+      }
+    }
+  }
+}
