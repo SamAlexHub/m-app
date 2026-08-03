@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, ShieldCheck, Sparkles, Volume2 } from 'lucide-react';
+import { View, Text, TouchableOpacity, Modal, StyleSheet, Image } from 'react-native';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, ShieldCheck } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 
@@ -13,75 +14,128 @@ export const VideoCallModal: React.FC = () => {
   const profile = MOCK_PROFILES.find((p) => p.id === activeChatProfileId) || MOCK_PROFILES[0];
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#062E2A] flex flex-col justify-between p-6 animate-fade-in select-none">
-      {/* Background Remote Video Feed Mock */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src={profile.photos[0]}
-          alt={profile.name}
-          className={`w-full h-full object-cover transition-filter duration-300 ${videoOff ? 'blur-2xl opacity-40' : 'brightness-90'}`}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
-      </div>
+    <Modal visible={videoCallActive} transparent animationType="fade">
+      <View style={styles.container}>
+        <Image source={{ uri: profile.photos[0] }} style={styles.bgImage} resizeMode="cover" />
+        <View style={styles.darkOverlay} />
 
-      {/* Top Bar Overlay */}
-      <div className="relative z-10 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 backdrop-blur-md border border-[#D6A24A]/50 text-[#D6A24A] text-xs font-semibold">
-            <ShieldCheck className="w-4 h-4" />
-            <span>256-Bit Encrypted HD Call</span>
-          </div>
-        </div>
+        {/* Top Encrypted Bar */}
+        <View style={styles.topRow}>
+          <View style={styles.encryptBadge}>
+            <ShieldCheck size={14} color="#D6A24A" />
+            <Text style={styles.encryptText}>256-Bit Encrypted HD Call</Text>
+          </View>
+        </View>
 
-        {/* Self Camera Miniature */}
-        <div className="w-24 h-32 rounded-2xl overflow-hidden border-2 border-[#D6A24A]/60 shadow-2xl bg-black relative">
-          <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80"
-            alt="You"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-white" />
-        </div>
-      </div>
+        {/* Center Remote Info */}
+        <View style={styles.centerInfo}>
+          <Image source={{ uri: profile.photos[0] }} style={styles.avatar} />
+          <Text style={styles.nameText}>{profile.name}</Text>
+          <Text style={styles.timeText}>04:28 • Connected HD Voice & Video</Text>
+        </View>
 
-      {/* Center Details */}
-      <div className="relative z-10 text-center my-auto">
-        <div className="w-24 h-24 rounded-full mx-auto p-[2px] bg-gradient-to-r from-[#D6A24A] to-[#F8E8CD] shadow-gold-halo mb-4">
-          <img src={profile.photos[0]} alt={profile.name} className="w-full h-full rounded-full object-cover" />
-        </div>
-        <h2 className="font-serif text-3xl font-bold text-white">{profile.name}</h2>
-        <p className="text-xs text-[#D6A24A] mt-1 font-semibold tracking-wider uppercase">
-          04:28 • Connected HD Voice & Video
-        </p>
-      </div>
+        {/* Bottom Control Bar */}
+        <View style={styles.controlRow}>
+          <TouchableOpacity onPress={() => setMuted(!muted)} style={[styles.controlBtn, muted && styles.controlBtnActive]}>
+            {muted ? <MicOff size={22} color="#ffffff" /> : <Mic size={22} color="#ffffff" />}
+          </TouchableOpacity>
 
-      {/* Bottom Controls Bar */}
-      <div className="relative z-10 flex items-center justify-center gap-6 pb-6">
-        <button
-          onClick={() => setMuted(!muted)}
-          className={`w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${
-            muted ? 'bg-red-500/80 border-red-400 text-white' : 'bg-white/20 border-white/30 text-white hover:bg-white/30'
-          }`}
-        >
-          {muted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
-        </button>
+          <TouchableOpacity onPress={() => setVideoCallActive(false)} style={styles.endCallBtn}>
+            <PhoneOff size={28} color="#ffffff" />
+          </TouchableOpacity>
 
-        <button
-          onClick={() => setVideoCallActive(false)}
-          className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center text-white shadow-2xl hover:bg-red-700 active:scale-95 transition-all"
-        >
-          <PhoneOff className="w-7 h-7" />
-        </button>
-
-        <button
-          onClick={() => setVideoOff(!videoOff)}
-          className={`w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${
-            videoOff ? 'bg-red-500/80 border-red-400 text-white' : 'bg-white/20 border-white/30 text-white hover:bg-white/30'
-          }`}
-        >
-          {videoOff ? <VideoOff className="w-6 h-6" /> : <Video className="w-6 h-6" />}
-        </button>
-      </div>
-    </div>
+          <TouchableOpacity onPress={() => setVideoOff(!videoOff)} style={[styles.controlBtn, videoOff && styles.controlBtnActive]}>
+            {videoOff ? <VideoOff size={22} color="#ffffff" /> : <Video size={22} color="#ffffff" />}
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#062E2A',
+    justify: 'space-between',
+    padding: 24,
+  },
+  bgImage: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  darkOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(6, 46, 42, 0.75)',
+  },
+  topRow: {
+    paddingTop: 36,
+    flexDirection: 'row',
+    justify: 'center',
+  },
+  encryptBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: 'rgba(6, 46, 42, 0.9)',
+    borderWidth: 1,
+    borderColor: '#D6A24A',
+  },
+  encryptText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+  },
+  centerInfo: {
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    borderWidth: 2,
+    borderColor: '#D6A24A',
+    marginBottom: 12,
+  },
+  nameText: {
+    fontFamily: 'serif',
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  timeText: {
+    fontSize: 11,
+    color: '#D6A24A',
+    fontWeight: 'bold',
+    marginTop: 4,
+  },
+  controlRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 24,
+    paddingBottom: 32,
+  },
+  controlBtn: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justify: 'center',
+  },
+  controlBtnActive: {
+    backgroundColor: 'rgba(239, 68, 68, 0.8)',
+  },
+  endCallBtn: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#DC2626',
+    alignItems: 'center',
+    justify: 'center',
+    elevation: 8,
+  },
+});

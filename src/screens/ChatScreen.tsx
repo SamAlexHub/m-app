@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Phone, Video, Send, Mic, Sparkles, Gift, Calendar, ShieldCheck, Play, CheckCheck } from 'lucide-react';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, Image } from 'react-native';
+import { ArrowLeft, Video, Send, Mic, Gift, Calendar, ShieldCheck, Play } from 'lucide-react-native';
 import { useAppStore, ChatMessage } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 
@@ -19,8 +20,7 @@ export const ChatScreen: React.FC = () => {
   const profile = MOCK_PROFILES.find((p) => p.id === activeChatProfileId) || MOCK_PROFILES[0];
   const chatMessages = messagesMap[profile.id] || [];
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSend = () => {
     if (!inputText.trim()) return;
 
     const newMsg: ChatMessage = {
@@ -47,190 +47,311 @@ export const ChatScreen: React.FC = () => {
     setShowGifts(false);
   };
 
-  const handleSendVoiceNote = () => {
-    const voiceMsg: ChatMessage = {
-      id: `m_${Date.now()}`,
-      senderId: 'user',
-      text: 'Voice Note (0:18)',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isVoiceNote: true,
-      duration: '0:18'
-    };
-    sendMessage(profile.id, voiceMsg);
-  };
-
   return (
-    <div className="relative w-full h-full min-h-screen bg-[#062E2A] text-white flex flex-col justify-between select-none overflow-hidden">
-      
-      {/* Top Luxury Chat Header Bar */}
-      <div className="relative z-10 px-4 py-3 bg-[#0E453F]/90 backdrop-blur-xl border-b border-[#D6A24A]/30 flex items-center justify-between shadow-lg">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setScreen('home')}
-            className="w-9 h-9 rounded-full bg-[#062E2A] border border-white/15 flex items-center justify-center text-white"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+    <View style={styles.container}>
+      {/* Top Header */}
+      <View style={styles.header}>
+        <View style={styles.userInfo}>
+          <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
+            <ArrowLeft size={18} color="#ffffff" />
+          </TouchableOpacity>
 
-          <div
-            onClick={() => setScreen('profile')}
-            className="flex items-center gap-2.5 cursor-pointer"
-          >
-            <div className="relative w-10 h-10 rounded-full p-[1px] bg-gradient-to-r from-[#D6A24A] to-[#F8E8CD]">
-              <img src={profile.photos[0]} alt={profile.name} className="w-full h-full rounded-full object-cover" />
-              <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#062E2A]" />
-            </div>
+          <TouchableOpacity onPress={() => setScreen('profile')} style={styles.profileRow}>
+            <Image source={{ uri: profile.photos[0] }} style={styles.avatar} />
+            <View>
+              <Text style={styles.nameText}>{profile.name}</Text>
+              <Text style={styles.statusText}>Online • Verified VIP</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
 
-            <div>
-              <h3 className="font-serif text-base font-bold text-white flex items-center gap-1">
-                {profile.name}
-                <ShieldCheck className="w-4 h-4 text-[#D6A24A]" />
-              </h3>
-              <span className="text-[10px] text-gray-300">Online • Verified VIP</span>
-            </div>
-          </div>
-        </div>
+        <View style={styles.actions}>
+          <TouchableOpacity onPress={() => setDatePlannerOpen(true)} style={styles.iconBtn}>
+            <Calendar size={18} color="#D6A24A" />
+          </TouchableOpacity>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setDatePlannerOpen(true)}
-            className="w-9 h-9 rounded-full bg-[#062E2A] border border-[#D6A24A]/40 flex items-center justify-center text-[#D6A24A] hover:bg-[#D6A24A] hover:text-[#062E2A] transition-colors"
-            title="Date Planner"
-          >
-            <Calendar className="w-4 h-4" />
-          </button>
+          <TouchableOpacity onPress={() => setVideoCallActive(true)} style={styles.iconBtn}>
+            <Video size={18} color="#D6A24A" />
+          </TouchableOpacity>
+        </View>
+      </View>
 
-          <button
-            onClick={() => setVideoCallActive(true)}
-            className="w-9 h-9 rounded-full bg-[#062E2A] border border-[#D6A24A]/40 flex items-center justify-center text-[#D6A24A] hover:bg-[#D6A24A] hover:text-[#062E2A] transition-colors"
-            title="HD Video Call"
-          >
-            <Video className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Encrypted Protection Badge */}
-        <div className="flex justify-center my-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0E453F]/60 border border-white/10 text-gray-300 text-[10px]">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#D6A24A]" />
-            <span>Messages protected by 256-Bit Encrypted Confidentiality</span>
-          </div>
-        </div>
+      {/* Messages */}
+      <ScrollView style={styles.chatArea} contentContainerStyle={styles.chatContent}>
+        <View style={styles.encryptBadge}>
+          <ShieldCheck size={12} color="#D6A24A" />
+          <Text style={styles.encryptText}>Protected by 256-Bit Encrypted Confidentiality</Text>
+        </View>
 
         {chatMessages.map((msg) => {
           const isUser = msg.senderId === 'user';
 
           return (
-            <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
-              <div
-                className={`max-w-[80%] rounded-2xl p-3.5 shadow-md ${
-                  isUser
-                    ? 'bg-gradient-to-r from-[#145A53] to-[#0E453F] border border-[#D6A24A]/40 text-white rounded-br-none'
-                    : 'bg-[#0E453F]/90 backdrop-blur-md border border-white/15 text-white rounded-bl-none'
-                }`}
-              >
-                {/* Voice Note View */}
+            <View key={msg.id} style={[styles.bubbleWrapper, isUser ? styles.userBubbleAlign : styles.otherBubbleAlign]}>
+              <View style={[styles.bubble, isUser ? styles.userBubble : styles.otherBubble]}>
                 {msg.isVoiceNote ? (
-                  <div className="flex items-center gap-3 min-w-[180px]">
-                    <button className="w-8 h-8 rounded-full bg-[#D6A24A] flex items-center justify-center text-[#062E2A]">
-                      <Play className="w-4 h-4 fill-current ml-0.5" />
-                    </button>
-                    <div className="flex-1">
-                      {/* Waveform graphic */}
-                      <div className="flex items-center gap-0.5 h-4">
-                        <div className="w-1 h-3 bg-[#D6A24A] rounded-full" />
-                        <div className="w-1 h-4 bg-[#D6A24A] rounded-full" />
-                        <div className="w-1 h-2 bg-white/40 rounded-full" />
-                        <div className="w-1 h-3 bg-[#D6A24A] rounded-full" />
-                        <div className="w-1 h-5 bg-[#D6A24A] rounded-full" />
-                        <div className="w-1 h-2 bg-white/40 rounded-full" />
-                      </div>
-                      <span className="text-[10px] text-gray-300 mt-1 block">Voice Note • {msg.duration}</span>
-                    </div>
-                  </div>
+                  <View style={styles.voiceNoteRow}>
+                    <View style={styles.playBtn}>
+                      <Play size={12} color="#062E2A" />
+                    </View>
+                    <Text style={styles.voiceText}>Voice Note • {msg.duration}</Text>
+                  </View>
                 ) : msg.isGiftSticker ? (
-                  <div className="flex items-center gap-3">
-                    <Gift className="w-8 h-8 text-[#D6A24A] animate-bounce" />
-                    <div>
-                      <span className="text-xs font-bold text-[#D6A24A]">{msg.giftName}</span>
-                      <p className="text-[10px] text-gray-300">Luxury Royal Gift</p>
-                    </div>
-                  </div>
+                  <View style={styles.giftRow}>
+                    <Gift size={20} color="#D6A24A" />
+                    <Text style={styles.giftText}>{msg.giftName}</Text>
+                  </View>
                 ) : (
-                  <p className="text-xs leading-relaxed font-sans">{msg.text}</p>
+                  <Text style={styles.msgText}>{msg.text}</Text>
                 )}
-
-                <div className="flex items-center justify-end gap-1 mt-1">
-                  <span className="text-[9px] text-gray-400">{msg.timestamp}</span>
-                  {isUser && <CheckCheck className="w-3 h-3 text-[#D6A24A]" />}
-                </div>
-              </div>
-            </div>
+                <Text style={styles.timeText}>{msg.timestamp}</Text>
+              </View>
+            </View>
           );
         })}
-      </div>
+      </ScrollView>
 
-      {/* Virtual Gifts Selection Tray */}
+      {/* Gifts Tray */}
       {showGifts && (
-        <div className="p-3 bg-[#0E453F] border-t border-[#D6A24A]/30 grid grid-cols-3 gap-2 animate-fade-in">
-          <button
-            onClick={() => handleSendGift('Dom Pérignon Champagne')}
-            className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-[#D6A24A] text-center text-xs"
-          >
-            🍾 Champagne
-          </button>
-          <button
-            onClick={() => handleSendGift('100 Royal Red Roses')}
-            className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-[#D6A24A] text-center text-xs"
-          >
-            🌹 Rose Bouquet
-          </button>
-          <button
-            onClick={() => handleSendGift('Cartier Gold Emblem')}
-            className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-[#D6A24A] text-center text-xs"
-          >
-            💍 Gold Ring
-          </button>
-        </div>
+        <View style={styles.giftsTray}>
+          <TouchableOpacity onPress={() => handleSendGift('Dom Pérignon Champagne')} style={styles.giftChip}>
+            <Text style={styles.giftChipText}>🍾 Champagne</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleSendGift('100 Royal Red Roses')} style={styles.giftChip}>
+            <Text style={styles.giftChipText}>🌹 Rose Bouquet</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleSendGift('Cartier Gold Emblem')} style={styles.giftChip}>
+            <Text style={styles.giftChipText}>💍 Gold Ring</Text>
+          </TouchableOpacity>
+        </View>
       )}
 
-      {/* Chat Input Bar */}
-      <form onSubmit={handleSend} className="p-3 bg-[#0E453F]/90 backdrop-blur-xl border-t border-white/10 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setShowGifts(!showGifts)}
-          className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-[#D6A24A] hover:bg-white/20 transition-colors"
-        >
-          <Gift className="w-5 h-5" />
-        </button>
+      {/* Input Bar */}
+      <View style={styles.inputBar}>
+        <TouchableOpacity onPress={() => setShowGifts(!showGifts)} style={styles.inputIconBtn}>
+          <Gift size={18} color="#D6A24A" />
+        </TouchableOpacity>
 
-        <button
-          type="button"
-          onClick={handleSendVoiceNote}
-          className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
-        >
-          <Mic className="w-5 h-5" />
-        </button>
-
-        <input
-          type="text"
+        <TextInput
           value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
+          onChangeText={setInputText}
           placeholder="Write a message..."
-          className="flex-1 bg-white/5 border border-white/15 rounded-full px-4 py-2.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-[#D6A24A]"
+          placeholderTextColor="#9CA3AF"
+          style={styles.textInput}
         />
 
-        <button
-          type="submit"
-          className="w-10 h-10 rounded-full bg-gradient-to-r from-[#B88432] via-[#D6A24A] to-[#F8E8CD] flex items-center justify-center text-[#062E2A] shadow-gold-glow hover:opacity-95 active:scale-95 transition-all"
-        >
-          <Send className="w-4 h-4 fill-[#062E2A] ml-0.5" />
-        </button>
-      </form>
-    </div>
+        <TouchableOpacity activeOpacity={0.85} onPress={handleSend} style={styles.sendBtn}>
+          <Send size={16} color="#062E2A" />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#062E2A',
+  },
+  header: {
+    paddingTop: 12,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    backgroundColor: '#0E453F',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(214, 162, 74, 0.3)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'space-between',
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  backBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#062E2A',
+    alignItems: 'center',
+    justify: 'center',
+  },
+  profileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#D6A24A',
+  },
+  nameText: {
+    fontFamily: 'serif',
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  statusText: {
+    fontSize: 9,
+    color: '#9CA3AF',
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  iconBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#062E2A',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 162, 74, 0.4)',
+    alignItems: 'center',
+    justify: 'center',
+  },
+  chatArea: {
+    flex: 1,
+  },
+  chatContent: {
+    padding: 16,
+    gap: 12,
+  },
+  encryptBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
+    backgroundColor: 'rgba(14, 69, 63, 0.6)',
+    alignSelf: 'center',
+    marginBottom: 8,
+  },
+  encryptText: {
+    fontSize: 9,
+    color: '#D1D5DB',
+  },
+  bubbleWrapper: {
+    marginBottom: 4,
+  },
+  userBubbleAlign: {
+    alignItems: 'flex-end',
+  },
+  otherBubbleAlign: {
+    alignItems: 'flex-start',
+  },
+  bubble: {
+    maxWidth: '80%',
+    padding: 12,
+    borderRadius: 18,
+  },
+  userBubble: {
+    backgroundColor: '#0E453F',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderBottomRightRadius: 2,
+  },
+  otherBubble: {
+    backgroundColor: 'rgba(14, 69, 63, 0.9)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderBottomLeftRadius: 2,
+  },
+  msgText: {
+    fontSize: 12,
+    color: '#ffffff',
+    lineHeight: 16,
+  },
+  timeText: {
+    fontSize: 8,
+    color: '#9CA3AF',
+    alignSelf: 'flex-end',
+    marginTop: 4,
+  },
+  voiceNoteRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  playBtn: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#D6A24A',
+    alignItems: 'center',
+    justify: 'center',
+  },
+  voiceText: {
+    fontSize: 11,
+    color: '#ffffff',
+  },
+  giftRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  giftText: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+  },
+  giftsTray: {
+    flexDirection: 'row',
+    justify: 'space-around',
+    padding: 8,
+    backgroundColor: '#0E453F',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(214, 162, 74, 0.3)',
+  },
+  giftChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  giftChipText: {
+    fontSize: 10,
+    color: '#ffffff',
+  },
+  inputBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 10,
+    backgroundColor: '#0E453F',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  inputIconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    alignItems: 'center',
+    justify: 'center',
+  },
+  textInput: {
+    flex: 1,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    paddingHorizontal: 14,
+    fontSize: 12,
+    color: '#ffffff',
+  },
+  sendBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#D6A24A',
+    alignItems: 'center',
+    justify: 'center',
+  },
+});

@@ -1,5 +1,6 @@
 import React from 'react';
-import { ArrowLeft, Heart, Sparkles, MapPin, Calendar, Quote, ShieldCheck } from 'lucide-react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
+import { ArrowLeft, Heart, Sparkles, MapPin } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { SUCCESS_STORIES } from '../data/successStories';
 import { GlassCard } from '../components/GlassCard';
@@ -8,81 +9,173 @@ export const SuccessStoriesScreen: React.FC = () => {
   const { setScreen } = useAppStore();
 
   return (
-    <div className="relative w-full min-h-screen bg-[#062E2A] text-white pb-28 pt-8 sm:pt-10 px-4 select-none overflow-x-hidden">
-      
-      {/* Top Header */}
-      <div className="relative z-10 flex items-center justify-between py-2 mb-4">
-        <button
-          onClick={() => setScreen('home')}
-          className="w-10 h-10 rounded-full bg-[#0E453F] border border-white/15 flex items-center justify-center text-white"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
+          <ArrowLeft size={18} color="#ffffff" />
+        </TouchableOpacity>
+        <View style={styles.badge}>
+          <Heart size={12} color="#D6A24A" fill="#D6A24A" />
+          <Text style={styles.badgeText}>ROYAL NUPTIALS</Text>
+        </View>
+        <View style={{ width: 36 }} />
+      </View>
 
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0E453F]/90 border border-[#D6A24A]/40 text-[#D6A24A] text-xs font-semibold uppercase tracking-wider">
-          <Heart className="w-3.5 h-3.5 fill-[#D6A24A]" />
-          <span>Royal Nuptials</span>
-        </div>
+      <Text style={styles.title}>Couples United by Éternité</Text>
+      <Text style={styles.sub}>Real Love Stories • Real European Weddings</Text>
 
-        <div className="w-10 h-10" />
-      </div>
-
-      {/* Hero Header */}
-      <div className="relative z-10 text-center mb-6">
-        <h1 className="font-serif text-3xl font-bold text-white">Couples United by Éternité</h1>
-        <p className="text-xs text-[#D6A24A] mt-1 font-semibold tracking-wider">
-          Real Love Stories • Real European Weddings
-        </p>
-      </div>
-
-      {/* Success Stories List */}
-      <div className="relative z-10 space-y-6">
+      <View style={styles.list}>
         {SUCCESS_STORIES.map((story) => (
-          <GlassCard key={story.id} glow className="p-6">
-            {/* Story Image */}
-            <div className="relative w-full h-52 rounded-2xl overflow-hidden mb-4 border border-[#D6A24A]/40">
-              <img src={story.coverImage} alt={story.coupleNames} className="w-full h-full object-cover" />
-              <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#062E2A]/90 text-[#D6A24A] text-xs font-bold flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{story.matchScore}% AI Soulmate Match</span>
-              </div>
-            </div>
+          <GlassCard key={story.id} glow style={styles.storyCard}>
+            <Image source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80' }} style={styles.coverImage} />
 
-            <div className="flex justify-between items-baseline mb-2">
-              <h2 className="font-serif text-2xl font-bold text-white">{story.coupleNames}</h2>
-              <span className="text-xs text-[#D6A24A] font-semibold">{story.weddingDate}</span>
-            </div>
+            <View style={styles.matchBadge}>
+              <Sparkles size={10} color="#062E2A" />
+              <Text style={styles.matchBadgeText}>{story.matchScore}% Match</Text>
+            </View>
 
-            <div className="flex items-center gap-1 text-xs text-gray-300 mb-3">
-              <MapPin className="w-3.5 h-3.5 text-[#D6A24A]" />
-              <span>{story.location}</span>
-            </div>
+            <View style={styles.cardHeader}>
+              <Text style={styles.coupleNames}>{story.coupleNames}</Text>
+              <Text style={styles.weddingDate}>{story.weddingDate}</Text>
+            </View>
 
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 italic text-xs text-gray-200 leading-relaxed relative">
-              <Quote className="w-6 h-6 text-[#D6A24A]/30 absolute top-2 right-2" />
-              "{story.quote}"
-            </div>
+            <View style={styles.locRow}>
+              <MapPin size={12} color="#D6A24A" />
+              <Text style={styles.locText}>{story.location}</Text>
+            </View>
 
-            {/* Timeline Breakdown */}
-            <div className="mt-5 border-t border-white/10 pt-4">
-              <h4 className="font-serif text-sm font-bold text-white mb-3">Wedding Journey Timeline</h4>
-              <div className="space-y-3">
-                {story.timeline.map((step, idx) => (
-                  <div key={idx} className="flex items-start gap-3 text-xs">
-                    <div className="px-2.5 py-1 rounded-full bg-[#D6A24A]/20 border border-[#D6A24A] text-[#D6A24A] font-bold text-[10px]">
-                      {step.phase}
-                    </div>
-                    <div>
-                      <span className="font-semibold text-white">{step.title}</span>
-                      <span className="text-[10px] text-gray-400 block">{step.date} • {step.details}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <View style={styles.quoteBox}>
+              <Text style={styles.quoteText}>"{story.quote}"</Text>
+            </View>
           </GlassCard>
         ))}
-      </div>
-    </div>
+      </View>
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#062E2A',
+  },
+  content: {
+    padding: 16,
+    paddingBottom: 90,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'space-between',
+    marginBottom: 16,
+    paddingTop: 8,
+  },
+  backBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#0E453F',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justify: 'center',
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
+    backgroundColor: '#0E453F',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 162, 74, 0.4)',
+  },
+  badgeText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+    letterSpacing: 1,
+  },
+  title: {
+    fontFamily: 'serif',
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'center',
+  },
+  sub: {
+    fontSize: 11,
+    color: '#D6A24A',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 2,
+    marginBottom: 16,
+  },
+  list: {
+    gap: 16,
+  },
+  storyCard: {
+    position: 'relative',
+  },
+  coverImage: {
+    width: '100%',
+    height: 160,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  matchBadge: {
+    position: 'absolute',
+    top: 28,
+    left: 28,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    backgroundColor: '#D6A24A',
+  },
+  matchBadgeText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#062E2A',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justify: 'space-between',
+    alignItems: 'baseline',
+  },
+  coupleNames: {
+    fontFamily: 'serif',
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  weddingDate: {
+    fontSize: 11,
+    color: '#D6A24A',
+    fontWeight: 'bold',
+  },
+  locRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 2,
+  },
+  locText: {
+    fontSize: 10,
+    color: '#D1D5DB',
+  },
+  quoteBox: {
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  quoteText: {
+    fontSize: 11,
+    color: '#D1D5DB',
+    fontStyle: 'italic',
+  },
+});

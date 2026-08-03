@@ -1,6 +1,9 @@
 import React from 'react';
-import { Home, Compass, Heart, MessageCircle, User, Search } from 'lucide-react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { Home, Compass, Heart, MessageCircle, User, Search } from 'lucide-react-native';
 import { useAppStore, ScreenType } from '../store/useAppStore';
+
+const { width } = Dimensions.get('window');
 
 export const FloatingBottomBar: React.FC = () => {
   const { currentScreen, setScreen, setFilterModalOpen } = useAppStore();
@@ -15,26 +18,23 @@ export const FloatingBottomBar: React.FC = () => {
   ];
 
   return (
-    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-40">
-      <div className="relative rounded-full backdrop-blur-2xl bg-[#0E453F]/85 border border-[#D6A24A]/40 px-3 py-2 flex items-center justify-between shadow-[0_12px_40px_rgba(0,0,0,0.6)]">
+    <View style={styles.outerContainer}>
+      <View style={styles.bar}>
         {navItems.map((item) => {
           if (item.isFloating) {
             return (
-              <div key="floating-search" className="relative -top-5 flex items-center justify-center">
-                <button
-                  onClick={() => {
+              <View key="floating-search" style={styles.floatingWrapper}>
+                <TouchableOpacity
+                  activeOpacity={0.85}
+                  onPress={() => {
                     setScreen('discover');
                     setFilterModalOpen(true);
                   }}
-                  className="relative group w-14 h-14 rounded-full bg-gradient-to-tr from-[#B88432] via-[#D6A24A] to-[#F8E8CD] p-[2px] shadow-[0_0_25px_rgba(214,162,74,0.6)] transition-transform duration-300 hover:scale-110 active:scale-95"
+                  style={styles.floatingButton}
                 >
-                  <div className="w-full h-full rounded-full bg-[#062E2A] flex items-center justify-center text-[#D6A24A] group-hover:bg-[#0E453F] transition-colors">
-                    <Search className="w-6 h-6 text-[#D6A24A]" />
-                  </div>
-                  {/* Outer pulse animation ring */}
-                  <div className="absolute -inset-1 rounded-full bg-[#D6A24A]/30 blur-sm animate-ping pointer-events-none" />
-                </button>
-              </div>
+                  <Search size={24} color="#D6A24A" />
+                </TouchableOpacity>
+              </View>
             );
           }
 
@@ -42,24 +42,83 @@ export const FloatingBottomBar: React.FC = () => {
           const isActive = currentScreen === item.id;
 
           return (
-            <button
+            <TouchableOpacity
               key={item.id}
-              onClick={() => setScreen(item.id as ScreenType)}
-              className={`flex flex-col items-center justify-center px-2 py-1 transition-all duration-200 ${
-                isActive ? 'text-[#D6A24A] scale-105' : 'text-gray-400 hover:text-gray-200'
-              }`}
+              activeOpacity={0.7}
+              onPress={() => setScreen(item.id as ScreenType)}
+              style={styles.navItem}
             >
-              <div className="relative">
-                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-                {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#D6A24A] shadow-[0_0_8px_#D6A24A]" />
-                )}
-              </div>
-              <span className="text-[10px] mt-1 font-medium tracking-tight">{item.label}</span>
-            </button>
+              <Icon size={20} color={isActive ? '#D6A24A' : '#9CA3AF'} />
+              <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
+                {item.label}
+              </Text>
+            </TouchableOpacity>
           );
         })}
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  outerContainer: {
+    position: 'absolute',
+    bottom: 12,
+    left: '4%',
+    right: '4%',
+    zIndex: 99,
+    alignItems: 'center',
+  },
+  bar: {
+    width: '100%',
+    height: 64,
+    borderRadius: 36,
+    backgroundColor: 'rgba(14, 69, 63, 0.92)',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 162, 74, 0.4)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingHorizontal: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 15,
+    elevation: 12,
+  },
+  navItem: {
+    alignItems: 'center',
+    justify: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  navLabel: {
+    fontSize: 9,
+    marginTop: 3,
+    color: '#9CA3AF',
+    fontWeight: '500',
+  },
+  navLabelActive: {
+    color: '#D6A24A',
+    fontWeight: 'bold',
+  },
+  floatingWrapper: {
+    position: 'relative',
+    top: -18,
+  },
+  floatingButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#062E2A',
+    borderWidth: 2,
+    borderColor: '#D6A24A',
+    alignItems: 'center',
+    justify: 'center',
+    shadowColor: '#D6A24A',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+});

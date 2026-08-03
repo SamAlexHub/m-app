@@ -1,38 +1,49 @@
 import React from 'react';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 
 interface GlassCardProps {
   children: React.ReactNode;
-  className?: string;
+  style?: ViewStyle;
   glow?: boolean;
   borderGold?: boolean;
   onClick?: () => void;
+  className?: string;
 }
 
 export const GlassCard: React.FC<GlassCardProps> = ({
   children,
-  className,
+  style,
   glow = false,
   borderGold = true,
   onClick,
 }) => {
-  return (
-    <div
-      onClick={onClick}
-      className={twMerge(
-        clsx(
-          'relative rounded-3xl p-5 backdrop-blur-xl bg-[#0E453F]/65 border transition-all duration-300 shadow-glass',
-          borderGold ? 'border-[#D6A24A]/30 hover:border-[#D6A24A]/70' : 'border-white/10',
-          glow && 'shadow-[0_0_30px_rgba(214,162,74,0.25)] border-[#D6A24A]/60',
-          onClick && 'cursor-pointer active:scale-[0.98]'
-        ),
-        className
-      )}
-    >
-      {/* Subtle ambient light gradient background glow inside card */}
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-white/5 via-transparent to-[#D6A24A]/5 pointer-events-none" />
-      <div className="relative z-10">{children}</div>
-    </div>
-  );
+  const containerStyle: ViewStyle = {
+    borderRadius: 24,
+    padding: 20,
+    backgroundColor: 'rgba(14, 69, 63, 0.75)',
+    borderWidth: 1,
+    borderColor: glow
+      ? 'rgba(214, 162, 74, 0.8)'
+      : borderGold
+      ? 'rgba(214, 162, 74, 0.3)'
+      : 'rgba(255, 255, 255, 0.1)',
+    shadowColor: glow ? '#D6A24A' : '#000000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: glow ? 0.4 : 0.3,
+    shadowRadius: 15,
+    elevation: 8,
+    position: 'relative',
+    overflow: 'hidden',
+    ...style,
+  };
+
+  if (onClick) {
+    return (
+      <TouchableOpacity activeOpacity={0.85} onPress={onClick} style={containerStyle}>
+        {children}
+      </TouchableOpacity>
+    );
+  }
+
+  return <View style={containerStyle}>{children}</View>;
 };

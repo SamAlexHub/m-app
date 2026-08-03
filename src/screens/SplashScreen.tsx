@@ -1,70 +1,164 @@
-import React, { useEffect } from 'react';
-import { Heart, Sparkles, ChevronRight } from 'lucide-react';
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Heart, Sparkles, ChevronRight } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 
 export const SplashScreen: React.FC = () => {
   const { setScreen } = useAppStore();
 
   return (
-    <div className="relative w-full h-full min-h-screen bg-[#062E2A] flex flex-col justify-between p-6 overflow-hidden select-none">
-      {/* Background Pixar Illustration with soft vignetting */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="/assets/3d/splash_hero_3d.png"
-          alt="Éternité Splash"
-          className="w-full h-full object-cover opacity-60 scale-105 animate-pulse"
-          style={{ animationDuration: '6s' }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#062E2A]/70 via-[#062E2A]/40 to-[#062E2A]" />
-      </div>
+    <View style={styles.container}>
+      {/* Background Image */}
+      <Image
+        source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80' }}
+        style={styles.bgImage}
+        resizeMode="cover"
+      />
+      <View style={styles.darkOverlay} />
 
-      {/* Floating Ambient Glowing Particles */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full bg-radial-gold opacity-60 pointer-events-none blur-2xl" />
+      {/* Top Tagline */}
+      <View style={styles.topContainer}>
+        <View style={styles.badge}>
+          <Sparkles size={12} color="#D6A24A" />
+          <Text style={styles.badgeText}>THE APPLE OF LUXURY MATRIMONY</Text>
+        </View>
+      </View>
 
-      {/* Top Brand Tagline */}
-      <div className="relative z-10 pt-10 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0E453F]/80 backdrop-blur-md border border-[#D6A24A]/40 text-[#D6A24A] text-xs font-semibold tracking-widest uppercase shadow-gold-glow">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>The Apple of Luxury Matrimony</span>
-        </div>
-      </div>
-
-      {/* Center Logo Emblem */}
-      <div className="relative z-10 text-center my-auto flex flex-col items-center">
-        <div className="relative group cursor-pointer" onClick={() => setScreen('onboarding')}>
-          <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#B88432] via-[#D6A24A] to-[#F8E8CD] p-[3px] shadow-[0_0_50px_rgba(214,162,74,0.6)] animate-pulse">
-            <div className="w-full h-full rounded-full bg-[#062E2A] flex items-center justify-center">
-              <Heart className="w-14 h-14 text-[#D6A24A] fill-[#D6A24A]/20" />
-            </div>
-          </div>
-          {/* Subtle surrounding ring */}
-          <div className="absolute -inset-3 rounded-full border border-[#D6A24A]/30 animate-spin" style={{ animationDuration: '12s' }} />
-        </div>
-
-        <h1 className="font-serif text-5xl font-bold text-white tracking-wider mt-6">ÉTERNITÉ</h1>
-        <p className="font-sans text-xs text-[#D6A24A] tracking-[0.3em] uppercase mt-2 font-medium">
-          Haute Matrimonie • International
-        </p>
-
-        <p className="text-sm text-gray-300 max-w-xs mt-4 font-sans leading-relaxed font-light">
-          Where love, family values, and timeless elegance unite across global horizons.
-        </p>
-      </div>
-
-      {/* Bottom Start Action Button */}
-      <div className="relative z-10 pb-8 flex flex-col items-center">
-        <button
-          onClick={() => setScreen('onboarding')}
-          className="w-full max-w-xs py-4 rounded-full bg-gradient-to-r from-[#B88432] via-[#D6A24A] to-[#F8E8CD] text-[#062E2A] font-bold text-sm shadow-gold-halo hover:opacity-95 active:scale-98 transition-all flex items-center justify-center gap-2 group"
+      {/* Center Logo & Title */}
+      <View style={styles.centerContainer}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => setScreen('onboarding')}
+          style={styles.logoCircle}
         >
-          <span>Begin Your Love Story</span>
-          <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </button>
+          <Heart size={44} color="#D6A24A" fill="rgba(214, 162, 74, 0.2)" />
+        </TouchableOpacity>
 
-        <span className="text-[10px] text-gray-400 mt-4 tracking-wider">
-          PRIVACY & TRUST VERIFIED • BY INVITATION ONLY
-        </span>
-      </div>
-    </div>
+        <Text style={styles.titleText}>ÉTERNITÉ</Text>
+        <Text style={styles.subtitleText}>HAUTE MATRIMONIE • INTERNATIONAL</Text>
+
+        <Text style={styles.descText}>
+          Where love, family values, and timeless elegance unite across global horizons.
+        </Text>
+      </View>
+
+      {/* Bottom Button */}
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => setScreen('onboarding')}
+          style={styles.ctaButton}
+        >
+          <Text style={styles.ctaText}>Begin Your Love Story</Text>
+          <ChevronRight size={18} color="#062E2A" />
+        </TouchableOpacity>
+
+        <Text style={styles.footerNote}>PRIVACY & TRUST VERIFIED • BY INVITATION ONLY</Text>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#062E2A',
+    justify: 'space-between',
+    padding: 24,
+  },
+  bgImage: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  darkOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(6, 46, 42, 0.75)',
+  },
+  topContainer: {
+    paddingTop: 16,
+    alignItems: 'center',
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: 'rgba(14, 69, 63, 0.9)',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 162, 74, 0.4)',
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+    letterSpacing: 1,
+  },
+  centerContainer: {
+    alignItems: 'center',
+  },
+  logoCircle: {
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: '#062E2A',
+    borderWidth: 2,
+    borderColor: '#D6A24A',
+    alignItems: 'center',
+    justify: 'center',
+    shadowColor: '#D6A24A',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  titleText: {
+    fontFamily: 'serif',
+    fontSize: 42,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginTop: 20,
+    letterSpacing: 2,
+  },
+  subtitleText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+    letterSpacing: 3,
+    marginTop: 4,
+  },
+  descText: {
+    fontSize: 12,
+    color: '#D1D5DB',
+    textAlign: 'center',
+    marginTop: 12,
+    lineHeight: 18,
+    maxWidth: 280,
+  },
+  bottomContainer: {
+    paddingBottom: 24,
+    alignItems: 'center',
+  },
+  ctaButton: {
+    width: '100%',
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#D6A24A',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 8,
+    elevation: 6,
+  },
+  ctaText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#062E2A',
+  },
+  footerNote: {
+    fontSize: 9,
+    color: '#9CA3AF',
+    marginTop: 12,
+    letterSpacing: 1,
+  },
+});

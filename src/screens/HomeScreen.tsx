@@ -1,5 +1,6 @@
 import React from 'react';
-import { Sparkles, Bell, ShieldCheck, Search, ChevronRight, Heart, MapPin, Crown, Star, ArrowRight, Award, Compass } from 'lucide-react';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { Sparkles, Bell, ShieldCheck, MapPin, Crown, Heart, ArrowRight } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
@@ -7,230 +8,489 @@ import { CircularScore } from '../components/CircularScore';
 import { SUCCESS_STORIES } from '../data/successStories';
 
 export const HomeScreen: React.FC = () => {
-  const { setScreen, setSelectedProfileId, setFilterModalOpen, notifications } = useAppStore();
+  const { setScreen, setSelectedProfileId, notifications } = useAppStore();
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-  const topMatch = MOCK_PROFILES[0]; // Aria D'Souza
+  const unreadCount = notifications.filter((n) => !n.read).length;
+  const topMatch = MOCK_PROFILES[0];
 
   return (
-    <div className="relative w-full min-h-screen bg-[#062E2A] text-white pb-28 pt-8 sm:pt-10 px-4 select-none overflow-x-hidden">
-      
-      {/* Background Ambient Glows */}
-      <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-radial-gold opacity-30 blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 left-0 w-80 h-80 rounded-full bg-[#0E453F]/60 blur-3xl pointer-events-none" />
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View>
+          <View style={styles.locationRow}>
+            <MapPin size={12} color="#D6A24A" />
+            <Text style={styles.locationText}>MONACO • LONDON • DUBAI</Text>
+          </View>
+          <Text style={styles.greetingText}>Bonjour, Devan</Text>
+        </View>
 
-      {/* Top Header Bar */}
-      <div className="relative z-10 flex items-center justify-between py-2 mb-4">
-        <div>
-          <div className="flex items-center gap-1.5 text-xs text-[#D6A24A] font-semibold tracking-wider uppercase">
-            <MapPin className="w-3.5 h-3.5" />
-            <span>Monaco • London • Dubai</span>
-          </div>
-          <h1 className="font-serif text-2xl font-bold text-white tracking-wide mt-0.5">
-            Bonjour, Devan
-          </h1>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setScreen('notifications')}
-            className="relative w-10 h-10 rounded-full bg-[#0E453F] border border-[#D6A24A]/40 flex items-center justify-center text-[#D6A24A] hover:bg-[#D6A24A] hover:text-[#062E2A] transition-colors"
-          >
-            <Bell className="w-5 h-5" />
+        <View style={styles.headerActions}>
+          <TouchableOpacity onPress={() => setScreen('notifications')} style={styles.iconBtn}>
+            <Bell size={20} color="#D6A24A" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow-lg">
-                {unreadCount}
-              </span>
+              <View style={styles.unreadBadge}>
+                <Text style={styles.unreadText}>{unreadCount}</Text>
+              </View>
             )}
-          </button>
+          </TouchableOpacity>
 
-          <button
-            onClick={() => setScreen('profile')}
-            className="w-10 h-10 rounded-full p-[1.5px] bg-gradient-to-r from-[#D6A24A] to-[#F8E8CD] shadow-gold-glow"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80"
-              alt="User"
-              className="w-full h-full rounded-full object-cover"
+          <TouchableOpacity onPress={() => setScreen('profile')} style={styles.avatarBtn}>
+            <Image
+              source={{ uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' }}
+              style={styles.avatarImg}
             />
-          </button>
-        </div>
-      </div>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-      {/* Hero 3D Pixar Illustration Banner */}
-      <div className="relative z-10 w-full h-48 rounded-[32px] overflow-hidden mb-6 shadow-[0_15px_40px_rgba(0,0,0,0.5)] border border-[#D6A24A]/40 bg-[#0E453F]">
-        <img
-          src="/assets/3d/home_hero_garden.png"
-          alt="Home Romantic Garden"
-          className="w-full h-full object-cover scale-105"
+      {/* Hero Card */}
+      <View style={styles.heroCard}>
+        <Image
+          source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80' }}
+          style={styles.heroImage}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#062E2A] via-[#062E2A]/70 to-transparent p-5 flex flex-col justify-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0E453F]/90 border border-[#D6A24A]/50 text-[#D6A24A] text-[10px] font-bold uppercase tracking-widest w-max mb-2">
-            <Sparkles className="w-3 h-3 text-[#D6A24A]" />
-            <span>Exclusive Matchmaking</span>
-          </div>
-          <h2 className="font-serif text-2xl font-bold text-white max-w-xs leading-tight">
-            Where Modern Romance Meets Timeless Values
-          </h2>
-          <p className="text-[11px] text-gray-300 mt-1 max-w-xs font-sans">
-            Curated soulmate recommendations verified by our European Concierge.
-          </p>
-        </div>
-      </div>
+        <View style={styles.heroOverlay} />
+        <View style={styles.heroContent}>
+          <View style={styles.heroBadge}>
+            <Sparkles size={10} color="#D6A24A" />
+            <Text style={styles.heroBadgeText}>EXCLUSIVE MATCHMAKING</Text>
+          </View>
+          <Text style={styles.heroTitle}>Where Modern Romance Meets Timeless Values</Text>
+          <Text style={styles.heroSub}>Curated soulmate recommendations verified by European Concierge.</Text>
+        </View>
+      </View>
 
-      {/* Today's AI Soulmate Match Section */}
-      <div className="relative z-10 mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-[#D6A24A]" />
-            <h2 className="font-serif text-xl font-bold text-white">Today’s AI Soulmate</h2>
-          </div>
-          <span className="text-xs font-semibold text-[#D6A24A]">Refreshes at midnight</span>
-        </div>
+      {/* Today's AI Match */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionTitleRow}>
+            <Sparkles size={18} color="#D6A24A" />
+            <Text style={styles.sectionTitle}>Today’s AI Soulmate</Text>
+          </View>
+          <Text style={styles.refreshText}>Refreshes at midnight</Text>
+        </View>
 
-        <GlassCard
-          glow
-          onClick={() => {
-            setSelectedProfileId(topMatch.id);
-            setScreen('match-details');
-          }}
-          className="p-5"
-        >
-          <div className="flex flex-col sm:flex-row items-center gap-5">
-            <div className="relative w-28 h-36 rounded-2xl overflow-hidden border border-[#D6A24A]/60 flex-shrink-0 shadow-lg">
-              <img src={topMatch.photos[0]} alt={topMatch.name} className="w-full h-full object-cover" />
-              <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-emerald-950/90 text-[#D6A24A] text-[9px] font-bold flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3" />
-                <span>Verified</span>
-              </div>
-            </div>
+        <GlassCard glow onClick={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}>
+          <View style={styles.matchCardRow}>
+            <Image source={{ uri: topMatch.photos[0] }} style={styles.matchAvatar} />
+            <View style={styles.matchInfo}>
+              <Text style={styles.matchName}>{topMatch.name}, {topMatch.age}</Text>
+              <Text style={styles.matchSub}>{topMatch.profession} • {topMatch.location}</Text>
+              <Text style={styles.matchQuote} numberOfLines={2}>"{topMatch.matchReason}"</Text>
 
-            <div className="flex-1 text-center sm:text-left">
-              <div className="flex items-center justify-center sm:justify-start gap-2">
-                <h3 className="font-serif text-2xl font-bold text-white">{topMatch.name}, {topMatch.age}</h3>
-                <span className="px-2 py-0.5 rounded-full bg-[#D6A24A]/20 border border-[#D6A24A]/40 text-[#D6A24A] text-[10px] font-bold">
-                  {topMatch.vipTier} VIP
-                </span>
-              </div>
-              <p className="text-xs text-gray-300 mt-1">{topMatch.profession} • {topMatch.location}</p>
-              <p className="text-xs text-emerald-200/90 italic mt-2 line-clamp-2">
-                "{topMatch.matchReason}"
-              </p>
-
-              <div className="flex items-center justify-center sm:justify-start gap-3 mt-4">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedProfileId(topMatch.id);
-                    setScreen('match-details');
-                  }}
-                  className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#B88432] via-[#D6A24A] to-[#F8E8CD] text-[#062E2A] font-bold text-xs shadow-gold-glow hover:opacity-95 transition-all"
-                >
-                  View Compatibility Insights
-                </button>
-              </div>
-            </div>
-
-            <div className="flex-shrink-0">
-              <CircularScore score={topMatch.aiMatchScore} size={95} />
-            </div>
-          </div>
+              <TouchableOpacity
+                onPress={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}
+                style={styles.insightBtn}
+              >
+                <Text style={styles.insightBtnText}>View Compatibility Insights</Text>
+              </TouchableOpacity>
+            </View>
+            <CircularScore score={topMatch.aiMatchScore} size={80} />
+          </View>
         </GlassCard>
-      </div>
+      </View>
 
       {/* Verified Profiles Horizontal Reel */}
-      <div className="relative z-10 mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-[#D6A24A]" />
-            <h2 className="font-serif text-xl font-bold text-white">Verified Royal Profiles</h2>
-          </div>
-          <button onClick={() => setScreen('discover')} className="text-xs text-[#D6A24A] font-semibold hover:underline">
-            View All
-          </button>
-        </div>
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionTitleRow}>
+            <ShieldCheck size={18} color="#D6A24A" />
+            <Text style={styles.sectionTitle}>Verified Royal Profiles</Text>
+          </View>
+          <TouchableOpacity onPress={() => setScreen('discover')}>
+            <Text style={styles.viewAllText}>View All</Text>
+          </TouchableOpacity>
+        </View>
 
-        <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.reelContent}>
           {MOCK_PROFILES.map((p) => (
-            <div
+            <TouchableOpacity
               key={p.id}
-              onClick={() => {
-                setSelectedProfileId(p.id);
-                setScreen('profile');
-              }}
-              className="w-36 flex-shrink-0 cursor-pointer group"
+              activeOpacity={0.8}
+              onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
+              style={styles.reelCard}
             >
-              <div className="relative w-36 h-48 rounded-2xl overflow-hidden border border-white/15 group-hover:border-[#D6A24A] transition-all shadow-md">
-                <img src={p.photos[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
-                <div className="absolute bottom-2 left-2 right-2">
-                  <h4 className="font-serif text-sm font-bold text-white line-clamp-1">{p.name}</h4>
-                  <p className="text-[10px] text-gray-300 line-clamp-1">{p.profession}</p>
-                </div>
-                <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-[#062E2A]/80 text-[#D6A24A] text-[9px] font-bold">
-                  {p.aiMatchScore}%
-                </div>
-              </div>
-            </div>
+              <Image source={{ uri: p.photos[0] }} style={styles.reelImage} />
+              <View style={styles.reelOverlay} />
+              <View style={styles.reelBadge}>
+                <Text style={styles.reelBadgeText}>{p.aiMatchScore}%</Text>
+              </View>
+              <View style={styles.reelFooter}>
+                <Text style={styles.reelName}>{p.name}</Text>
+                <Text style={styles.reelSub} numberOfLines={1}>{p.profession}</Text>
+              </View>
+            </TouchableOpacity>
           ))}
-        </div>
-      </div>
+        </ScrollView>
+      </View>
 
       {/* VIP Membership Banner */}
-      <div className="relative z-10 mb-6">
-        <GlassCard
-          glow
-          onClick={() => setScreen('membership')}
-          className="p-6 bg-gradient-to-r from-[#0E453F] via-[#062E2A] to-[#145A53]"
-        >
-          <div className="flex items-center justify-between">
-            <div className="max-w-xs">
-              <div className="flex items-center gap-1.5 text-xs text-[#D6A24A] font-bold uppercase tracking-widest mb-1">
-                <Crown className="w-4 h-4 text-[#D6A24A]" />
-                <span>Diamond VIP Membership</span>
-              </div>
-              <h3 className="font-serif text-xl font-bold text-white">Unlock Private Matchmaker Concierge</h3>
-              <p className="text-xs text-gray-300 mt-1">
-                Personalized introduction by senior European wedding consultants, unlimited video calls & incognito mode.
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#D6A24A] to-[#F8E8CD] p-[1px] flex-shrink-0 flex items-center justify-center text-[#062E2A] font-bold shadow-gold-halo">
-              <ArrowRight className="w-6 h-6" />
-            </div>
-          </div>
+      <View style={styles.section}>
+        <GlassCard glow onClick={() => setScreen('membership')}>
+          <View style={styles.vipRow}>
+            <View style={styles.vipTextCol}>
+              <View style={styles.vipBadge}>
+                <Crown size={12} color="#D6A24A" />
+                <Text style={styles.vipBadgeText}>DIAMOND VIP MEMBERSHIP</Text>
+              </View>
+              <Text style={styles.vipTitle}>Unlock Private Matchmaker Concierge</Text>
+              <Text style={styles.vipSub}>Senior European wedding consultants & incognito mode.</Text>
+            </View>
+            <View style={styles.vipArrowBtn}>
+              <ArrowRight size={20} color="#062E2A" />
+            </View>
+          </View>
         </GlassCard>
-      </div>
+      </View>
 
-      {/* Success Stories Snapshot */}
-      <div className="relative z-10 mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-red-400 fill-red-400/20" />
-            <h2 className="font-serif text-xl font-bold text-white">Royal Success Stories</h2>
-          </div>
-          <button onClick={() => setScreen('success-stories')} className="text-xs text-[#D6A24A] font-semibold hover:underline">
-            Explore All
-          </button>
-        </div>
+      {/* Success Stories */}
+      <View style={[styles.section, { marginBottom: 32 }]}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionTitleRow}>
+            <Heart size={18} color="#EF4444" fill="#EF4444" />
+            <Text style={styles.sectionTitle}>Royal Success Stories</Text>
+          </View>
+          <TouchableOpacity onPress={() => setScreen('success-stories')}>
+            <Text style={styles.viewAllText}>Explore All</Text>
+          </TouchableOpacity>
+        </View>
 
-        <GlassCard onClick={() => setScreen('success-stories')} className="p-5">
-          <div className="flex gap-4 items-center">
-            <img
-              src="/assets/3d/success_stories_couple.png"
-              alt="Success Story"
-              className="w-24 h-24 rounded-2xl object-cover border border-[#D6A24A]/40 flex-shrink-0"
-            />
-            <div>
-              <span className="text-[10px] font-semibold text-[#D6A24A] tracking-wider uppercase">Villa d’Este, Lake Como</span>
-              <h4 className="font-serif text-lg font-bold text-white">{SUCCESS_STORIES[0].coupleNames}</h4>
-              <p className="text-xs text-gray-300 mt-1 line-clamp-2 italic">
-                "{SUCCESS_STORIES[0].quote}"
-              </p>
-            </div>
-          </div>
+        <GlassCard onClick={() => setScreen('success-stories')}>
+          <View style={styles.storyRow}>
+            <Image source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&q=80' }} style={styles.storyImg} />
+            <View style={styles.storyContent}>
+              <Text style={styles.storyLoc}>VILLA D’ESTE, LAKE COMO</Text>
+              <Text style={styles.storyCouple}>{SUCCESS_STORIES[0].coupleNames}</Text>
+              <Text style={styles.storyQuote} numberOfLines={2}>"{SUCCESS_STORIES[0].quote}"</Text>
+            </View>
+          </View>
         </GlassCard>
-      </div>
-
-    </div>
+      </View>
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#062E2A',
+  },
+  content: {
+    padding: 16,
+    paddingBottom: 90,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'space-between',
+    marginBottom: 16,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  locationText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+    letterSpacing: 1,
+  },
+  greetingText: {
+    fontFamily: 'serif',
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginTop: 2,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  iconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#0E453F',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 162, 74, 0.4)',
+    alignItems: 'center',
+    justify: 'center',
+  },
+  unreadBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#EF4444',
+    alignItems: 'center',
+    justify: 'center',
+  },
+  unreadText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  avatarBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#D6A24A',
+    overflow: 'hidden',
+  },
+  avatarImg: {
+    width: '100%',
+    height: '100%',
+  },
+  heroCard: {
+    height: 160,
+    borderRadius: 24,
+    overflow: 'hidden',
+    backgroundColor: '#0E453F',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 162, 74, 0.4)',
+    position: 'relative',
+    marginBottom: 20,
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+  },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(6, 46, 42, 0.65)',
+  },
+  heroContent: {
+    padding: 16,
+    justifyContent: 'center',
+    flex: 1,
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    backgroundColor: 'rgba(14, 69, 63, 0.9)',
+    alignSelf: 'flex-start',
+    marginBottom: 6,
+  },
+  heroBadgeText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+  },
+  heroTitle: {
+    fontFamily: 'serif',
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  heroSub: {
+    fontSize: 10,
+    color: '#D1D5DB',
+    marginTop: 2,
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'space-between',
+    marginBottom: 10,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  sectionTitle: {
+    fontFamily: 'serif',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  refreshText: {
+    fontSize: 10,
+    color: '#D6A24A',
+    fontWeight: 'bold',
+  },
+  viewAllText: {
+    fontSize: 11,
+    color: '#D6A24A',
+    fontWeight: 'bold',
+  },
+  matchCardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  matchAvatar: {
+    width: 72,
+    height: 90,
+    borderRadius: 16,
+  },
+  matchInfo: {
+    flex: 1,
+  },
+  matchName: {
+    fontFamily: 'serif',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  matchSub: {
+    fontSize: 10,
+    color: '#9CA3AF',
+    marginTop: 2,
+  },
+  matchQuote: {
+    fontSize: 10,
+    color: '#D1D5DB',
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  insightBtn: {
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: '#D6A24A',
+    alignSelf: 'flex-start',
+  },
+  insightBtnText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#062E2A',
+  },
+  reelContent: {
+    gap: 12,
+  },
+  reelCard: {
+    width: 120,
+    height: 160,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#0E453F',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    position: 'relative',
+  },
+  reelImage: {
+    width: '100%',
+    height: '100%',
+  },
+  reelOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  reelBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    backgroundColor: '#062E2A',
+  },
+  reelBadgeText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+  },
+  reelFooter: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    right: 8,
+  },
+  reelName: {
+    fontFamily: 'serif',
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  reelSub: {
+    fontSize: 9,
+    color: '#D1D5DB',
+  },
+  vipRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'space-between',
+  },
+  vipTextCol: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  vipBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 4,
+  },
+  vipBadgeText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+  },
+  vipTitle: {
+    fontFamily: 'serif',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  vipSub: {
+    fontSize: 10,
+    color: '#D1D5DB',
+    marginTop: 2,
+  },
+  vipArrowBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#D6A24A',
+    alignItems: 'center',
+    justify: 'center',
+  },
+  storyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  storyImg: {
+    width: 70,
+    height: 70,
+    borderRadius: 16,
+  },
+  storyContent: {
+    flex: 1,
+  },
+  storyLoc: {
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+    letterSpacing: 1,
+  },
+  storyCouple: {
+    fontFamily: 'serif',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginTop: 1,
+  },
+  storyQuote: {
+    fontSize: 10,
+    color: '#D1D5DB',
+    marginTop: 2,
+    fontStyle: 'italic',
+  },
+});

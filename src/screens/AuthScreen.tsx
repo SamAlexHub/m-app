@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Mail, Phone, Lock, Sparkles, Fingerprint, ArrowRight, ShieldCheck } from 'lucide-react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 'react-native';
+import { Mail, Phone, Lock, Fingerprint, ArrowRight, ShieldCheck } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { GlassCard } from '../components/GlassCard';
 
@@ -12,8 +13,7 @@ export const AuthScreen: React.FC = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('8899');
 
-  const handleAuthSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAuthSubmit = () => {
     if (!otpSent && method === 'phone') {
       setOtpSent(true);
       return;
@@ -22,178 +22,268 @@ export const AuthScreen: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-full min-h-screen bg-[#062E2A] flex flex-col justify-between p-6 select-none overflow-hidden">
-      {/* Background Pixar Parisian Balcony Image */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="/assets/3d/login_luxury_scene.png"
-          alt="Luxury Login Scene"
-          className="w-full h-full object-cover opacity-40 scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#062E2A]/80 via-[#062E2A]/70 to-[#062E2A]" />
-      </div>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.confidentialBadge}>
+          <ShieldCheck size={14} color="#D6A24A" />
+          <Text style={styles.confidentialText}>STRICT CONFIDENTIALITY GUARANTEED</Text>
+        </View>
+      </View>
 
-      {/* Top Header */}
-      <div className="relative z-10 pt-6 text-center">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#0E453F]/90 border border-[#D6A24A]/40 text-[#D6A24A] text-xs font-semibold uppercase tracking-wider">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Strict Confidentiality Guaranteed</span>
-        </div>
-      </div>
+      <GlassCard style={styles.card}>
+        <Text style={styles.titleText}>
+          {authMode === 'login' ? 'Welcome Back' : 'Join Éternité'}
+        </Text>
+        <Text style={styles.subtext}>
+          {authMode === 'login'
+            ? 'Sign in to access your private match invitations'
+            : 'Create your luxury matrimonial profile in minutes'}
+        </Text>
 
-      {/* Auth Card Container */}
-      <div className="relative z-10 my-auto w-full max-w-md mx-auto">
-        <GlassCard className="p-7">
-          <div className="text-center mb-6">
-            <h2 className="font-serif text-3xl font-bold text-white">
-              {authMode === 'login' ? 'Welcome Back' : 'Join Éternité'}
-            </h2>
-            <p className="text-xs text-gray-300 mt-1">
-              {authMode === 'login'
-                ? 'Sign in to access your private match invitations'
-                : 'Create your luxury matrimonial profile in minutes'}
-            </p>
+        <View style={styles.pillContainer}>
+          <TouchableOpacity
+            onPress={() => setAuthMode('login')}
+            style={[styles.pill, authMode === 'login' && styles.pillActive]}
+          >
+            <Text style={[styles.pillText, authMode === 'login' && styles.pillTextActive]}>Sign In</Text>
+          </TouchableOpacity>
 
-            {/* Toggle Mode Pills */}
-            <div className="flex rounded-full bg-white/5 p-1 border border-white/10 mt-4">
-              <button
-                onClick={() => setAuthMode('login')}
-                className={`flex-1 py-2 text-xs font-semibold rounded-full transition-all ${
-                  authMode === 'login' ? 'bg-[#D6A24A] text-[#062E2A] shadow-gold-glow' : 'text-gray-400'
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => setAuthMode('signup')}
-                className={`flex-1 py-2 text-xs font-semibold rounded-full transition-all ${
-                  authMode === 'signup' ? 'bg-[#D6A24A] text-[#062E2A] shadow-gold-glow' : 'text-gray-400'
-                }`}
-              >
-                Register
-              </button>
-            </div>
-          </div>
+          <TouchableOpacity
+            onPress={() => setAuthMode('signup')}
+            style={[styles.pill, authMode === 'signup' && styles.pillActive]}
+          >
+            <Text style={[styles.pillText, authMode === 'signup' && styles.pillTextActive]}>Register</Text>
+          </TouchableOpacity>
+        </View>
 
-          <form onSubmit={handleAuthSubmit} className="space-y-4">
-            {/* Method Selectors */}
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => { setMethod('phone'); setOtpSent(false); }}
-                className={`flex-1 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 ${
-                  method === 'phone' ? 'border-[#D6A24A] text-[#D6A24A] bg-[#D6A24A]/10' : 'border-white/10 text-gray-400'
-                }`}
-              >
-                <Phone className="w-3.5 h-3.5" />
-                <span>Phone OTP</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setMethod('email')}
-                className={`flex-1 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 ${
-                  method === 'email' ? 'border-[#D6A24A] text-[#D6A24A] bg-[#D6A24A]/10' : 'border-white/10 text-gray-400'
-                }`}
-              >
-                <Mail className="w-3.5 h-3.5" />
-                <span>Email</span>
-              </button>
-            </div>
+        <View style={styles.methodRow}>
+          <TouchableOpacity
+            onPress={() => { setMethod('phone'); setOtpSent(false); }}
+            style={[styles.methodBtn, method === 'phone' && styles.methodBtnActive]}
+          >
+            <Phone size={14} color={method === 'phone' ? '#D6A24A' : '#9CA3AF'} />
+            <Text style={[styles.methodText, method === 'phone' && styles.methodTextActive]}>Phone OTP</Text>
+          </TouchableOpacity>
 
-            {/* Phone Input or Email Input */}
-            {method === 'phone' ? (
-              <div>
-                <label className="block text-xs font-medium text-[#D6A24A] mb-1">Mobile Number</label>
-                <div className="flex items-center gap-2 p-3 rounded-2xl bg-white/5 border border-white/15 text-white">
-                  <Phone className="w-4 h-4 text-[#D6A24A]" />
-                  <input
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="bg-transparent text-sm text-white focus:outline-none w-full font-sans"
-                    placeholder="+1 (555) 000-0000"
-                  />
-                </div>
-              </div>
-            ) : (
-              <div>
-                <label className="block text-xs font-medium text-[#D6A24A] mb-1">Email Address</label>
-                <div className="flex items-center gap-2 p-3 rounded-2xl bg-white/5 border border-white/15 text-white">
-                  <Mail className="w-4 h-4 text-[#D6A24A]" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-transparent text-sm text-white focus:outline-none w-full font-sans"
-                    placeholder="name@domain.com"
-                  />
-                </div>
-              </div>
-            )}
+          <TouchableOpacity
+            onPress={() => setMethod('email')}
+            style={[styles.methodBtn, method === 'email' && styles.methodBtnActive]}
+          >
+            <Mail size={14} color={method === 'email' ? '#D6A24A' : '#9CA3AF'} />
+            <Text style={[styles.methodText, method === 'email' && styles.methodTextActive]}>Email</Text>
+          </TouchableOpacity>
+        </View>
 
-            {/* OTP Input if Phone Sent */}
-            {method === 'phone' && otpSent && (
-              <div className="animate-fade-in">
-                <label className="block text-xs font-medium text-[#D6A24A] mb-1">Enter 4-Digit Security Code</label>
-                <div className="flex items-center gap-2 p-3 rounded-2xl bg-white/5 border border-[#D6A24A]/60 text-white">
-                  <Lock className="w-4 h-4 text-[#D6A24A]" />
-                  <input
-                    type="text"
-                    maxLength={4}
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    className="bg-transparent text-sm font-bold tracking-widest text-white focus:outline-none w-full"
-                  />
-                </div>
-              </div>
-            )}
+        {method === 'phone' ? (
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inputLabel}>Mobile Number</Text>
+            <View style={styles.inputBox}>
+              <Phone size={16} color="#D6A24A" />
+              <TextInput
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                keyboardType="phone-pad"
+                placeholderTextColor="#9CA3AF"
+                style={styles.inputText}
+              />
+            </View>
+          </View>
+        ) : (
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inputLabel}>Email Address</Text>
+            <View style={styles.inputBox}>
+              <Mail size={16} color="#D6A24A" />
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                placeholderTextColor="#9CA3AF"
+                style={styles.inputText}
+              />
+            </View>
+          </View>
+        )}
 
-            {/* Action Submit */}
-            <button
-              type="submit"
-              className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#B88432] via-[#D6A24A] to-[#F8E8CD] text-[#062E2A] font-bold text-sm shadow-gold-halo hover:opacity-95 active:scale-98 transition-all flex items-center justify-center gap-2 mt-2"
-            >
-              <span>{method === 'phone' && !otpSent ? 'Send Verification OTP' : 'Enter Private Lounge'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
+        {method === 'phone' && otpSent && (
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inputLabel}>4-Digit Code</Text>
+            <View style={styles.inputBox}>
+              <Lock size={16} color="#D6A24A" />
+              <TextInput
+                value={otp}
+                onChangeText={setOtp}
+                keyboardType="number-pad"
+                maxLength={4}
+                placeholderTextColor="#9CA3AF"
+                style={[styles.inputText, { letterSpacing: 6, fontWeight: 'bold' }]}
+              />
+            </View>
+          </View>
+        )}
 
-          {/* Social Sign-In Divider */}
-          <div className="mt-6">
-            <div className="relative flex py-2 items-center">
-              <div className="flex-grow border-t border-white/10"></div>
-              <span className="flex-shrink mx-4 text-[10px] uppercase tracking-widest text-gray-400">or sign in with</span>
-              <div className="flex-grow border-t border-white/10"></div>
-            </div>
+        <TouchableOpacity activeOpacity={0.85} onPress={handleAuthSubmit} style={styles.submitBtn}>
+          <Text style={styles.submitBtnText}>
+            {method === 'phone' && !otpSent ? 'Send Verification OTP' : 'Enter Private Lounge'}
+          </Text>
+          <ArrowRight size={16} color="#062E2A" />
+        </TouchableOpacity>
+      </GlassCard>
 
-            <div className="grid grid-cols-2 gap-3 mt-3">
-              <button
-                onClick={() => setScreen('home')}
-                className="py-2.5 rounded-2xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
-              >
-                <span> Apple ID</span>
-              </button>
-              <button
-                onClick={() => setScreen('home')}
-                className="py-2.5 rounded-2xl bg-white/5 border border-white/10 text-xs font-medium text-white hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
-              >
-                <span>G Google</span>
-              </button>
-            </div>
-          </div>
-        </GlassCard>
-      </div>
-
-      {/* Footer Biometrics */}
-      <div className="relative z-10 pb-6 text-center">
-        <button
-          onClick={() => setScreen('home')}
-          className="inline-flex items-center gap-2 text-xs text-gray-300 hover:text-[#D6A24A] transition-colors"
-        >
-          <Fingerprint className="w-5 h-5 text-[#D6A24A]" />
-          <span>Biometric Passcode Sign-In</span>
-        </button>
-      </div>
-    </div>
+      <TouchableOpacity onPress={() => setScreen('home')} style={styles.fingerprintBtn}>
+        <Fingerprint size={20} color="#D6A24A" />
+        <Text style={styles.fingerprintText}>Biometric Passcode Sign-In</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#062E2A',
+    justify: 'space-between',
+    padding: 24,
+  },
+  header: {
+    paddingTop: 16,
+    alignItems: 'center',
+  },
+  confidentialBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#0E453F',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 162, 74, 0.4)',
+  },
+  confidentialText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+    letterSpacing: 1,
+  },
+  card: {
+    marginTop: 20,
+  },
+  titleText: {
+    fontFamily: 'serif',
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'center',
+  },
+  subtext: {
+    fontSize: 11,
+    color: '#D1D5DB',
+    textAlign: 'center',
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  pillContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 24,
+    padding: 4,
+    marginBottom: 16,
+  },
+  pill: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 20,
+    alignItems: 'center',
+  },
+  pillActive: {
+    backgroundColor: '#D6A24A',
+  },
+  pillText: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    fontWeight: '600',
+  },
+  pillTextActive: {
+    color: '#062E2A',
+    fontWeight: 'bold',
+  },
+  methodRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  methodBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  methodBtnActive: {
+    borderColor: '#D6A24A',
+    backgroundColor: 'rgba(214, 162, 74, 0.1)',
+  },
+  methodText: {
+    fontSize: 11,
+    color: '#9CA3AF',
+  },
+  methodTextActive: {
+    color: '#D6A24A',
+    fontWeight: 'bold',
+  },
+  inputWrapper: {
+    marginBottom: 14,
+  },
+  inputLabel: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#D6A24A',
+    marginBottom: 4,
+  },
+  inputBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    height: 46,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    paddingHorizontal: 12,
+  },
+  inputText: {
+    flex: 1,
+    color: '#ffffff',
+    fontSize: 13,
+  },
+  submitBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 8,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#D6A24A',
+    marginTop: 8,
+  },
+  submitBtnText: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#062E2A',
+  },
+  fingerprintBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 8,
+    paddingVertical: 16,
+  },
+  fingerprintText: {
+    fontSize: 11,
+    color: '#D1D5DB',
+  },
+});
