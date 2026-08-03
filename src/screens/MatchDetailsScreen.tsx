@@ -5,6 +5,7 @@ import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
 import { CircularScore } from '../components/CircularScore';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const MatchDetailsScreen: React.FC = () => {
   const { selectedProfileId, setScreen, setDatePlannerOpen, setVideoCallActive } = useAppStore();
@@ -26,10 +27,10 @@ export const MatchDetailsScreen: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
-            <ArrowLeft size={18} color="#ffffff" />
+            <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
           </TouchableOpacity>
           <View style={styles.reportBadge}>
-            <Sparkles size={12} color="#D6A24A" />
+            <Sparkles size={12} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.reportBadgeText}>AI COMPATIBILITY REPORT</Text>
           </View>
           <View style={{ width: 36 }} />
@@ -66,13 +67,13 @@ export const MatchDetailsScreen: React.FC = () => {
 
       {/* Action Footer */}
       <View style={styles.bottomBar}>
-        <TouchableOpacity activeOpacity={0.85} onPress={() => setDatePlannerOpen(true)} style={styles.inviteBtn}>
-          <Calendar size={16} color="#062E2A" />
+        <TouchableOpacity activeOpacity={0.88} onPress={() => setDatePlannerOpen(true)} style={styles.inviteBtn}>
+          <Calendar size={16} color={COLORS.primary} strokeWidth={2} />
           <Text style={styles.inviteBtnText}>Invite to Date</Text>
         </TouchableOpacity>
 
         <TouchableOpacity activeOpacity={0.8} onPress={() => setVideoCallActive(true)} style={styles.videoBtn}>
-          <Video size={16} color="#D6A24A" />
+          <Video size={16} color={COLORS.accentGold} strokeWidth={2} />
           <Text style={styles.videoBtnText}>HD Video Call</Text>
         </TouchableOpacity>
       </View>
@@ -83,24 +84,24 @@ export const MatchDetailsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
   },
   content: {
-    padding: 16,
+    padding: SPACING.md,
     paddingBottom: 110,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
-    marginBottom: 16,
-    paddingTop: 8,
+    marginBottom: SPACING.md,
+    paddingTop: SPACING.xs,
   },
   backBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#0E453F',
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
@@ -111,55 +112,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
-    backgroundColor: '#0E453F',
+    paddingVertical: 5,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
   },
   reportBadgeText: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 9,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
   },
   heroBox: {
     alignItems: 'center',
-    paddingVertical: 24,
+    paddingVertical: SPACING.lg,
   },
   namesText: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleL,
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginTop: 12,
+    marginTop: SPACING.md,
   },
   resonanceText: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 9,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
     marginTop: 2,
   },
   descText: {
+    ...TYPOGRAPHY.body,
     fontSize: 11,
-    color: '#D1D5DB',
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: SPACING.sm,
     maxWidth: 260,
   },
   section: {
-    marginTop: 16,
+    marginTop: SPACING.md,
   },
   sectionTitle: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleM,
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
   },
   matrixCard: {
-    gap: 12,
+    gap: SPACING.md,
   },
   matrixRow: {},
   matrixLabelRow: {
@@ -168,53 +161,54 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   matrixLabel: {
-    fontSize: 11,
-    color: '#ffffff',
+    fontSize: 12,
+    color: COLORS.white,
     fontWeight: '600',
   },
   matrixScore: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#D6A24A',
+    color: COLORS.accentGold,
   },
   track: {
     height: 6,
     borderRadius: 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     overflow: 'hidden',
   },
   bar: {
     height: '100%',
     borderRadius: 3,
-    backgroundColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
   },
   bottomBar: {
     position: 'absolute',
-    bottom: 16,
-    left: 16,
-    right: 16,
+    bottom: SPACING.md,
+    left: SPACING.md,
+    right: SPACING.md,
     flexDirection: 'row',
-    gap: 12,
+    gap: SPACING.md,
   },
   inviteBtn: {
     flex: 1,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#D6A24A',
+    height: 52,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
     gap: 6,
+    ...SHADOWS.goldGlow,
   },
   inviteBtnText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 'bold',
-    color: '#062E2A',
+    color: COLORS.primary,
   },
   videoBtn: {
-    height: 48,
-    paddingHorizontal: 16,
-    borderRadius: 24,
+    height: 52,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.full,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
@@ -224,8 +218,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   videoBtnText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: COLORS.white,
   },
 });

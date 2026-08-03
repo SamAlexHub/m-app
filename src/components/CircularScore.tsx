@@ -1,17 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Sparkles } from 'lucide-react-native';
+import { COLORS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 interface CircularScoreProps {
   score: number;
   size?: number;
-  strokeWidth?: number;
   label?: string;
 }
 
 export const CircularScore: React.FC<CircularScoreProps> = ({
   score,
-  size = 90,
+  size = 96,
   label = 'AI Soulmate Match',
 }) => {
   return (
@@ -28,7 +28,7 @@ export const CircularScore: React.FC<CircularScoreProps> = ({
       >
         <View style={styles.content}>
           <View style={styles.row}>
-            <Sparkles size={14} color="#D6A24A" />
+            <Sparkles size={14} color={COLORS.accentGold} />
             <Text style={styles.scoreText}>{score}%</Text>
           </View>
           <Text style={styles.matchSubtext}>MATCH</Text>
@@ -42,46 +42,44 @@ export const CircularScore: React.FC<CircularScoreProps> = ({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    justifyContent: 'center',
+    justify: 'center',
   },
   circle: {
-    backgroundColor: '#0E453F',
-    borderWidth: 4,
-    borderColor: '#D6A24A',
+    backgroundColor: COLORS.secondary,
+    borderWidth: 3.5,
+    borderColor: COLORS.accentGold,
     alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#D6A24A',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 6,
+    justify: 'center',
+    ...SHADOWS.goldGlow,
   },
   content: {
     alignItems: 'center',
-    justifyContent: 'center',
+    justify: 'center',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
+    gap: 4,
   },
   scoreText: {
     fontFamily: 'serif',
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: COLORS.white,
+    letterSpacing: -0.5,
   },
   matchSubtext: {
-    fontSize: 8,
-    color: '#D6A24A',
+    fontSize: 9,
+    color: COLORS.accentGold,
     fontWeight: 'bold',
-    letterSpacing: 1,
-    marginTop: 1,
+    letterSpacing: 1.5,
+    marginTop: 2,
   },
   labelText: {
-    marginTop: 6,
-    fontSize: 10,
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontWeight: '500',
+    marginTop: SPACING.sm,
+    fontSize: 11,
+    color: COLORS.mutedGray,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
 });

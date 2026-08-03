@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, Image, ScrollView } from 'react-native';
 import { Sparkles, X, CheckCircle2 } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const DatePlannerModal: React.FC = () => {
   const { datePlannerOpen, setDatePlannerOpen } = useAppStore();
@@ -30,18 +31,18 @@ export const DatePlannerModal: React.FC = () => {
         <View style={styles.sheetContainer}>
           <View style={styles.header}>
             <View style={styles.titleRow}>
-              <Sparkles size={18} color="#D6A24A" />
+              <Sparkles size={18} color={COLORS.accentGold} strokeWidth={2} />
               <Text style={styles.titleText}>VIP Luxury Date Planner</Text>
             </View>
             <TouchableOpacity onPress={() => setDatePlannerOpen(false)} style={styles.closeBtn}>
-              <X size={16} color="#ffffff" />
+              <X size={16} color={COLORS.white} strokeWidth={2} />
             </TouchableOpacity>
           </View>
 
           {submitted ? (
             <View style={styles.submittedContainer}>
-              <CheckCircle2 size={56} color="#D6A24A" />
-              <Text style={styles.submittedTitle}>Invitation Sent</Text>
+              <CheckCircle2 size={56} color={COLORS.accentGold} strokeWidth={1.8} />
+              <Text style={styles.submittedTitle}>Invitation Dispatched</Text>
               <Text style={styles.submittedSubtext}>
                 Your date invitation to {selectedVenue} has been dispatched via Éternité Concierge.
               </Text>
@@ -49,14 +50,14 @@ export const DatePlannerModal: React.FC = () => {
           ) : (
             <ScrollView style={styles.scrollContent}>
               <Text style={styles.subtext}>
-                Propose an exclusive date. Our VIP Concierge handles reservations and security seamlessly.
+                Propose an exclusive experience. Our VIP Concierge handles reservations and security verification seamlessly.
               </Text>
 
               <Text style={styles.sectionHeader}>SELECT MICHELIN VENUE</Text>
               {venues.map((v) => (
                 <TouchableOpacity
                   key={v.name}
-                  activeOpacity={0.8}
+                  activeOpacity={0.85}
                   onPress={() => setSelectedVenue(v.name)}
                   style={[
                     styles.venueCard,
@@ -71,8 +72,8 @@ export const DatePlannerModal: React.FC = () => {
                 </TouchableOpacity>
               ))}
 
-              <TouchableOpacity activeOpacity={0.85} onPress={handlePropose} style={styles.submitButton}>
-                <Sparkles size={16} color="#062E2A" />
+              <TouchableOpacity activeOpacity={0.88} onPress={handlePropose} style={styles.submitButton}>
+                <Sparkles size={16} color={COLORS.primary} strokeWidth={2} />
                 <Text style={styles.submitText}>Send VIP Invitation</Text>
               </TouchableOpacity>
             </ScrollView>
@@ -87,35 +88,32 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'flex-end',
+    justify: 'flex-end',
   },
   sheetContainer: {
-    backgroundColor: '#0E453F',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    padding: 24,
+    backgroundColor: COLORS.secondary,
+    borderTopLeftRadius: RADIUS.xl, // 32px
+    borderTopRightRadius: RADIUS.xl,
+    padding: SPACING.lg,
     maxHeight: '80%',
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: 12,
+    justify: 'space-between',
+    paddingBottom: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: SPACING.sm,
   },
   titleText: {
-    fontFamily: 'serif',
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    ...TYPOGRAPHY.titleM,
   },
   closeBtn: {
     width: 32,
@@ -126,83 +124,79 @@ const styles = StyleSheet.create({
     justify: 'center',
   },
   scrollContent: {
-    marginTop: 12,
+    marginTop: SPACING.md,
   },
   subtext: {
-    fontSize: 11,
-    color: '#D1D5DB',
-    marginBottom: 16,
+    ...TYPOGRAPHY.body,
+    fontSize: 12,
+    marginBottom: SPACING.md,
   },
   sectionHeader: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
-    marginBottom: 8,
+    ...TYPOGRAPHY.subtitle,
+    marginBottom: SPACING.sm,
   },
   venueCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    padding: 12,
-    borderRadius: 16,
+    gap: SPACING.md,
+    padding: SPACING.md,
+    borderRadius: RADIUS.md,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    marginBottom: 8,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    marginBottom: SPACING.sm,
   },
   venueCardSelected: {
-    borderColor: '#D6A24A',
-    backgroundColor: 'rgba(6, 46, 42, 0.9)',
+    borderColor: COLORS.accentGold,
+    backgroundColor: 'rgba(7, 47, 43, 0.9)',
+    ...SHADOWS.goldGlow,
   },
   venueImage: {
     width: 48,
     height: 48,
-    borderRadius: 12,
+    borderRadius: RADIUS.sm,
   },
   venueInfo: {
     flex: 1,
   },
   venueName: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: COLORS.white,
   },
   venueSub: {
-    fontSize: 10,
-    color: '#9CA3AF',
+    fontSize: 11,
+    color: COLORS.mutedGray,
     marginTop: 2,
   },
   submitButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    gap: 8,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#D6A24A',
-    marginTop: 16,
+    gap: SPACING.sm,
+    height: 52,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentGold,
+    marginTop: SPACING.lg,
+    ...SHADOWS.goldGlow,
   },
   submitText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#062E2A',
+    color: COLORS.primary,
   },
   submittedContainer: {
-    paddingVertical: 32,
+    paddingVertical: SPACING.xxl,
     alignItems: 'center',
   },
   submittedTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginTop: 12,
+    ...TYPOGRAPHY.titleL,
+    marginTop: SPACING.md,
   },
   submittedSubtext: {
-    fontSize: 11,
-    color: '#D1D5DB',
+    ...TYPOGRAPHY.body,
     textAlign: 'center',
-    marginTop: 6,
-    maxWidth: 240,
+    marginTop: SPACING.xs,
+    maxWidth: 260,
   },
 });

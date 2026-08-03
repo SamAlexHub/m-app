@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'rea
 import { ArrowLeft, Bell, Sparkles } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { GlassCard } from '../components/GlassCard';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const NotificationsScreen: React.FC = () => {
   const { notifications, markNotificationAsRead, setScreen, setSelectedProfileId } = useAppStore();
@@ -11,10 +12,10 @@ export const NotificationsScreen: React.FC = () => {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
-          <ArrowLeft size={18} color="#ffffff" />
+          <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
         </TouchableOpacity>
         <View style={styles.badge}>
-          <Bell size={12} color="#D6A24A" />
+          <Bell size={12} color={COLORS.accentGold} strokeWidth={1.8} />
           <Text style={styles.badgeText}>ACTIVITY CENTER</Text>
         </View>
         <View style={{ width: 36 }} />
@@ -40,7 +41,7 @@ export const NotificationsScreen: React.FC = () => {
                 <Image source={{ uri: n.avatar }} style={styles.avatar} />
               ) : (
                 <View style={styles.iconBox}>
-                  <Sparkles size={16} color="#062E2A" />
+                  <Sparkles size={16} color={COLORS.primary} strokeWidth={2} />
                 </View>
               )}
 
@@ -64,24 +65,24 @@ export const NotificationsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
   },
   content: {
-    padding: 16,
+    padding: SPACING.md,
     paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
-    marginBottom: 16,
-    paddingTop: 8,
+    marginBottom: SPACING.md,
+    paddingTop: SPACING.xs,
   },
   backBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#0E453F',
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
@@ -92,38 +93,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
-    backgroundColor: '#0E453F',
+    paddingVertical: 5,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
   },
   badgeText: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 9,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
   },
   title: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleL,
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
     textAlign: 'center',
   },
   sub: {
-    fontSize: 11,
-    color: '#D6A24A',
-    fontWeight: 'bold',
+    ...TYPOGRAPHY.subtitle,
+    fontSize: 10,
     textAlign: 'center',
     marginTop: 2,
-    marginBottom: 16,
+    marginBottom: SPACING.md,
   },
   list: {
-    gap: 10,
+    gap: SPACING.sm,
   },
   notifCard: {
-    padding: 12,
+    padding: SPACING.md,
   },
   notifRow: {
     flexDirection: 'row',
@@ -135,13 +131,13 @@ const styles = StyleSheet.create({
     height: 38,
     borderRadius: 19,
     borderWidth: 1,
-    borderColor: '#D6A24A',
+    borderColor: COLORS.accentGold,
   },
   iconBox: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
     alignItems: 'center',
     justify: 'center',
   },
@@ -157,21 +153,21 @@ const styles = StyleSheet.create({
     fontFamily: 'serif',
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: COLORS.white,
   },
   timeText: {
     fontSize: 9,
-    color: '#9CA3AF',
+    color: COLORS.mutedGray,
   },
   msgText: {
+    ...TYPOGRAPHY.body,
     fontSize: 10,
-    color: '#D1D5DB',
     marginTop: 2,
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
   },
 });

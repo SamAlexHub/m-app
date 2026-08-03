@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, SafeAreaView, StatusBar, Dimensions } from 'react-native';
+import { View, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import { useAppStore } from './store/useAppStore';
 import { SplashScreen } from './screens/SplashScreen';
 import { OnboardingScreen } from './screens/OnboardingScreen';
@@ -18,6 +18,7 @@ import { FloatingBottomBar } from './components/FloatingBottomBar';
 import { DatePlannerModal } from './components/DatePlannerModal';
 import { VideoCallModal } from './components/VideoCallModal';
 import { FilterSheetModal } from './components/FilterSheetModal';
+import { COLORS } from './theme/tokens';
 
 export const App: React.FC = () => {
   const { currentScreen } = useAppStore();
@@ -57,7 +58,7 @@ export const App: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#062E2A" />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
       <View style={styles.screenWrapper}>
         {renderScreen()}
       </View>
@@ -72,11 +73,11 @@ export const App: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
   },
   screenWrapper: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
   },
 });
 

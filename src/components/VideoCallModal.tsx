@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet, Image } from 'react-na
 import { Mic, MicOff, Video, VideoOff, PhoneOff, ShieldCheck } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const VideoCallModal: React.FC = () => {
   const { videoCallActive, setVideoCallActive, activeChatProfileId } = useAppStore();
@@ -22,7 +23,7 @@ export const VideoCallModal: React.FC = () => {
         {/* Top Encrypted Bar */}
         <View style={styles.topRow}>
           <View style={styles.encryptBadge}>
-            <ShieldCheck size={14} color="#D6A24A" />
+            <ShieldCheck size={14} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.encryptText}>256-Bit Encrypted HD Call</Text>
           </View>
         </View>
@@ -37,15 +38,15 @@ export const VideoCallModal: React.FC = () => {
         {/* Bottom Control Bar */}
         <View style={styles.controlRow}>
           <TouchableOpacity onPress={() => setMuted(!muted)} style={[styles.controlBtn, muted && styles.controlBtnActive]}>
-            {muted ? <MicOff size={22} color="#ffffff" /> : <Mic size={22} color="#ffffff" />}
+            {muted ? <MicOff size={22} color={COLORS.white} strokeWidth={2} /> : <Mic size={22} color={COLORS.white} strokeWidth={2} />}
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => setVideoCallActive(false)} style={styles.endCallBtn}>
-            <PhoneOff size={28} color="#ffffff" />
+            <PhoneOff size={28} color={COLORS.white} strokeWidth={2} />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => setVideoOff(!videoOff)} style={[styles.controlBtn, videoOff && styles.controlBtnActive]}>
-            {videoOff ? <VideoOff size={22} color="#ffffff" /> : <Video size={22} color="#ffffff" />}
+            {videoOff ? <VideoOff size={22} color={COLORS.white} strokeWidth={2} /> : <Video size={22} color={COLORS.white} strokeWidth={2} />}
           </TouchableOpacity>
         </View>
       </View>
@@ -56,19 +57,19 @@ export const VideoCallModal: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
     justify: 'space-between',
-    padding: 24,
+    padding: SPACING.lg,
   },
   bgImage: {
     ...StyleSheet.absoluteFillObject,
   },
   darkOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(6, 46, 42, 0.75)',
+    backgroundColor: 'rgba(7, 47, 43, 0.75)',
   },
   topRow: {
-    paddingTop: 36,
+    paddingTop: SPACING.xl,
     flexDirection: 'row',
     justify: 'center',
   },
@@ -76,17 +77,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: 'rgba(6, 46, 42, 0.9)',
+    borderRadius: RADIUS.full,
+    backgroundColor: 'rgba(7, 47, 43, 0.9)',
     borderWidth: 1,
-    borderColor: '#D6A24A',
+    borderColor: COLORS.accentGold,
   },
   encryptText: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#D6A24A',
+    color: COLORS.accentGold,
+    letterSpacing: 0.5,
   },
   centerInfo: {
     alignItems: 'center',
@@ -96,18 +98,15 @@ const styles = StyleSheet.create({
     height: 96,
     borderRadius: 48,
     borderWidth: 2,
-    borderColor: '#D6A24A',
-    marginBottom: 12,
+    borderColor: COLORS.accentGold,
+    marginBottom: SPACING.md,
   },
   nameText: {
-    fontFamily: 'serif',
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    ...TYPOGRAPHY.titleXL,
   },
   timeText: {
     fontSize: 11,
-    color: '#D6A24A',
+    color: COLORS.accentGold,
     fontWeight: 'bold',
     marginTop: 4,
   },
@@ -115,13 +114,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    gap: 24,
-    paddingBottom: 32,
+    gap: SPACING.lg,
+    paddingBottom: SPACING.xl,
   },
   controlBtn: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justify: 'center',
@@ -133,9 +132,9 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#DC2626',
+    backgroundColor: COLORS.redAccent,
     alignItems: 'center',
     justify: 'center',
-    elevation: 8,
+    ...SHADOWS.soft,
   },
 });

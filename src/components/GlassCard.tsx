@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import { COLORS, RADIUS, SHADOWS, SPACING } from '../theme/tokens';
 
 interface GlassCardProps {
   children: React.ReactNode;
@@ -7,7 +8,7 @@ interface GlassCardProps {
   glow?: boolean;
   borderGold?: boolean;
   onClick?: () => void;
-  className?: string;
+  padding?: number;
 }
 
 export const GlassCard: React.FC<GlassCardProps> = ({
@@ -16,22 +17,19 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   glow = false,
   borderGold = true,
   onClick,
+  padding = SPACING.lg, // 24px default padding
 }) => {
   const containerStyle: ViewStyle = {
-    borderRadius: 24,
-    padding: 20,
-    backgroundColor: 'rgba(14, 69, 63, 0.75)',
+    borderRadius: RADIUS.lg,
+    padding: padding,
+    backgroundColor: COLORS.darkGlass,
     borderWidth: 1,
     borderColor: glow
-      ? 'rgba(214, 162, 74, 0.8)'
+      ? COLORS.accentGold
       : borderGold
-      ? 'rgba(214, 162, 74, 0.3)'
-      : 'rgba(255, 255, 255, 0.1)',
-    shadowColor: glow ? '#D6A24A' : '#000000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: glow ? 0.4 : 0.3,
-    shadowRadius: 15,
-    elevation: 8,
+      ? COLORS.darkGlassBorder
+      : 'rgba(255, 255, 255, 0.12)',
+    ...(glow ? SHADOWS.goldGlow : SHADOWS.soft),
     position: 'relative',
     overflow: 'hidden',
     ...style,
@@ -39,7 +37,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 
   if (onClick) {
     return (
-      <TouchableOpacity activeOpacity={0.85} onPress={onClick} style={containerStyle}>
+      <TouchableOpacity activeOpacity={0.88} onPress={onClick} style={containerStyle}>
         {children}
       </TouchableOpacity>
     );

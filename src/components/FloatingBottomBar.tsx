@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Home, Compass, Heart, MessageCircle, User, Search } from 'lucide-react-native';
 import { useAppStore, ScreenType } from '../store/useAppStore';
-
-const { width } = Dimensions.get('window');
+import { COLORS, RADIUS, SHADOWS, SPACING } from '../theme/tokens';
 
 export const FloatingBottomBar: React.FC = () => {
   const { currentScreen, setScreen, setFilterModalOpen } = useAppStore();
@@ -25,14 +24,14 @@ export const FloatingBottomBar: React.FC = () => {
             return (
               <View key="floating-search" style={styles.floatingWrapper}>
                 <TouchableOpacity
-                  activeOpacity={0.85}
+                  activeOpacity={0.88}
                   onPress={() => {
                     setScreen('discover');
                     setFilterModalOpen(true);
                   }}
                   style={styles.floatingButton}
                 >
-                  <Search size={24} color="#D6A24A" />
+                  <Search size={22} color={COLORS.accentGold} strokeWidth={2.2} />
                 </TouchableOpacity>
               </View>
             );
@@ -48,7 +47,7 @@ export const FloatingBottomBar: React.FC = () => {
               onPress={() => setScreen(item.id as ScreenType)}
               style={styles.navItem}
             >
-              <Icon size={20} color={isActive ? '#D6A24A' : '#9CA3AF'} />
+              <Icon size={20} color={isActive ? COLORS.accentGold : COLORS.mutedGray} strokeWidth={isActive ? 2.2 : 1.8} />
               <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
                 {item.label}
               </Text>
@@ -63,62 +62,54 @@ export const FloatingBottomBar: React.FC = () => {
 const styles = StyleSheet.create({
   outerContainer: {
     position: 'absolute',
-    bottom: 12,
-    left: '4%',
-    right: '4%',
+    bottom: SPACING.md,
+    left: SPACING.md,
+    right: SPACING.md,
     zIndex: 99,
     alignItems: 'center',
   },
   bar: {
     width: '100%',
     height: 64,
-    borderRadius: 36,
+    borderRadius: RADIUS.xl, // 32px
     backgroundColor: 'rgba(14, 69, 63, 0.92)',
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingHorizontal: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
-    shadowRadius: 15,
-    elevation: 12,
+    justify: 'space-around',
+    paddingHorizontal: SPACING.sm,
+    ...SHADOWS.soft,
   },
   navItem: {
     alignItems: 'center',
     justify: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
   },
   navLabel: {
-    fontSize: 9,
-    marginTop: 3,
-    color: '#9CA3AF',
+    fontSize: 10,
+    marginTop: 4,
+    color: COLORS.mutedGray,
     fontWeight: '500',
   },
   navLabelActive: {
-    color: '#D6A24A',
+    color: COLORS.accentGold,
     fontWeight: 'bold',
   },
   floatingWrapper: {
     position: 'relative',
-    top: -18,
+    top: -20,
   },
   floatingButton: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
     borderWidth: 2,
-    borderColor: '#D6A24A',
+    borderColor: COLORS.accentGold,
     alignItems: 'center',
     justify: 'center',
-    shadowColor: '#D6A24A',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 12,
-    elevation: 10,
+    ...SHADOWS.goldGlow,
   },
 });

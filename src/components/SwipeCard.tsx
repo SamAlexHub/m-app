@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Heart, X, Sparkles, ShieldCheck, MapPin, Briefcase, MessageCircle } from 'lucide-react-native';
 import { Profile } from '../data/profiles';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 const { width } = Dimensions.get('window');
 
@@ -32,7 +33,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         <View style={styles.badgeRow}>
           {profile.verified && (
             <View style={styles.verifiedBadge}>
-              <ShieldCheck size={12} color="#D6A24A" />
+              <ShieldCheck size={12} color={COLORS.accentGold} />
               <Text style={styles.verifiedText}>Verified Royal</Text>
             </View>
           )}
@@ -42,7 +43,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         </View>
 
         <View style={styles.scoreBadge}>
-          <Sparkles size={12} color="#062E2A" />
+          <Sparkles size={12} color={COLORS.primary} />
           <Text style={styles.scoreText}>{profile.aiMatchScore}% Match</Text>
         </View>
       </View>
@@ -56,11 +57,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
 
         <View style={styles.metaRow}>
           <View style={styles.metaItem}>
-            <MapPin size={12} color="#D6A24A" />
+            <MapPin size={14} color={COLORS.accentGold} />
             <Text style={styles.metaText}>{profile.location}</Text>
           </View>
           <View style={styles.metaItem}>
-            <Briefcase size={12} color="#D6A24A" />
+            <Briefcase size={14} color={COLORS.accentGold} />
             <Text style={styles.metaText}>{profile.profession}</Text>
           </View>
         </View>
@@ -82,19 +83,19 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       {/* Action Buttons Row */}
       <View style={styles.actionRow}>
         <TouchableOpacity activeOpacity={0.8} onPress={onPass} style={styles.passButton}>
-          <X size={20} color="#EF4444" />
+          <X size={20} color={COLORS.redAccent} strokeWidth={2} />
         </TouchableOpacity>
 
         <TouchableOpacity activeOpacity={0.8} onPress={onSuperLike} style={styles.superLikeButton}>
-          <Sparkles size={20} color="#D6A24A" />
+          <Sparkles size={20} color={COLORS.accentGold} strokeWidth={2} />
         </TouchableOpacity>
 
         <TouchableOpacity activeOpacity={0.85} onPress={onLike} style={styles.likeButton}>
-          <Heart size={28} color="#FFFFFF" fill="#FFFFFF" />
+          <Heart size={26} color={COLORS.white} fill={COLORS.white} />
         </TouchableOpacity>
 
         <TouchableOpacity activeOpacity={0.8} onPress={onStartChat} style={styles.chatButton}>
-          <MessageCircle size={20} color="#D6A24A" />
+          <MessageCircle size={20} color={COLORS.accentGold} strokeWidth={2} />
         </TouchableOpacity>
       </View>
     </View>
@@ -105,17 +106,13 @@ const styles = StyleSheet.create({
   cardContainer: {
     width: '100%',
     height: 520,
-    borderRadius: 32,
+    borderRadius: RADIUS.xl, // 32px
     overflow: 'hidden',
-    backgroundColor: '#0E453F',
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
     position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.6,
-    shadowRadius: 20,
-    elevation: 10,
+    ...SHADOWS.soft,
   },
   image: {
     width: '100%',
@@ -124,92 +121,91 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(6, 46, 42, 0.45)',
+    backgroundColor: 'rgba(7, 47, 43, 0.45)',
   },
   topRow: {
     position: 'absolute',
-    top: 16,
-    left: 16,
-    right: 16,
+    top: SPACING.md,
+    left: SPACING.md,
+    right: SPACING.md,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justify: 'space-between',
     zIndex: 10,
   },
   badgeRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: SPACING.sm,
   },
   verifiedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    backgroundColor: 'rgba(6, 46, 42, 0.85)',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: RADIUS.full,
+    backgroundColor: 'rgba(7, 47, 43, 0.9)',
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.5)',
+    borderColor: COLORS.darkGlassBorder,
   },
   verifiedText: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#D6A24A',
+    color: COLORS.accentGold,
+    letterSpacing: 0.5,
   },
   tierBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    backgroundColor: 'rgba(14, 69, 63, 0.85)',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: RADIUS.full,
+    backgroundColor: 'rgba(14, 69, 63, 0.9)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   tierText: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#ffffff',
+    color: COLORS.white,
   },
   scoreBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    backgroundColor: '#D6A24A',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentGold,
+    ...SHADOWS.goldGlow,
   },
   scoreText: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#062E2A',
+    color: COLORS.primary,
   },
   detailsContainer: {
     position: 'absolute',
-    bottom: 80,
-    left: 16,
-    right: 16,
+    bottom: 84,
+    left: SPACING.md,
+    right: SPACING.md,
     zIndex: 10,
   },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    justifyContent: 'space-between',
+    justify: 'space-between',
   },
   nameText: {
-    fontFamily: 'serif',
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    ...TYPOGRAPHY.titleL,
   },
   gunaText: {
     fontSize: 11,
-    color: '#D6A24A',
+    color: COLORS.accentGold,
     fontWeight: '600',
   },
   metaRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 4,
+    gap: SPACING.md,
+    marginTop: SPACING.xs,
   },
   metaItem: {
     flexDirection: 'row',
@@ -217,60 +213,60 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   metaText: {
-    fontSize: 11,
-    color: '#E5E7EB',
+    ...TYPOGRAPHY.caption,
+    color: COLORS.lightGray,
   },
   bioText: {
-    fontSize: 11,
-    color: '#D1D5DB',
-    marginTop: 6,
-    lineHeight: 16,
+    ...TYPOGRAPHY.body,
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: SPACING.sm,
   },
   tagsRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 8,
+    gap: SPACING.sm,
+    marginTop: SPACING.sm,
   },
   tag: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: RADIUS.full,
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
   tagText: {
     fontSize: 10,
-    color: '#ffffff',
+    color: COLORS.white,
   },
   tagGold: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 16,
-    backgroundColor: 'rgba(214, 162, 74, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: RADIUS.full,
+    backgroundColor: 'rgba(216, 168, 75, 0.2)',
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
   },
   tagGoldText: {
     fontSize: 10,
-    color: '#D6A24A',
+    color: COLORS.accentGold,
     fontWeight: 'bold',
   },
   actionRow: {
     position: 'absolute',
-    bottom: 16,
-    left: 16,
-    right: 16,
+    bottom: SPACING.md,
+    left: SPACING.md,
+    right: SPACING.md,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justify: 'space-around',
     zIndex: 20,
   },
   passButton: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(6, 46, 42, 0.9)',
+    backgroundColor: 'rgba(7, 47, 43, 0.9)',
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.5)',
+    borderColor: 'rgba(239, 68, 68, 0.4)',
     alignItems: 'center',
     justify: 'center',
   },
@@ -280,7 +276,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     backgroundColor: 'rgba(14, 69, 63, 0.9)',
     borderWidth: 1,
-    borderColor: '#D6A24A',
+    borderColor: COLORS.accentGold,
     alignItems: 'center',
     justify: 'center',
   },
@@ -288,18 +284,18 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: 29,
-    backgroundColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
     alignItems: 'center',
     justify: 'center',
-    elevation: 8,
+    ...SHADOWS.goldGlow,
   },
   chatButton: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(6, 46, 42, 0.9)',
+    backgroundColor: 'rgba(7, 47, 43, 0.9)',
     borderWidth: 1,
-    borderColor: '#D6A24A',
+    borderColor: COLORS.accentGold,
     alignItems: 'center',
     justify: 'center',
   },

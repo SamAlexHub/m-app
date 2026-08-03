@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 
 import { Mail, Phone, Lock, Fingerprint, ArrowRight, ShieldCheck } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { GlassCard } from '../components/GlassCard';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const AuthScreen: React.FC = () => {
   const { setScreen } = useAppStore();
@@ -25,7 +26,7 @@ export const AuthScreen: React.FC = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <View style={styles.confidentialBadge}>
-          <ShieldCheck size={14} color="#D6A24A" />
+          <ShieldCheck size={14} color={COLORS.accentGold} strokeWidth={2} />
           <Text style={styles.confidentialText}>STRICT CONFIDENTIALITY GUARANTEED</Text>
         </View>
       </View>
@@ -61,7 +62,7 @@ export const AuthScreen: React.FC = () => {
             onPress={() => { setMethod('phone'); setOtpSent(false); }}
             style={[styles.methodBtn, method === 'phone' && styles.methodBtnActive]}
           >
-            <Phone size={14} color={method === 'phone' ? '#D6A24A' : '#9CA3AF'} />
+            <Phone size={14} color={method === 'phone' ? COLORS.accentGold : COLORS.mutedGray} strokeWidth={1.8} />
             <Text style={[styles.methodText, method === 'phone' && styles.methodTextActive]}>Phone OTP</Text>
           </TouchableOpacity>
 
@@ -69,35 +70,35 @@ export const AuthScreen: React.FC = () => {
             onPress={() => setMethod('email')}
             style={[styles.methodBtn, method === 'email' && styles.methodBtnActive]}
           >
-            <Mail size={14} color={method === 'email' ? '#D6A24A' : '#9CA3AF'} />
+            <Mail size={14} color={method === 'email' ? COLORS.accentGold : COLORS.mutedGray} strokeWidth={1.8} />
             <Text style={[styles.methodText, method === 'email' && styles.methodTextActive]}>Email</Text>
           </TouchableOpacity>
         </View>
 
         {method === 'phone' ? (
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Mobile Number</Text>
+            <Text style={styles.inputLabel}>MOBILE NUMBER</Text>
             <View style={styles.inputBox}>
-              <Phone size={16} color="#D6A24A" />
+              <Phone size={16} color={COLORS.accentGold} strokeWidth={1.8} />
               <TextInput
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
                 keyboardType="phone-pad"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={COLORS.mutedGray}
                 style={styles.inputText}
               />
             </View>
           </View>
         ) : (
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Email Address</Text>
+            <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
             <View style={styles.inputBox}>
-              <Mail size={16} color="#D6A24A" />
+              <Mail size={16} color={COLORS.accentGold} strokeWidth={1.8} />
               <TextInput
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={COLORS.mutedGray}
                 style={styles.inputText}
               />
             </View>
@@ -106,31 +107,31 @@ export const AuthScreen: React.FC = () => {
 
         {method === 'phone' && otpSent && (
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>4-Digit Code</Text>
+            <Text style={styles.inputLabel}>4-DIGIT CODE</Text>
             <View style={styles.inputBox}>
-              <Lock size={16} color="#D6A24A" />
+              <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
               <TextInput
                 value={otp}
                 onChangeText={setOtp}
                 keyboardType="number-pad"
                 maxLength={4}
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={COLORS.mutedGray}
                 style={[styles.inputText, { letterSpacing: 6, fontWeight: 'bold' }]}
               />
             </View>
           </View>
         )}
 
-        <TouchableOpacity activeOpacity={0.85} onPress={handleAuthSubmit} style={styles.submitBtn}>
+        <TouchableOpacity activeOpacity={0.88} onPress={handleAuthSubmit} style={styles.submitBtn}>
           <Text style={styles.submitBtnText}>
             {method === 'phone' && !otpSent ? 'Send Verification OTP' : 'Enter Private Lounge'}
           </Text>
-          <ArrowRight size={16} color="#062E2A" />
+          <ArrowRight size={16} color={COLORS.primary} strokeWidth={2.2} />
         </TouchableOpacity>
       </GlassCard>
 
       <TouchableOpacity onPress={() => setScreen('home')} style={styles.fingerprintBtn}>
-        <Fingerprint size={20} color="#D6A24A" />
+        <Fingerprint size={20} color={COLORS.accentGold} strokeWidth={1.8} />
         <Text style={styles.fingerprintText}>Biometric Passcode Sign-In</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -140,77 +141,73 @@ export const AuthScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
     justify: 'space-between',
-    padding: 24,
+    padding: SPACING.lg,
   },
   header: {
-    paddingTop: 16,
+    paddingTop: SPACING.md,
     alignItems: 'center',
   },
   confidentialBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#0E453F',
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
   },
   confidentialText: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 9,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
   },
   card: {
-    marginTop: 20,
+    marginTop: SPACING.lg,
   },
   titleText: {
-    fontFamily: 'serif',
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    ...TYPOGRAPHY.titleL,
     textAlign: 'center',
   },
   subtext: {
-    fontSize: 11,
-    color: '#D1D5DB',
+    ...TYPOGRAPHY.body,
+    fontSize: 12,
     textAlign: 'center',
     marginTop: 4,
-    marginBottom: 16,
+    marginBottom: SPACING.md,
   },
   pillContainer: {
     flexDirection: 'row',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 24,
+    borderRadius: RADIUS.full,
     padding: 4,
-    marginBottom: 16,
+    marginBottom: SPACING.md,
   },
   pill: {
     flex: 1,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: RADIUS.full,
     alignItems: 'center',
   },
   pillActive: {
-    backgroundColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
+    ...SHADOWS.goldGlow,
   },
   pillText: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: COLORS.mutedGray,
     fontWeight: '600',
   },
   pillTextActive: {
-    color: '#062E2A',
+    color: COLORS.primary,
     fontWeight: 'bold',
   },
   methodRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
+    gap: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   methodBtn: {
     flex: 1,
@@ -219,71 +216,71 @@ const styles = StyleSheet.create({
     justify: 'center',
     gap: 6,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
   },
   methodBtnActive: {
-    borderColor: '#D6A24A',
-    backgroundColor: 'rgba(214, 162, 74, 0.1)',
+    borderColor: COLORS.accentGold,
+    backgroundColor: 'rgba(216, 168, 75, 0.1)',
   },
   methodText: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: COLORS.mutedGray,
   },
   methodTextActive: {
-    color: '#D6A24A',
+    color: COLORS.accentGold,
     fontWeight: 'bold',
   },
   inputWrapper: {
-    marginBottom: 14,
+    marginBottom: SPACING.md,
   },
   inputLabel: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#D6A24A',
+    ...TYPOGRAPHY.subtitle,
+    fontSize: 9,
     marginBottom: 4,
   },
   inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    height: 46,
-    borderRadius: 16,
+    height: 48,
+    borderRadius: RADIUS.md,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
-    paddingHorizontal: 12,
+    paddingHorizontal: SPACING.md,
   },
   inputText: {
     flex: 1,
-    color: '#ffffff',
+    color: COLORS.white,
     fontSize: 13,
   },
   submitBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    gap: 8,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#D6A24A',
-    marginTop: 8,
+    gap: SPACING.sm,
+    height: 52,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentGold,
+    marginTop: SPACING.xs,
+    ...SHADOWS.goldGlow,
   },
   submitBtnText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#062E2A',
+    color: COLORS.primary,
   },
   fingerprintBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    gap: 8,
-    paddingVertical: 16,
+    gap: SPACING.sm,
+    paddingVertical: SPACING.md,
   },
   fingerprintText: {
-    fontSize: 11,
-    color: '#D1D5DB',
+    fontSize: 12,
+    color: COLORS.lightGray,
   },
 });

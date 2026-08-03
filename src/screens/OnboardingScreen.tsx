@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { ChevronRight, Sparkles, Shield, Heart, ArrowLeft } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const OnboardingScreen: React.FC = () => {
   const { setScreen } = useAppStore();
@@ -54,7 +55,7 @@ export const OnboardingScreen: React.FC = () => {
       <View style={styles.headerRow}>
         {currentSlide > 0 ? (
           <TouchableOpacity onPress={() => setCurrentSlide(currentSlide - 1)} style={styles.backBtn}>
-            <ArrowLeft size={18} color="#ffffff" />
+            <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
           </TouchableOpacity>
         ) : (
           <View style={styles.backBtnEmpty} />
@@ -70,7 +71,7 @@ export const OnboardingScreen: React.FC = () => {
         <View style={styles.imageCard}>
           <Image source={{ uri: slide.image }} style={styles.slideImage} resizeMode="cover" />
           <View style={styles.badge}>
-            <Icon size={12} color="#D6A24A" />
+            <Icon size={12} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.badgeText}>{slide.badge}</Text>
           </View>
         </View>
@@ -98,7 +99,7 @@ export const OnboardingScreen: React.FC = () => {
           <Text style={styles.nextText}>
             {currentSlide === slides.length - 1 ? 'Enter Éternité' : 'Continue'}
           </Text>
-          <ChevronRight size={18} color="#062E2A" />
+          <ChevronRight size={18} color={COLORS.primary} strokeWidth={2.2} />
         </TouchableOpacity>
       </View>
     </View>
@@ -108,12 +109,12 @@ export const OnboardingScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
     justify: 'space-between',
-    padding: 24,
+    padding: SPACING.lg,
   },
   headerRow: {
-    paddingTop: 12,
+    paddingTop: SPACING.sm,
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: 'rgba(14, 69, 63, 0.8)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
     justify: 'center',
   },
@@ -132,10 +133,8 @@ const styles = StyleSheet.create({
     width: 36,
   },
   skipText: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 11,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
   },
   contentContainer: {
     alignItems: 'center',
@@ -143,13 +142,14 @@ const styles = StyleSheet.create({
   imageCard: {
     width: 270,
     height: 270,
-    borderRadius: 36,
+    borderRadius: RADIUS.xl, // 32px
     overflow: 'hidden',
     borderWidth: 2,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
-    backgroundColor: '#0E453F',
+    borderColor: COLORS.darkGlassBorder,
+    backgroundColor: COLORS.secondary,
     position: 'relative',
-    marginBottom: 24,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.soft,
   },
   slideImage: {
     width: '100%',
@@ -157,53 +157,47 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
-    top: 12,
-    left: 12,
+    top: SPACING.sm,
+    left: SPACING.sm,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 16,
-    backgroundColor: 'rgba(6, 46, 42, 0.85)',
+    paddingVertical: 5,
+    borderRadius: RADIUS.full,
+    backgroundColor: 'rgba(7, 47, 43, 0.85)',
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.5)',
+    borderColor: COLORS.darkGlassBorder,
   },
   badgeText: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#D6A24A',
+    color: COLORS.accentGold,
   },
   subtitleText: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 10,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 2,
   },
   titleText: {
-    fontFamily: 'serif',
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    ...TYPOGRAPHY.titleL,
     marginTop: 4,
     textAlign: 'center',
   },
   descText: {
-    fontSize: 12,
-    color: '#D1D5DB',
+    ...TYPOGRAPHY.body,
+    fontSize: 13,
     textAlign: 'center',
-    marginTop: 8,
-    lineHeight: 18,
+    marginTop: SPACING.sm,
     maxWidth: 280,
   },
   footerContainer: {
-    paddingBottom: 24,
+    paddingBottom: SPACING.lg,
     alignItems: 'center',
   },
   dotsRow: {
     flexDirection: 'row',
     gap: 6,
-    marginBottom: 20,
+    marginBottom: SPACING.lg,
   },
   dot: {
     width: 8,
@@ -213,22 +207,23 @@ const styles = StyleSheet.create({
   },
   dotActive: {
     width: 28,
-    backgroundColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
+    ...SHADOWS.goldGlow,
   },
   nextBtn: {
     width: '100%',
     height: 52,
-    borderRadius: 26,
-    backgroundColor: '#D6A24A',
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    gap: 8,
-    elevation: 6,
+    gap: SPACING.sm,
+    ...SHADOWS.goldGlow,
   },
   nextText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#062E2A',
+    color: COLORS.primary,
   },
 });

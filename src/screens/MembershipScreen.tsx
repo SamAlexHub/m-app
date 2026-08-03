@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-nati
 import { Crown, Sparkles, Check, ArrowLeft } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { GlassCard } from '../components/GlassCard';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const MembershipScreen: React.FC = () => {
   const { setUserTier, setScreen } = useAppStore();
@@ -54,10 +55,10 @@ export const MembershipScreen: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
-            <ArrowLeft size={18} color="#ffffff" />
+            <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
           </TouchableOpacity>
           <View style={styles.badge}>
-            <Crown size={12} color="#D6A24A" />
+            <Crown size={12} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.badgeText}>VIP MEMBERSHIP</Text>
           </View>
           <View style={{ width: 36 }} />
@@ -107,7 +108,7 @@ export const MembershipScreen: React.FC = () => {
               <View style={styles.featureList}>
                 {plan.features.map((f, i) => (
                   <View key={i} style={styles.featureRow}>
-                    <Check size={14} color="#D6A24A" />
+                    <Check size={14} color={COLORS.accentGold} strokeWidth={2} />
                     <Text style={styles.featureText}>{f}</Text>
                   </View>
                 ))}
@@ -120,14 +121,14 @@ export const MembershipScreen: React.FC = () => {
       {/* Subscribe Footer */}
       <View style={styles.bottomBar}>
         <TouchableOpacity
-          activeOpacity={0.85}
+          activeOpacity={0.88}
           onPress={() => {
             setUserTier(selectedPlan);
             setScreen('home');
           }}
           style={styles.subBtn}
         >
-          <Sparkles size={16} color="#062E2A" />
+          <Sparkles size={16} color={COLORS.primary} strokeWidth={2} />
           <Text style={styles.subBtnText}>Subscribe to {selectedPlan} Membership</Text>
         </TouchableOpacity>
       </View>
@@ -138,24 +139,24 @@ export const MembershipScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
   },
   content: {
-    padding: 16,
+    padding: SPACING.md,
     paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
-    marginBottom: 16,
-    paddingTop: 8,
+    marginBottom: SPACING.md,
+    paddingTop: SPACING.xs,
   },
   backBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#0E453F',
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
@@ -166,109 +167,104 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
-    backgroundColor: '#0E453F',
+    paddingVertical: 5,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
   },
   badgeText: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 9,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
   },
   toggleContainer: {
     flexDirection: 'row',
-    backgroundColor: '#0E453F',
-    borderRadius: 24,
+    backgroundColor: COLORS.secondary,
+    borderRadius: RADIUS.full,
     padding: 4,
-    marginBottom: 16,
+    marginBottom: SPACING.md,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
   },
   toggleBtn: {
     flex: 1,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: RADIUS.full,
     alignItems: 'center',
   },
   toggleBtnActive: {
-    backgroundColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
+    ...SHADOWS.goldGlow,
   },
   toggleText: {
     fontSize: 10,
-    color: '#9CA3AF',
+    color: COLORS.mutedGray,
     fontWeight: 'bold',
   },
   toggleTextActive: {
-    color: '#062E2A',
+    color: COLORS.primary,
   },
   planCard: {
-    marginBottom: 12,
+    marginBottom: SPACING.md,
   },
   planHeader: {
     flexDirection: 'row',
     justify: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: SPACING.md,
   },
   planTag: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 8,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
   },
   planName: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleM,
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
   },
   planPrice: {
     fontFamily: 'serif',
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#D6A24A',
+    color: COLORS.accentGold,
   },
   planPer: {
-    fontSize: 8,
-    color: '#D1D5DB',
+    fontSize: 9,
+    color: COLORS.lightGray,
   },
   featureList: {
     gap: 6,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    paddingTop: 8,
+    paddingTop: SPACING.sm,
   },
   featureRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: SPACING.sm,
   },
   featureText: {
+    ...TYPOGRAPHY.body,
     fontSize: 11,
-    color: '#D1D5DB',
   },
   bottomBar: {
     position: 'absolute',
-    bottom: 16,
-    left: 16,
-    right: 16,
+    bottom: SPACING.md,
+    left: SPACING.md,
+    right: SPACING.md,
   },
   subBtn: {
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#D6A24A',
+    height: 52,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    gap: 8,
-    elevation: 6,
+    gap: SPACING.sm,
+    ...SHADOWS.goldGlow,
   },
   subBtnText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#062E2A',
+    color: COLORS.primary,
   },
 });

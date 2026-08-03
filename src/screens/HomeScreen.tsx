@@ -6,6 +6,7 @@ import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
 import { CircularScore } from '../components/CircularScore';
 import { SUCCESS_STORIES } from '../data/successStories';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const HomeScreen: React.FC = () => {
   const { setScreen, setSelectedProfileId, notifications } = useAppStore();
@@ -19,7 +20,7 @@ export const HomeScreen: React.FC = () => {
       <View style={styles.header}>
         <View>
           <View style={styles.locationRow}>
-            <MapPin size={12} color="#D6A24A" />
+            <MapPin size={12} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.locationText}>MONACO • LONDON • DUBAI</Text>
           </View>
           <Text style={styles.greetingText}>Bonjour, Devan</Text>
@@ -27,7 +28,7 @@ export const HomeScreen: React.FC = () => {
 
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={() => setScreen('notifications')} style={styles.iconBtn}>
-            <Bell size={20} color="#D6A24A" />
+            <Bell size={20} color={COLORS.accentGold} strokeWidth={1.8} />
             {unreadCount > 0 && (
               <View style={styles.unreadBadge}>
                 <Text style={styles.unreadText}>{unreadCount}</Text>
@@ -53,7 +54,7 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.heroOverlay} />
         <View style={styles.heroContent}>
           <View style={styles.heroBadge}>
-            <Sparkles size={10} color="#D6A24A" />
+            <Sparkles size={10} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.heroBadgeText}>EXCLUSIVE MATCHMAKING</Text>
           </View>
           <Text style={styles.heroTitle}>Where Modern Romance Meets Timeless Values</Text>
@@ -65,7 +66,7 @@ export const HomeScreen: React.FC = () => {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <View style={styles.sectionTitleRow}>
-            <Sparkles size={18} color="#D6A24A" />
+            <Sparkles size={18} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.sectionTitle}>Today’s AI Soulmate</Text>
           </View>
           <Text style={styles.refreshText}>Refreshes at midnight</Text>
@@ -86,7 +87,7 @@ export const HomeScreen: React.FC = () => {
                 <Text style={styles.insightBtnText}>View Compatibility Insights</Text>
               </TouchableOpacity>
             </View>
-            <CircularScore score={topMatch.aiMatchScore} size={80} />
+            <CircularScore score={topMatch.aiMatchScore} size={84} />
           </View>
         </GlassCard>
       </View>
@@ -95,7 +96,7 @@ export const HomeScreen: React.FC = () => {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <View style={styles.sectionTitleRow}>
-            <ShieldCheck size={18} color="#D6A24A" />
+            <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.sectionTitle}>Verified Royal Profiles</Text>
           </View>
           <TouchableOpacity onPress={() => setScreen('discover')}>
@@ -107,7 +108,7 @@ export const HomeScreen: React.FC = () => {
           {MOCK_PROFILES.map((p) => (
             <TouchableOpacity
               key={p.id}
-              activeOpacity={0.8}
+              activeOpacity={0.85}
               onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
               style={styles.reelCard}
             >
@@ -131,24 +132,24 @@ export const HomeScreen: React.FC = () => {
           <View style={styles.vipRow}>
             <View style={styles.vipTextCol}>
               <View style={styles.vipBadge}>
-                <Crown size={12} color="#D6A24A" />
+                <Crown size={12} color={COLORS.accentGold} strokeWidth={2} />
                 <Text style={styles.vipBadgeText}>DIAMOND VIP MEMBERSHIP</Text>
               </View>
               <Text style={styles.vipTitle}>Unlock Private Matchmaker Concierge</Text>
               <Text style={styles.vipSub}>Senior European wedding consultants & incognito mode.</Text>
             </View>
             <View style={styles.vipArrowBtn}>
-              <ArrowRight size={20} color="#062E2A" />
+              <ArrowRight size={20} color={COLORS.primary} strokeWidth={2.2} />
             </View>
           </View>
         </GlassCard>
       </View>
 
       {/* Success Stories */}
-      <View style={[styles.section, { marginBottom: 32 }]}>
+      <View style={[styles.section, { marginBottom: SPACING.xl }]}>
         <View style={styles.sectionHeader}>
           <View style={styles.sectionTitleRow}>
-            <Heart size={18} color="#EF4444" fill="#EF4444" />
+            <Heart size={18} color={COLORS.redAccent} fill={COLORS.redAccent} />
             <Text style={styles.sectionTitle}>Royal Success Stories</Text>
           </View>
           <TouchableOpacity onPress={() => setScreen('success-stories')}>
@@ -174,17 +175,17 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
   },
   content: {
-    padding: 16,
+    padding: SPACING.md,
     paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
-    marginBottom: 16,
+    marginBottom: SPACING.md,
   },
   locationRow: {
     flexDirection: 'row',
@@ -192,16 +193,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   locationText: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 9,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
   },
   greetingText: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleL,
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#ffffff',
     marginTop: 2,
   },
   headerActions: {
@@ -213,9 +210,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#0E453F',
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
     alignItems: 'center',
     justify: 'center',
   },
@@ -226,21 +223,21 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: '#EF4444',
+    backgroundColor: COLORS.redAccent,
     alignItems: 'center',
     justify: 'center',
   },
   unreadText: {
     fontSize: 9,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: COLORS.white,
   },
   avatarBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: '#D6A24A',
+    borderColor: COLORS.accentGold,
     overflow: 'hidden',
   },
   avatarImg: {
@@ -249,13 +246,14 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     height: 160,
-    borderRadius: 24,
+    borderRadius: RADIUS.lg,
     overflow: 'hidden',
-    backgroundColor: '#0E453F',
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
     position: 'relative',
-    marginBottom: 20,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.soft,
   },
   heroImage: {
     width: '100%',
@@ -264,11 +262,11 @@ const styles = StyleSheet.create({
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(6, 46, 42, 0.65)',
+    backgroundColor: 'rgba(7, 47, 43, 0.65)',
   },
   heroContent: {
-    padding: 16,
-    justifyContent: 'center',
+    padding: SPACING.md,
+    justify: 'center',
     flex: 1,
   },
   heroBadge: {
@@ -277,7 +275,7 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 12,
+    borderRadius: RADIUS.full,
     backgroundColor: 'rgba(14, 69, 63, 0.9)',
     alignSelf: 'flex-start',
     marginBottom: 6,
@@ -285,27 +283,26 @@ const styles = StyleSheet.create({
   heroBadgeText: {
     fontSize: 9,
     fontWeight: 'bold',
-    color: '#D6A24A',
+    color: COLORS.accentGold,
   },
   heroTitle: {
-    fontFamily: 'serif',
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    ...TYPOGRAPHY.titleM,
+    fontSize: 18,
+    lineHeight: 24,
   },
   heroSub: {
+    ...TYPOGRAPHY.caption,
     fontSize: 10,
-    color: '#D1D5DB',
     marginTop: 2,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: SPACING.lg,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
-    marginBottom: 10,
+    marginBottom: SPACING.sm,
   },
   sectionTitleRow: {
     flexDirection: 'row',
@@ -313,73 +310,71 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   sectionTitle: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleM,
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
   },
   refreshText: {
     fontSize: 10,
-    color: '#D6A24A',
+    color: COLORS.accentGold,
     fontWeight: 'bold',
   },
   viewAllText: {
     fontSize: 11,
-    color: '#D6A24A',
+    color: COLORS.accentGold,
     fontWeight: 'bold',
   },
   matchCardRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: SPACING.md,
   },
   matchAvatar: {
     width: 72,
     height: 90,
-    borderRadius: 16,
+    borderRadius: RADIUS.md,
   },
   matchInfo: {
     flex: 1,
   },
   matchName: {
-    fontFamily: 'serif',
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    ...TYPOGRAPHY.titleM,
+    fontSize: 16,
   },
   matchSub: {
+    ...TYPOGRAPHY.caption,
     fontSize: 10,
-    color: '#9CA3AF',
     marginTop: 2,
   },
   matchQuote: {
+    ...TYPOGRAPHY.body,
     fontSize: 10,
-    color: '#D1D5DB',
+    lineHeight: 14,
     marginTop: 4,
     fontStyle: 'italic',
   },
   insightBtn: {
-    marginTop: 8,
+    marginTop: SPACING.sm,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: '#D6A24A',
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentGold,
     alignSelf: 'flex-start',
+    ...SHADOWS.goldGlow,
   },
   insightBtnText: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#062E2A',
+    color: COLORS.primary,
   },
   reelContent: {
-    gap: 12,
+    gap: SPACING.md,
   },
   reelCard: {
     width: 120,
     height: 160,
-    borderRadius: 20,
+    borderRadius: RADIUS.lg,
     overflow: 'hidden',
-    backgroundColor: '#0E453F',
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     position: 'relative',
@@ -398,13 +393,13 @@ const styles = StyleSheet.create({
     right: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 10,
-    backgroundColor: '#062E2A',
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.primary,
   },
   reelBadgeText: {
     fontSize: 9,
     fontWeight: 'bold',
-    color: '#D6A24A',
+    color: COLORS.accentGold,
   },
   reelFooter: {
     position: 'absolute',
@@ -416,11 +411,11 @@ const styles = StyleSheet.create({
     fontFamily: 'serif',
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: COLORS.white,
   },
   reelSub: {
     fontSize: 9,
-    color: '#D1D5DB',
+    color: COLORS.lightGray,
   },
   vipRow: {
     flexDirection: 'row',
@@ -429,7 +424,7 @@ const styles = StyleSheet.create({
   },
   vipTextCol: {
     flex: 1,
-    paddingRight: 12,
+    paddingRight: SPACING.md,
   },
   vipBadge: {
     flexDirection: 'row',
@@ -438,58 +433,53 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   vipBadgeText: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 9,
-    fontWeight: 'bold',
-    color: '#D6A24A',
   },
   vipTitle: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleM,
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
   },
   vipSub: {
+    ...TYPOGRAPHY.caption,
     fontSize: 10,
-    color: '#D1D5DB',
     marginTop: 2,
   },
   vipArrowBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
     alignItems: 'center',
     justify: 'center',
+    ...SHADOWS.goldGlow,
   },
   storyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: SPACING.md,
   },
   storyImg: {
     width: 70,
     height: 70,
-    borderRadius: 16,
+    borderRadius: RADIUS.md,
   },
   storyContent: {
     flex: 1,
   },
   storyLoc: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 8,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
   },
   storyCouple: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleM,
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
     marginTop: 1,
   },
   storyQuote: {
+    ...TYPOGRAPHY.body,
     fontSize: 10,
-    color: '#D1D5DB',
+    lineHeight: 14,
     marginTop: 2,
     fontStyle: 'italic',
   },

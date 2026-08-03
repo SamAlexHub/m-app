@@ -4,6 +4,7 @@ import { ArrowLeft, Heart, Sparkles, MapPin } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { SUCCESS_STORIES } from '../data/successStories';
 import { GlassCard } from '../components/GlassCard';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const SuccessStoriesScreen: React.FC = () => {
   const { setScreen } = useAppStore();
@@ -12,10 +13,10 @@ export const SuccessStoriesScreen: React.FC = () => {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
-          <ArrowLeft size={18} color="#ffffff" />
+          <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
         </TouchableOpacity>
         <View style={styles.badge}>
-          <Heart size={12} color="#D6A24A" fill="#D6A24A" />
+          <Heart size={12} color={COLORS.accentGold} fill={COLORS.accentGold} />
           <Text style={styles.badgeText}>ROYAL NUPTIALS</Text>
         </View>
         <View style={{ width: 36 }} />
@@ -30,7 +31,7 @@ export const SuccessStoriesScreen: React.FC = () => {
             <Image source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80' }} style={styles.coverImage} />
 
             <View style={styles.matchBadge}>
-              <Sparkles size={10} color="#062E2A" />
+              <Sparkles size={10} color={COLORS.primary} strokeWidth={2} />
               <Text style={styles.matchBadgeText}>{story.matchScore}% Match</Text>
             </View>
 
@@ -40,7 +41,7 @@ export const SuccessStoriesScreen: React.FC = () => {
             </View>
 
             <View style={styles.locRow}>
-              <MapPin size={12} color="#D6A24A" />
+              <MapPin size={12} color={COLORS.accentGold} strokeWidth={2} />
               <Text style={styles.locText}>{story.location}</Text>
             </View>
 
@@ -57,24 +58,24 @@ export const SuccessStoriesScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
   },
   content: {
-    padding: 16,
+    padding: SPACING.md,
     paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
-    marginBottom: 16,
-    paddingTop: 8,
+    marginBottom: SPACING.md,
+    paddingTop: SPACING.xs,
   },
   backBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#0E453F',
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
@@ -85,35 +86,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
-    backgroundColor: '#0E453F',
+    paddingVertical: 5,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
   },
   badgeText: {
+    ...TYPOGRAPHY.subtitle,
     fontSize: 9,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
   },
   title: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleL,
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
     textAlign: 'center',
   },
   sub: {
-    fontSize: 11,
-    color: '#D6A24A',
-    fontWeight: 'bold',
+    ...TYPOGRAPHY.subtitle,
+    fontSize: 10,
     textAlign: 'center',
     marginTop: 2,
-    marginBottom: 16,
+    marginBottom: SPACING.md,
   },
   list: {
-    gap: 16,
+    gap: SPACING.md,
   },
   storyCard: {
     position: 'relative',
@@ -121,8 +117,8 @@ const styles = StyleSheet.create({
   coverImage: {
     width: '100%',
     height: 160,
-    borderRadius: 16,
-    marginBottom: 12,
+    borderRadius: RADIUS.md,
+    marginBottom: SPACING.md,
   },
   matchBadge: {
     position: 'absolute',
@@ -133,13 +129,14 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 12,
-    backgroundColor: '#D6A24A',
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentGold,
+    ...SHADOWS.goldGlow,
   },
   matchBadgeText: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#062E2A',
+    color: COLORS.primary,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -147,14 +144,12 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
   },
   coupleNames: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleM,
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
   },
   weddingDate: {
     fontSize: 11,
-    color: '#D6A24A',
+    color: COLORS.accentGold,
     fontWeight: 'bold',
   },
   locRow: {
@@ -164,18 +159,18 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   locText: {
+    ...TYPOGRAPHY.caption,
     fontSize: 10,
-    color: '#D1D5DB',
   },
   quoteBox: {
-    marginTop: 10,
-    padding: 10,
-    borderRadius: 12,
+    marginTop: SPACING.sm,
+    padding: SPACING.sm,
+    borderRadius: RADIUS.sm,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   quoteText: {
+    ...TYPOGRAPHY.body,
     fontSize: 11,
-    color: '#D1D5DB',
     fontStyle: 'italic',
   },
 });

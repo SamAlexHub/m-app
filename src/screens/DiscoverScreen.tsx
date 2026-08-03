@@ -5,6 +5,7 @@ import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { SwipeCard } from '../components/SwipeCard';
 import { GlassCard } from '../components/GlassCard';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const DiscoverScreen: React.FC = () => {
   const {
@@ -35,7 +36,7 @@ export const DiscoverScreen: React.FC = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <Compass size={22} color="#D6A24A" />
+          <Compass size={22} color={COLORS.accentGold} strokeWidth={2} />
           <Text style={styles.titleText}>Discover Matches</Text>
         </View>
 
@@ -58,7 +59,7 @@ export const DiscoverScreen: React.FC = () => {
       {/* Filter Chips */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsRow}>
         <TouchableOpacity onPress={() => setFilterModalOpen(true)} style={styles.filterBtn}>
-          <SlidersHorizontal size={12} color="#D6A24A" />
+          <SlidersHorizontal size={12} color={COLORS.accentGold} strokeWidth={2} />
           <Text style={styles.filterBtnText}>Filters</Text>
         </TouchableOpacity>
 
@@ -126,55 +127,54 @@ export const DiscoverScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
   },
   content: {
-    padding: 16,
+    padding: SPACING.md,
     paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
-    marginBottom: 12,
+    marginBottom: SPACING.md,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: SPACING.sm,
   },
   titleText: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleL,
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#ffffff',
   },
   modePill: {
     flexDirection: 'row',
-    backgroundColor: '#0E453F',
-    borderRadius: 20,
+    backgroundColor: COLORS.secondary,
+    borderRadius: RADIUS.full,
     padding: 3,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
   },
   pillBtn: {
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 16,
+    borderRadius: RADIUS.full,
   },
   pillBtnActive: {
-    backgroundColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
+    ...SHADOWS.goldGlow,
   },
   pillText: {
     fontSize: 10,
-    color: '#9CA3AF',
+    color: COLORS.mutedGray,
     fontWeight: 'bold',
   },
   pillTextActive: {
-    color: '#062E2A',
+    color: COLORS.primary,
   },
   chipsRow: {
-    marginBottom: 16,
+    marginBottom: SPACING.md,
   },
   filterBtn: {
     flexDirection: 'row',
@@ -182,60 +182,58 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: '#0E453F',
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.6)',
+    borderColor: COLORS.darkGlassBorder,
     marginRight: 8,
   },
   filterBtnText: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#D6A24A',
+    color: COLORS.accentGold,
   },
   chip: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
+    borderRadius: RADIUS.full,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     marginRight: 8,
   },
   chipActive: {
-    backgroundColor: '#D6A24A',
-    borderColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
+    borderColor: COLORS.accentGold,
   },
   chipText: {
     fontSize: 10,
-    color: '#D1D5DB',
+    color: COLORS.lightGray,
   },
   chipTextActive: {
-    color: '#062E2A',
+    color: COLORS.primary,
     fontWeight: 'bold',
   },
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: SPACING.md,
   },
   gridCard: {
     width: '48%',
   },
   gridName: {
-    fontFamily: 'serif',
+    ...TYPOGRAPHY.titleM,
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#ffffff',
   },
   gridSub: {
+    ...TYPOGRAPHY.caption,
     fontSize: 10,
-    color: '#D1D5DB',
     marginTop: 2,
   },
   gridLoc: {
     fontSize: 9,
-    color: '#D6A24A',
+    color: COLORS.accentGold,
     fontWeight: 'bold',
     marginTop: 4,
   },

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView } from 'react-native';
 import { SlidersHorizontal, X, Sparkles } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const FilterSheetModal: React.FC = () => {
   const {
@@ -24,11 +25,11 @@ export const FilterSheetModal: React.FC = () => {
         <View style={styles.sheetContainer}>
           <View style={styles.header}>
             <View style={styles.titleRow}>
-              <SlidersHorizontal size={18} color="#D6A24A" />
+              <SlidersHorizontal size={18} color={COLORS.accentGold} strokeWidth={2} />
               <Text style={styles.titleText}>Advanced Match Filters</Text>
             </View>
             <TouchableOpacity onPress={() => setFilterModalOpen(false)} style={styles.closeBtn}>
-              <X size={16} color="#ffffff" />
+              <X size={16} color={COLORS.white} strokeWidth={2} />
             </TouchableOpacity>
           </View>
 
@@ -46,7 +47,7 @@ export const FilterSheetModal: React.FC = () => {
               ))}
             </View>
 
-            <Text style={[styles.sectionHeader, { marginTop: 16 }]}>LOCATION & DIASPORA</Text>
+            <Text style={[styles.sectionHeader, { marginTop: SPACING.md }]}>LOCATION & DIASPORA</Text>
             <View style={styles.chipGrid}>
               {regions.map((c) => (
                 <TouchableOpacity
@@ -59,8 +60,8 @@ export const FilterSheetModal: React.FC = () => {
               ))}
             </View>
 
-            <TouchableOpacity activeOpacity={0.85} onPress={() => setFilterModalOpen(false)} style={styles.applyBtn}>
-              <Sparkles size={16} color="#062E2A" />
+            <TouchableOpacity activeOpacity={0.88} onPress={() => setFilterModalOpen(false)} style={styles.applyBtn}>
+              <Sparkles size={16} color={COLORS.primary} strokeWidth={2} />
               <Text style={styles.applyText}>Apply Filters & View Matches</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -74,35 +75,32 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'flex-end',
+    justify: 'flex-end',
   },
   sheetContainer: {
-    backgroundColor: '#0E453F',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    padding: 24,
+    backgroundColor: COLORS.secondary,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
+    padding: SPACING.lg,
     maxHeight: '75%',
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
-    paddingBottom: 12,
+    paddingBottom: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: SPACING.sm,
   },
   titleText: {
-    fontFamily: 'serif',
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    ...TYPOGRAPHY.titleM,
   },
   closeBtn: {
     width: 32,
@@ -113,53 +111,51 @@ const styles = StyleSheet.create({
     justify: 'center',
   },
   scrollContent: {
-    marginTop: 16,
+    marginTop: SPACING.md,
   },
   sectionHeader: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#D6A24A',
-    letterSpacing: 1,
-    marginBottom: 8,
+    ...TYPOGRAPHY.subtitle,
+    marginBottom: SPACING.sm,
   },
   chipGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: SPACING.sm,
   },
   chip: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 16,
+    borderRadius: RADIUS.full,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   chipSelected: {
-    backgroundColor: '#D6A24A',
-    borderColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
+    borderColor: COLORS.accentGold,
   },
   chipText: {
     fontSize: 11,
-    color: '#D1D5DB',
+    color: COLORS.lightGray,
   },
   chipTextSelected: {
-    color: '#062E2A',
+    color: COLORS.primary,
     fontWeight: 'bold',
   },
   applyBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    gap: 8,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#D6A24A',
-    marginTop: 24,
+    gap: SPACING.sm,
+    height: 52,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentGold,
+    marginTop: SPACING.lg,
+    ...SHADOWS.goldGlow,
   },
   applyText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#062E2A',
+    color: COLORS.primary,
   },
 });

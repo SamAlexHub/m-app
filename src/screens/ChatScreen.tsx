@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, Image } from 'react-native';
-import { ArrowLeft, Video, Send, Mic, Gift, Calendar, ShieldCheck, Play } from 'lucide-react-native';
+import { ArrowLeft, Video, Send, Gift, Calendar, ShieldCheck, Play } from 'lucide-react-native';
 import { useAppStore, ChatMessage } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
+import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const ChatScreen: React.FC = () => {
   const {
@@ -53,7 +54,7 @@ export const ChatScreen: React.FC = () => {
       <View style={styles.header}>
         <View style={styles.userInfo}>
           <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
-            <ArrowLeft size={18} color="#ffffff" />
+            <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => setScreen('profile')} style={styles.profileRow}>
@@ -67,11 +68,11 @@ export const ChatScreen: React.FC = () => {
 
         <View style={styles.actions}>
           <TouchableOpacity onPress={() => setDatePlannerOpen(true)} style={styles.iconBtn}>
-            <Calendar size={18} color="#D6A24A" />
+            <Calendar size={18} color={COLORS.accentGold} strokeWidth={1.8} />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => setVideoCallActive(true)} style={styles.iconBtn}>
-            <Video size={18} color="#D6A24A" />
+            <Video size={18} color={COLORS.accentGold} strokeWidth={1.8} />
           </TouchableOpacity>
         </View>
       </View>
@@ -79,7 +80,7 @@ export const ChatScreen: React.FC = () => {
       {/* Messages */}
       <ScrollView style={styles.chatArea} contentContainerStyle={styles.chatContent}>
         <View style={styles.encryptBadge}>
-          <ShieldCheck size={12} color="#D6A24A" />
+          <ShieldCheck size={12} color={COLORS.accentGold} strokeWidth={1.8} />
           <Text style={styles.encryptText}>Protected by 256-Bit Encrypted Confidentiality</Text>
         </View>
 
@@ -92,13 +93,13 @@ export const ChatScreen: React.FC = () => {
                 {msg.isVoiceNote ? (
                   <View style={styles.voiceNoteRow}>
                     <View style={styles.playBtn}>
-                      <Play size={12} color="#062E2A" />
+                      <Play size={12} color={COLORS.primary} />
                     </View>
                     <Text style={styles.voiceText}>Voice Note • {msg.duration}</Text>
                   </View>
                 ) : msg.isGiftSticker ? (
                   <View style={styles.giftRow}>
-                    <Gift size={20} color="#D6A24A" />
+                    <Gift size={20} color={COLORS.accentGold} strokeWidth={1.8} />
                     <Text style={styles.giftText}>{msg.giftName}</Text>
                   </View>
                 ) : (
@@ -129,19 +130,19 @@ export const ChatScreen: React.FC = () => {
       {/* Input Bar */}
       <View style={styles.inputBar}>
         <TouchableOpacity onPress={() => setShowGifts(!showGifts)} style={styles.inputIconBtn}>
-          <Gift size={18} color="#D6A24A" />
+          <Gift size={18} color={COLORS.accentGold} strokeWidth={1.8} />
         </TouchableOpacity>
 
         <TextInput
           value={inputText}
           onChangeText={setInputText}
           placeholder="Write a message..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={COLORS.mutedGray}
           style={styles.textInput}
         />
 
-        <TouchableOpacity activeOpacity={0.85} onPress={handleSend} style={styles.sendBtn}>
-          <Send size={16} color="#062E2A" />
+        <TouchableOpacity activeOpacity={0.88} onPress={handleSend} style={styles.sendBtn}>
+          <Send size={16} color={COLORS.primary} strokeWidth={2.2} />
         </TouchableOpacity>
       </View>
     </View>
@@ -151,15 +152,15 @@ export const ChatScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
   },
   header: {
-    paddingTop: 12,
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    backgroundColor: '#0E453F',
+    paddingTop: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    paddingBottom: SPACING.md,
+    backgroundColor: COLORS.secondary,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(214, 162, 74, 0.3)',
+    borderBottomColor: COLORS.darkGlassBorder,
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
@@ -170,10 +171,10 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   backBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#062E2A',
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: COLORS.primary,
     alignItems: 'center',
     justify: 'center',
   },
@@ -187,17 +188,17 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: '#D6A24A',
+    borderColor: COLORS.accentGold,
   },
   nameText: {
     fontFamily: 'serif',
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: COLORS.white,
   },
   statusText: {
     fontSize: 9,
-    color: '#9CA3AF',
+    color: COLORS.mutedGray,
   },
   actions: {
     flexDirection: 'row',
@@ -207,9 +208,9 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#062E2A',
+    backgroundColor: COLORS.primary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
     alignItems: 'center',
     justify: 'center',
   },
@@ -217,8 +218,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   chatContent: {
-    padding: 16,
-    gap: 12,
+    padding: SPACING.md,
+    gap: SPACING.md,
   },
   encryptBadge: {
     flexDirection: 'row',
@@ -226,15 +227,15 @@ const styles = StyleSheet.create({
     justify: 'center',
     gap: 6,
     paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
+    paddingVertical: 5,
+    borderRadius: RADIUS.full,
     backgroundColor: 'rgba(14, 69, 63, 0.6)',
     alignSelf: 'center',
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
   },
   encryptText: {
     fontSize: 9,
-    color: '#D1D5DB',
+    color: COLORS.lightGray,
   },
   bubbleWrapper: {
     marginBottom: 4,
@@ -248,13 +249,14 @@ const styles = StyleSheet.create({
   bubble: {
     maxWidth: '80%',
     padding: 12,
-    borderRadius: 18,
+    borderRadius: RADIUS.md,
   },
   userBubble: {
-    backgroundColor: '#0E453F',
+    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(214, 162, 74, 0.4)',
+    borderColor: COLORS.darkGlassBorder,
     borderBottomRightRadius: 2,
+    ...SHADOWS.soft,
   },
   otherBubble: {
     backgroundColor: 'rgba(14, 69, 63, 0.9)',
@@ -263,13 +265,13 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 2,
   },
   msgText: {
+    ...TYPOGRAPHY.body,
     fontSize: 12,
-    color: '#ffffff',
-    lineHeight: 16,
+    lineHeight: 18,
   },
   timeText: {
     fontSize: 8,
-    color: '#9CA3AF',
+    color: COLORS.mutedGray,
     alignSelf: 'flex-end',
     marginTop: 4,
   },
@@ -282,13 +284,13 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#D6A24A',
+    backgroundColor: COLORS.accentGold,
     alignItems: 'center',
     justify: 'center',
   },
   voiceText: {
     fontSize: 11,
-    color: '#ffffff',
+    color: COLORS.white,
   },
   giftRow: {
     flexDirection: 'row',
@@ -298,60 +300,61 @@ const styles = StyleSheet.create({
   giftText: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#D6A24A',
+    color: COLORS.accentGold,
   },
   giftsTray: {
     flexDirection: 'row',
     justify: 'space-around',
-    padding: 8,
-    backgroundColor: '#0E453F',
+    padding: SPACING.sm,
+    backgroundColor: COLORS.secondary,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(214, 162, 74, 0.3)',
+    borderTopColor: COLORS.darkGlassBorder,
   },
   giftChip: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 12,
+    borderRadius: RADIUS.md,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   giftChipText: {
     fontSize: 10,
-    color: '#ffffff',
+    color: COLORS.white,
   },
   inputBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    padding: 10,
-    backgroundColor: '#0E453F',
+    gap: SPACING.sm,
+    padding: 12,
+    backgroundColor: COLORS.secondary,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
   inputIconBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     alignItems: 'center',
     justify: 'center',
   },
   textInput: {
     flex: 1,
-    height: 38,
-    borderRadius: 19,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     paddingHorizontal: 14,
     fontSize: 12,
-    color: '#ffffff',
+    color: COLORS.white,
   },
   sendBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#D6A24A',
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: COLORS.accentGold,
     alignItems: 'center',
     justify: 'center',
+    ...SHADOWS.goldGlow,
   },
 });
