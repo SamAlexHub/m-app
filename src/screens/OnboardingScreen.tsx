@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { ChevronRight, Sparkles, Shield, Heart, ArrowLeft } from 'lucide-react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { ChevronRight, Sparkles, Shield, Heart, ArrowLeft, Globe } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
@@ -12,6 +12,7 @@ export const OnboardingScreen: React.FC = () => {
     {
       id: 1,
       title: 'Curated Genuine Matches',
+      accentWord: 'Genuine',
       subtitle: 'VERIFIED GLOBAL ELITE',
       description: 'Connect with accomplished individuals across London, NYC, Paris, Dubai, and Mumbai.',
       image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
@@ -21,6 +22,7 @@ export const OnboardingScreen: React.FC = () => {
     {
       id: 2,
       title: 'AI Soulmate Compatibility',
+      accentWord: 'Compatibility',
       subtitle: '36-GUNA ASTRO & VALUES SYNC',
       description: 'Our proprietary algorithm harmonizes core life values, career ambitions, and Vedic charts.',
       image: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80',
@@ -30,6 +32,7 @@ export const OnboardingScreen: React.FC = () => {
     {
       id: 3,
       title: 'Uncompromised Trust & Privacy',
+      accentWord: 'Privacy',
       subtitle: '256-BIT ENCRYPTED SHIELD',
       description: 'Enjoy Incognito mode, family-verified access shields, and confidential video invitations.',
       image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80',
@@ -50,116 +53,149 @@ export const OnboardingScreen: React.FC = () => {
   const Icon = slide.icon;
 
   return (
-    <View style={styles.container}>
-      {/* Top Header Controls */}
-      <View style={styles.headerRow}>
-        {currentSlide > 0 ? (
-          <TouchableOpacity onPress={() => setCurrentSlide(currentSlide - 1)} style={styles.backBtn}>
-            <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
+    <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <View style={styles.cardModal}>
+        {/* Top Header */}
+        <View style={styles.headerRow}>
+          {currentSlide > 0 ? (
+            <TouchableOpacity onPress={() => setCurrentSlide(currentSlide - 1)} style={styles.backBtn}>
+              <ArrowLeft size={16} color={COLORS.white} strokeWidth={2} />
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.backBtnEmpty} />
+          )}
+
+          <TouchableOpacity onPress={() => setScreen('login')}>
+            <Text style={styles.skipText}>SKIP</Text>
           </TouchableOpacity>
-        ) : (
-          <View style={styles.backBtnEmpty} />
-        )}
+        </View>
 
-        <TouchableOpacity onPress={() => setScreen('login')}>
-          <Text style={styles.skipText}>SKIP</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Centered Slide Content */}
-      <View style={styles.centerContent}>
-        <View style={styles.imageCard}>
-          <Image source={{ uri: slide.image }} style={styles.slideImage} resizeMode="cover" />
+        {/* Hero Artwork */}
+        <View style={styles.heroWrapper}>
+          <Image source={{ uri: slide.image }} style={styles.heroImage} resizeMode="cover" />
+          <View style={styles.heroOverlay} />
           <View style={styles.badge}>
             <Icon size={12} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.badgeText}>{slide.badge}</Text>
           </View>
         </View>
 
-        <Text style={styles.subtitleText}>{slide.subtitle}</Text>
-        <Text style={styles.titleText}>{slide.title}</Text>
-        <Text style={styles.descText}>{slide.description}</Text>
-      </View>
-
-      {/* Footer Navigation */}
-      <View style={styles.footerContainer}>
-        <View style={styles.dotsRow}>
-          {slides.map((_, idx) => (
-            <View
-              key={idx}
-              style={[
-                styles.dot,
-                currentSlide === idx && styles.dotActive,
-              ]}
-            />
-          ))}
-        </View>
-
-        <TouchableOpacity activeOpacity={0.85} onPress={handleNext} style={styles.nextBtn}>
-          <Text style={styles.nextText}>
-            {currentSlide === slides.length - 1 ? 'Enter Éternité' : 'Continue'}
+        {/* Content Details */}
+        <View style={styles.contentBody}>
+          <Text style={styles.subtitleText}>{slide.subtitle}</Text>
+          
+          <Text style={styles.titleText}>
+            {slide.title.replace(slide.accentWord, '')}
+            <Text style={styles.titleAccent}>{slide.accentWord}</Text>
           </Text>
-          <ChevronRight size={18} color={COLORS.primary} strokeWidth={2.5} style={styles.btnIcon} />
-        </TouchableOpacity>
+
+          <Text style={styles.descText}>{slide.description}</Text>
+
+          {/* Dots Carousel Indicator */}
+          <View style={styles.dotsRow}>
+            {slides.map((_, idx) => (
+              <View
+                key={idx}
+                style={[
+                  styles.dot,
+                  currentSlide === idx && styles.dotActive,
+                ]}
+              />
+            ))}
+          </View>
+
+          {/* Action Row matching 2nd screenshot layout (Google + Apple + Primary Action) */}
+          <View style={styles.actionRow}>
+            <TouchableOpacity activeOpacity={0.8} onPress={() => setScreen('login')} style={styles.socialBtn}>
+              <Text style={styles.socialIconText}>G</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity activeOpacity={0.8} onPress={() => setScreen('login')} style={styles.socialBtn}>
+              <Text style={styles.socialIconText}></Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity activeOpacity={0.85} onPress={handleNext} style={styles.primaryCtaBtn}>
+              <Text style={styles.primaryCtaText}>
+                {currentSlide === slides.length - 1 ? 'Create Account' : 'Continue'}
+              </Text>
+              <ChevronRight size={16} color={COLORS.primary} strokeWidth={2.5} style={styles.btnIcon} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Bottom Direct Login Link */}
+          <View style={styles.loginRow}>
+            <Text style={styles.loginSubtext}>Already have an account? </Text>
+            <TouchableOpacity onPress={() => setScreen('login')}>
+              <Text style={styles.loginLinkText}>Sign in</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  scrollContainer: {
+    flexGrow: 1,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
-    justify: 'space-between',
-    padding: SPACING.lg,
+    justify: 'center',
+    padding: SPACING.md,
+  },
+  cardModal: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 32,
+    borderWidth: 1,
+    borderColor: COLORS.darkGlassBorder,
+    padding: SPACING.md,
+    ...SHADOWS.soft,
   },
   headerRow: {
-    width: '100%',
-    paddingTop: SPACING.xs,
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
-    zIndex: 10,
+    marginBottom: SPACING.xs,
   },
   backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(14, 69, 63, 0.8)',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(7, 47, 43, 0.8)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
     justify: 'center',
   },
   backBtnEmpty: {
-    width: 36,
+    width: 32,
   },
   skipText: {
     ...TYPOGRAPHY.subtitle,
-    fontSize: 11,
+    fontSize: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 4,
   },
-  centerContent: {
+  heroWrapper: {
     width: '100%',
-    maxWidth: 360,
-    alignItems: 'center',
-    justify: 'center',
-  },
-  imageCard: {
-    width: 250,
-    height: 250,
-    borderRadius: 32,
+    height: 260,
+    borderRadius: 24,
     overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: COLORS.darkGlassBorder,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.primary,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     position: 'relative',
     marginBottom: SPACING.md,
-    ...SHADOWS.soft,
   },
-  slideImage: {
+  heroImage: {
     width: '100%',
     height: '100%',
+  },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(7, 47, 43, 0.25)',
   },
   badge: {
     position: 'absolute',
@@ -180,10 +216,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.accentGold,
   },
+  contentBody: {
+    alignItems: 'center',
+  },
   subtitleText: {
     ...TYPOGRAPHY.subtitle,
-    fontSize: 10,
+    fontSize: 9,
     textAlign: 'center',
+    letterSpacing: 1.5,
   },
   titleText: {
     ...TYPOGRAPHY.titleL,
@@ -191,54 +231,89 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center',
   },
+  titleAccent: {
+    color: COLORS.accentGold,
+  },
   descText: {
     ...TYPOGRAPHY.body,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: 12,
+    lineHeight: 18,
     textAlign: 'center',
     marginTop: SPACING.xs,
-    maxWidth: 290,
-  },
-  footerContainer: {
-    width: '100%',
-    maxWidth: 320,
-    alignItems: 'center',
-    paddingBottom: SPACING.sm,
+    maxWidth: 310,
   },
   dotsRow: {
     flexDirection: 'row',
     gap: 6,
-    marginBottom: SPACING.md,
+    marginVertical: SPACING.md,
   },
   dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   dotActive: {
-    width: 28,
+    width: 24,
     backgroundColor: COLORS.accentGold,
     ...SHADOWS.goldGlow,
   },
-  nextBtn: {
+  actionRow: {
     width: '100%',
-    height: 54,
-    borderRadius: 27,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    marginTop: SPACING.xs,
+  },
+  socialBtn: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justify: 'center',
+  },
+  socialIconText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.white,
+  },
+  primaryCtaBtn: {
+    flex: 1,
+    height: 46,
+    borderRadius: 23,
     backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     ...SHADOWS.goldGlow,
   },
-  nextText: {
-    fontSize: 15,
+  primaryCtaText: {
+    fontSize: 14,
     fontWeight: '700',
     color: COLORS.primary,
     textAlign: 'center',
   },
   btnIcon: {
-    marginLeft: 8,
+    marginLeft: 6,
+  },
+  loginRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    marginTop: SPACING.md,
+  },
+  loginSubtext: {
+    fontSize: 11,
+    color: COLORS.mutedGray,
+  },
+  loginLinkText: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: COLORS.white,
+    textDecorationLine: 'underline',
   },
 });
