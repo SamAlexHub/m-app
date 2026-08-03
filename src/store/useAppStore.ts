@@ -89,7 +89,7 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
-  currentScreen: 'home', // Default screen after splash/onboarding initialization
+  currentScreen: 'splash', // Start at Splash screen -> Onboarding -> Login -> Home
   selectedProfileId: 'p1',
   discoverMode: 'swipe',
   swipeIndex: 0,
