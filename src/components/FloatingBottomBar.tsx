@@ -5,7 +5,7 @@ import { useAppStore, ScreenType } from '../store/useAppStore';
 import { COLORS, RADIUS } from '../theme/tokens';
 
 export const FloatingBottomBar: React.FC = () => {
-  const { currentScreen, setScreen } = useAppStore();
+  const { currentScreen, setScreen, setSelectedProfileId } = useAppStore();
 
   const navItems = [
     { id: 'home', icon: Home },
@@ -26,7 +26,10 @@ export const FloatingBottomBar: React.FC = () => {
               <TouchableOpacity
                 key="profile-tab"
                 activeOpacity={0.8}
-                onPress={() => setScreen('profile')}
+                onPress={() => {
+                  setSelectedProfileId('p2');
+                  setScreen('profile');
+                }}
                 style={styles.navItem}
               >
                 <Image

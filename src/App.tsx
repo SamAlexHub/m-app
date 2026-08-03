@@ -13,6 +13,7 @@ import { MembershipScreen } from './screens/MembershipScreen';
 import { SuccessStoriesScreen } from './screens/SuccessStoriesScreen';
 import { NotificationsScreen } from './screens/NotificationsScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { CompleteProfileScreen } from './screens/CompleteProfileScreen';
 
 import { FloatingBottomBar } from './components/FloatingBottomBar';
 import { DatePlannerModal } from './components/DatePlannerModal';
@@ -51,6 +52,8 @@ export const App: React.FC = () => {
         return <NotificationsScreen />;
       case 'settings':
         return <SettingsScreen />;
+      case 'complete-profile':
+        return <CompleteProfileScreen />;
       default:
         return <HomeScreen />;
     }

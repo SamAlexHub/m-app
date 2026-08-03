@@ -13,7 +13,8 @@ export type ScreenType =
   | 'membership'
   | 'success-stories'
   | 'notifications'
-  | 'settings';
+  | 'settings'
+  | 'complete-profile';
 
 export type DiscoverViewMode = 'swipe' | 'grid' | 'map';
 

@@ -11,14 +11,13 @@ export const SettingsScreen: React.FC = () => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => setScreen('profile')} style={styles.backBtn}>
-          <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
+        <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
+          <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
         </TouchableOpacity>
         <View style={styles.badge}>
           <ShieldCheck size={12} color={COLORS.accentGold} strokeWidth={2} />
           <Text style={styles.badgeText}>PRIVACY & SETTINGS</Text>
         </View>
-        <View style={{ width: 36 }} />
       </View>
 
       <Text style={styles.title}>App Settings</Text>
@@ -70,20 +69,6 @@ export const SettingsScreen: React.FC = () => {
         </GlassCard>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionHeader}>24/7 VIP ASSISTANCE</Text>
-        <GlassCard style={styles.card}>
-          <View style={styles.row}>
-            <HelpCircle size={18} color={COLORS.accentGold} strokeWidth={1.8} />
-            <View style={styles.textCol}>
-              <Text style={styles.rowTitle}>Contact Senior Concierge</Text>
-              <Text style={styles.rowSub}>Direct dedicated European line</Text>
-            </View>
-            <ChevronRight size={16} color={COLORS.mutedGray} strokeWidth={1.8} />
-          </View>
-        </GlassCard>
-      </View>
-
       <TouchableOpacity onPress={() => setScreen('login')} style={styles.signOutBtn}>
         <LogOut size={16} color={COLORS.redAccent} strokeWidth={1.8} />
         <Text style={styles.signOutText}>Sign Out of Éternité</Text>
@@ -104,7 +89,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'flex-start',
+    gap: SPACING.sm,
     marginBottom: SPACING.md,
     paddingTop: SPACING.xs,
   },
@@ -116,7 +102,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
+    display: 'flex',
   },
   badge: {
     flexDirection: 'row',
@@ -193,16 +180,19 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   signOutBtn: {
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 8,
-    paddingVertical: 14,
-    borderRadius: RADIUS.md,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: RADIUS.full,
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-    marginTop: SPACING.md,
+    borderColor: 'rgba(239, 68, 68, 0.45)',
+    backgroundColor: 'rgba(239, 68, 68, 0.08)',
+    marginTop: SPACING.xl,
+    width: '64%',
   },
   signOutText: {
     fontSize: 12,

@@ -25,7 +25,7 @@ export const DiscoverScreen: React.FC = () => {
   const filterChips = [
     'Highest AI Match',
     'Verified Royalty',
-    '34+ Guna Sync',
+    'Diamond Elite',
     'London & Paris',
   ];
 
@@ -38,21 +38,6 @@ export const DiscoverScreen: React.FC = () => {
         <Text style={styles.headerTitle}>Éternité</Text>
 
         <View style={styles.headerActions}>
-          <View style={styles.modePill}>
-            <TouchableOpacity
-              onPress={() => setDiscoverMode('swipe')}
-              style={[styles.pillBtn, discoverMode === 'swipe' && styles.pillBtnActive]}
-            >
-              <Text style={[styles.pillText, discoverMode === 'swipe' && styles.pillTextActive]}>Feed</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setDiscoverMode('grid')}
-              style={[styles.pillBtn, discoverMode === 'grid' && styles.pillBtnActive]}
-            >
-              <Text style={[styles.pillText, discoverMode === 'grid' && styles.pillTextActive]}>Grid</Text>
-            </TouchableOpacity>
-          </View>
-
           <TouchableOpacity onPress={() => setScreen('chat')} style={styles.actionIconBtn}>
             <MessageCircle size={18} color={COLORS.white} strokeWidth={2} />
           </TouchableOpacity>
@@ -61,26 +46,6 @@ export const DiscoverScreen: React.FC = () => {
             <Settings size={18} color={COLORS.white} strokeWidth={2} />
           </TouchableOpacity>
         </View>
-      </View>
-
-      {/* Stories Reel */}
-      <View style={styles.storiesContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.storiesContent}>
-          {/* Other stories */}
-          {MOCK_PROFILES.map((p) => (
-            <TouchableOpacity
-              key={`story-${p.id}`}
-              activeOpacity={0.82}
-              onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
-              style={styles.storyWrapper}
-            >
-              <View style={styles.storyCircleGold}>
-                <Image source={{ uri: p.photos[0] }} style={styles.storyAvatar} />
-              </View>
-              <Text style={styles.storyName} numberOfLines={1}>{p.name.split(' ')[0].toLowerCase()}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
       </View>
 
       {/* Filter Chips */}
@@ -101,52 +66,50 @@ export const DiscoverScreen: React.FC = () => {
         ))}
       </ScrollView>
 
-      {/* Mode 1: Swipe Cards View */}
-      {discoverMode === 'swipe' && (
-        <SwipeCard
-          profile={currentProfile}
-          onLike={() => {
-            likeProfile(currentProfile.id);
-            nextSwipe();
-          }}
-          onPass={() => {
-            passProfile(currentProfile.id);
-            nextSwipe();
-          }}
-          onSuperLike={() => {
-            likeProfile(currentProfile.id);
-            nextSwipe();
-          }}
-          onOpenDetails={() => {
-            setSelectedProfileId(currentProfile.id);
-            setScreen('profile');
-          }}
-          onStartChat={() => {
-            setSelectedProfileId(currentProfile.id);
-            setScreen('chat');
-          }}
-        />
-      )}
+      {/* Discover Swipe Cards Feed */}
+      <SwipeCard
+        profile={currentProfile}
+        onLike={() => {
+          likeProfile(currentProfile.id);
+          nextSwipe();
+        }}
+        onPass={() => {
+          passProfile(currentProfile.id);
+          nextSwipe();
+        }}
+        onSuperLike={() => {
+          likeProfile(currentProfile.id);
+          nextSwipe();
+        }}
+        onOpenDetails={() => {
+          setSelectedProfileId(currentProfile.id);
+          setScreen('profile');
+        }}
+        onStartChat={() => {
+          setSelectedProfileId(currentProfile.id);
+          setScreen('chat');
+        }}
+      />
 
-      {/* Mode 2: Grid Gallery View */}
-      {discoverMode === 'grid' && (
-        <View style={styles.gridContainer}>
+      {/* Stories Reel (Moved to the bottom for thumb-zone ergonomics) */}
+      <View style={styles.storiesContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.storiesContent}>
+          {/* Other stories */}
           {MOCK_PROFILES.map((p) => (
-            <GlassCard
-              key={p.id}
-              onClick={() => {
-                setSelectedProfileId(p.id);
-                setScreen('profile');
-              }}
-              style={styles.gridCard}
+            <TouchableOpacity
+              key={`story-${p.id}`}
+              activeOpacity={0.82}
+              onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
+              style={styles.storyWrapper}
             >
-              <Text style={styles.gridName}>{p.name}, {p.age}</Text>
-              <Text style={styles.gridSub}>{p.profession}</Text>
-              <Text style={styles.gridLoc}>{p.location}</Text>
-            </GlassCard>
+              <View style={styles.storyCircleGold}>
+                <Image source={{ uri: p.photos[0] }} style={styles.storyAvatar} />
+              </View>
+              <Text style={styles.storyName} numberOfLines={1}>{p.name.split(' ')[0].toLowerCase()}</Text>
+            </TouchableOpacity>
           ))}
-        </View>
-      )}
+        </ScrollView>
+      </View>
     </ScrollView>
   );
 };
@@ -190,7 +153,7 @@ const styles = StyleSheet.create({
   },
   storiesContainer: {
     marginBottom: SPACING.md,
-    marginTop: SPACING.xs,
+    marginTop: SPACING.lg,
   },
   storiesContent: {
     gap: SPACING.md,

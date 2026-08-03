@@ -31,7 +31,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         {/* Glassmorphic Overlay pill bottom-left */}
         <View style={styles.imageOverlayPill}>
           <Sparkles size={11} color={COLORS.accentGold} strokeWidth={2.5} />
-          <Text style={styles.imageOverlayText}>{profile.aiMatchScore}% Match • {profile.horoscope.gunaScore} Guna Sync</Text>
+          <Text style={styles.imageOverlayText}>{profile.aiMatchScore}% Match</Text>
         </View>
 
         {/* Top Badges */}

@@ -35,18 +35,29 @@ export const HomeScreen: React.FC = () => {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={{ flex: 1 }}>
-          <View style={styles.locationRow}>
-            <MapPin size={12} color={COLORS.accentGold} strokeWidth={2} />
-            <Text style={styles.locationText}>MONACO • LONDON • DUBAI</Text>
-            {!isProfileVerified && (
-              <TouchableOpacity onPress={handleVerifyProfile} style={styles.verifyPill}>
-                <ShieldCheck size={10} color={COLORS.redAccent} strokeWidth={2.5} />
-                <Text style={styles.verifyPillText}>Verify Profile</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+        <View style={styles.headerLeft}>
           <Text style={styles.greetingText}>Bonjour, Devan</Text>
+          <TouchableOpacity
+            onPress={isProfileVerified ? undefined : handleVerifyProfile}
+            style={[
+              styles.verifyPillHeader,
+              isProfileVerified ? styles.verifyPillHeaderVerified : styles.verifyPillHeaderPending
+            ]}
+          >
+            <ShieldCheck
+              size={10}
+              color={isProfileVerified ? COLORS.accentGold : COLORS.redAccent}
+              strokeWidth={2.5}
+            />
+            <Text
+              style={[
+                styles.verifyPillTextHeader,
+                isProfileVerified ? styles.verifyPillTextHeaderVerified : styles.verifyPillTextHeaderPending
+              ]}
+            >
+              {isProfileVerified ? 'Verified' : 'Pending'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.headerActions}>
@@ -59,7 +70,7 @@ export const HomeScreen: React.FC = () => {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setScreen('profile')} style={styles.avatarBtn}>
+          <TouchableOpacity onPress={() => { setSelectedProfileId('p2'); setScreen('profile'); }} style={styles.avatarBtn}>
             <Image
               source={{ uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' }}
               style={styles.avatarImg}
@@ -93,7 +104,7 @@ export const HomeScreen: React.FC = () => {
               <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2} />
               <Text style={styles.sectionTitle}>Verification Checklist</Text>
             </View>
-            <Text style={styles.checklistProgress}>2 of 4 Completed</Text>
+            <Text style={styles.checklistProgress}>2 of 3 Completed</Text>
           </View>
 
           <GlassCard glow>
@@ -104,14 +115,14 @@ export const HomeScreen: React.FC = () => {
                 <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
                   <Text style={styles.checkIndicatorText}>✓</Text>
                 </View>
-                <Text style={styles.checkItemTextDone}>Astro & Personality Profile Check</Text>
+                <Text style={styles.checkItemTextDone}>Email Verification Completed</Text>
               </View>
               
               <View style={styles.checkItemRow}>
                 <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
                   <Text style={styles.checkIndicatorText}>✓</Text>
                 </View>
-                <Text style={styles.checkItemTextDone}>Family Background Audit</Text>
+                <Text style={styles.checkItemTextDone}>Mobile Phone Verification Completed</Text>
               </View>
               
               <TouchableOpacity onPress={handleVerifyProfile} style={styles.checkItemRow}>
@@ -119,14 +130,6 @@ export const HomeScreen: React.FC = () => {
                   <Text style={styles.checkIndicatorText}>•</Text>
                 </View>
                 <Text style={styles.checkItemText}>Government ID Verification (Action Required)</Text>
-                <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={handleVerifyProfile} style={styles.checkItemRow}>
-                <View style={styles.checkIndicator}>
-                  <Text style={styles.checkIndicatorText}>•</Text>
-                </View>
-                <Text style={styles.checkItemText}>Professional Status Audit (Action Required)</Text>
                 <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
               </TouchableOpacity>
             </View>
@@ -221,7 +224,7 @@ export const HomeScreen: React.FC = () => {
               <Text style={styles.vipSub}>Senior European wedding consultants & incognito mode.</Text>
             </View>
             <View style={styles.vipArrowBtn}>
-              <ArrowRight size={20} color={COLORS.primary} strokeWidth={2.5} />
+              <ArrowRight size={20} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
             </View>
           </View>
         </GlassCard>
@@ -269,37 +272,45 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: SPACING.md,
   },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+  headerLeft: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
-  locationText: {
-    ...TYPOGRAPHY.subtitle,
-    fontSize: 9,
-  },
-  verifyPill: {
+  verifyPillHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 2.5,
     borderRadius: RADIUS.full,
-    marginLeft: SPACING.sm,
+    alignSelf: 'flex-start',
+    marginTop: 6,
   },
-  verifyPillText: {
+  verifyPillHeaderPending: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderColor: 'rgba(239, 68, 68, 0.35)',
+  },
+  verifyPillHeaderVerified: {
+    backgroundColor: 'rgba(216, 168, 75, 0.12)',
+    borderColor: 'rgba(216, 168, 75, 0.35)',
+  },
+  verifyPillTextHeader: {
     fontSize: 9,
     fontWeight: 'bold',
-    color: COLORS.redAccent,
     letterSpacing: 0.5,
+  },
+  verifyPillTextHeaderPending: {
+    color: COLORS.redAccent,
+  },
+  verifyPillTextHeaderVerified: {
+    color: COLORS.accentGold,
   },
   greetingText: {
     ...TYPOGRAPHY.titleL,
     fontSize: 22,
-    marginTop: 2,
+    marginTop: 0,
   },
   headerActions: {
     flexDirection: 'row',
@@ -632,7 +643,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: COLORS.accentGold,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
+    display: 'flex',
     ...SHADOWS.goldGlow,
   },
   storyRow: {

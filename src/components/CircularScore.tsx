@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Sparkles } from 'lucide-react-native';
-import { COLORS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
+import { COLORS, SHADOWS, SPACING } from '../theme/tokens';
 
 interface CircularScoreProps {
   score: number;
@@ -14,6 +14,13 @@ export const CircularScore: React.FC<CircularScoreProps> = ({
   size = 96,
   label = 'AI Soulmate Match',
 }) => {
+  const isSmall = size < 75;
+  
+  // Calculate dynamic font sizing to keep text enclosed in small circles
+  const scoreFontSize = isSmall ? Math.round(size * 0.25) : 22; // For size 64: 16px
+  const matchFontSize = isSmall ? Math.round(size * 0.12) : 9;   // For size 64: 8px
+  const borderWidth = isSmall ? 2.5 : 3.5;
+
   return (
     <View style={styles.container}>
       <View
@@ -23,15 +30,16 @@ export const CircularScore: React.FC<CircularScoreProps> = ({
             width: size,
             height: size,
             borderRadius: size / 2,
+            borderWidth: borderWidth,
           },
         ]}
       >
         <View style={styles.content}>
           <View style={styles.row}>
-            <Sparkles size={14} color={COLORS.accentGold} />
-            <Text style={styles.scoreText}>{score}%</Text>
+            {!isSmall && <Sparkles size={14} color={COLORS.accentGold} />}
+            <Text style={[styles.scoreText, { fontSize: scoreFontSize }]}>{score}%</Text>
           </View>
-          <Text style={styles.matchSubtext}>MATCH</Text>
+          <Text style={[styles.matchSubtext, { fontSize: matchFontSize, marginTop: isSmall ? 1 : 2 }]}>MATCH</Text>
         </View>
       </View>
       {label ? <Text style={styles.labelText}>{label}</Text> : null}
@@ -46,15 +54,14 @@ const styles = StyleSheet.create({
   },
   circle: {
     backgroundColor: COLORS.secondary,
-    borderWidth: 3.5,
     borderColor: COLORS.accentGold,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     ...SHADOWS.goldGlow,
   },
   content: {
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   row: {
     flexDirection: 'row',
@@ -63,17 +70,14 @@ const styles = StyleSheet.create({
   },
   scoreText: {
     fontFamily: 'serif',
-    fontSize: 22,
     fontWeight: 'bold',
     color: COLORS.white,
     letterSpacing: -0.5,
   },
   matchSubtext: {
-    fontSize: 9,
     color: COLORS.accentGold,
     fontWeight: 'bold',
     letterSpacing: 1.5,
-    marginTop: 2,
   },
   labelText: {
     marginTop: SPACING.sm,
