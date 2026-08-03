@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal } from 'react-native';
-import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Settings } from 'lucide-react-native';
+import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
+const MOCK_EDIT_POOL = [
+  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=800&q=80',
+];
+
 export const ProfileScreen: React.FC = () => {
-  const { selectedProfileId, setScreen, isProfileVerified } = useAppStore();
+  const { selectedProfileId, setScreen, isProfileVerified, currentUserProfile, updateUserPhoto } = useAppStore();
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
   // If selectedProfileId is empty or is the current user ('p2'), display Devan M. Kapoor's own profile.
   const isOwnProfile = !selectedProfileId || selectedProfileId === 'p2';
   
   // Find appropriate profile: p2 represents the current user (Devan)
-  const profile = MOCK_PROFILES.find((p) => p.id === (isOwnProfile ? 'p2' : selectedProfileId)) || MOCK_PROFILES[0];
+  const profile = isOwnProfile ? currentUserProfile : (MOCK_PROFILES.find((p) => p.id === selectedProfileId) || MOCK_PROFILES[0]);
   
   // Construct clean username handle matching screenshot format
   const username = `@${profile.name.toLowerCase().replace(/ /g, '_')}`;
@@ -41,6 +49,24 @@ export const ProfileScreen: React.FC = () => {
       [
         { text: "Cancel", style: "cancel" },
         { text: "Sign Out", onPress: () => setScreen('login') }
+      ]
+    );
+  };
+
+  const handleEditPhoto = (index: number) => {
+    Alert.alert(
+      "Update Photo",
+      "Choose a photo to upload to your matrimonial profile card.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Select from Library", 
+          onPress: () => {
+            const randomUrl = MOCK_EDIT_POOL[Math.floor(Math.random() * MOCK_EDIT_POOL.length)];
+            updateUserPhoto(index, randomUrl);
+            Alert.alert("Success", "Photo updated and synced successfully!");
+          } 
+        }
       ]
     );
   };
@@ -74,9 +100,16 @@ export const ProfileScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* Large Centered Square Avatar with Rounded Corners */}
+        {/* Large Centered Square Avatar with Rounded Corners & Edit Pencil */}
         <View style={styles.avatarWrapper}>
-          <Image source={{ uri: profile.photos[0] }} style={styles.avatarImg} />
+          <View style={styles.avatarContainer}>
+            <Image source={{ uri: profile.photos[0] }} style={styles.avatarImg} />
+            {isOwnProfile && (
+              <TouchableOpacity onPress={() => handleEditPhoto(0)} style={styles.pencilOverlayAvatar}>
+                <Pencil size={11} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
 
         {/* Name and Job Subtitle */}
@@ -126,15 +159,96 @@ export const ProfileScreen: React.FC = () => {
           </TouchableOpacity>
         )}
 
-        {/* Masonry Photo Grid */}
+        {/* Masonry Photo Grid with Edit Pencils & Placeholders */}
         <View style={styles.photoGrid}>
+          {/* Column 1 */}
           <View style={styles.gridColumn}>
-            <Image source={{ uri: profile.photos[0] }} style={[styles.gridPhoto, { height: 210 }]} />
-            {profile.photos[2] && <Image source={{ uri: profile.photos[2] }} style={[styles.gridPhoto, { height: 150 }]} />}
+            {/* Slot 1 (Index 1) */}
+            <TouchableOpacity
+              activeOpacity={isOwnProfile ? 0.85 : 1}
+              onPress={isOwnProfile ? () => handleEditPhoto(1) : undefined}
+              style={[styles.gridPhotoContainer, { height: 210 }]}
+            >
+              {profile.photos[1] ? (
+                <Image source={{ uri: profile.photos[1] }} style={styles.gridPhoto} />
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <Text style={styles.photoPlaceholderText}>Add Photo</Text>
+                </View>
+              )}
+              {isOwnProfile && profile.photos[1] && (
+                <View style={styles.pencilOverlayGrid}>
+                  <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
+                </View>
+              )}
+            </TouchableOpacity>
+
+            {/* Slot 3 (Index 3) */}
+            <TouchableOpacity
+              activeOpacity={isOwnProfile ? 0.85 : 1}
+              onPress={isOwnProfile ? () => handleEditPhoto(3) : undefined}
+              style={[styles.gridPhotoContainer, { height: 150 }]}
+            >
+              {profile.photos[3] ? (
+                <Image source={{ uri: profile.photos[3] }} style={styles.gridPhoto} />
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <Text style={styles.photoPlaceholderText}>Add Photo</Text>
+                </View>
+              )}
+              {isOwnProfile && profile.photos[3] && (
+                <View style={styles.pencilOverlayGrid}>
+                  <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
+
+          {/* Column 2 */}
           <View style={styles.gridColumn}>
-            {profile.photos[1] && <Image source={{ uri: profile.photos[1] }} style={[styles.gridPhoto, { height: 150 }]} />}
-            {profile.photos[3] && <Image source={{ uri: profile.photos[3] }} style={[styles.gridPhoto, { height: 210 }]} />}
+            {/* Slot 2 (Index 2) */}
+            <TouchableOpacity
+              activeOpacity={isOwnProfile ? 0.85 : 1}
+              onPress={isOwnProfile ? () => handleEditPhoto(2) : undefined}
+              style={[styles.gridPhotoContainer, { height: 150 }]}
+            >
+              {profile.photos[2] ? (
+                <Image source={{ uri: profile.photos[2] }} style={styles.gridPhoto} />
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <Text style={styles.photoPlaceholderText}>Add Photo</Text>
+                </View>
+              )}
+              {isOwnProfile && profile.photos[2] && (
+                <View style={styles.pencilOverlayGrid}>
+                  <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
+                </View>
+              )}
+            </TouchableOpacity>
+
+            {/* Slot 4 (Index 4) */}
+            <TouchableOpacity
+              activeOpacity={isOwnProfile ? 0.85 : 1}
+              onPress={isOwnProfile ? () => handleEditPhoto(4) : undefined}
+              style={[styles.gridPhotoContainer, { height: 210 }]}
+            >
+              {profile.photos[4] ? (
+                <Image source={{ uri: profile.photos[4] }} style={styles.gridPhoto} />
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <Text style={styles.photoPlaceholderText}>Add Photo</Text>
+                </View>
+              )}
+              {isOwnProfile && profile.photos[4] && (
+                <View style={styles.pencilOverlayGrid}>
+                  <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -226,12 +340,47 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: SPACING.md,
   },
+  avatarContainer: {
+    position: 'relative',
+    width: 140,
+    height: 140,
+  },
   avatarImg: {
     width: 140,
     height: 140,
     borderRadius: 28,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  pencilOverlayAvatar: {
+    position: 'absolute',
+    bottom: -6,
+    right: -6,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.accentGold,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+    ...SHADOWS.soft,
+  },
+  pencilOverlayGrid: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: COLORS.accentGold,
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+    ...SHADOWS.soft,
   },
   detailsBlock: {
     alignItems: 'center',
@@ -342,8 +491,13 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: SPACING.md,
   },
+  gridPhotoContainer: {
+    position: 'relative',
+    width: '100%',
+  },
   gridPhoto: {
     width: '100%',
+    height: '100%',
     borderRadius: RADIUS.lg,
     backgroundColor: COLORS.secondary,
     borderWidth: 1,
@@ -412,5 +566,23 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: 'bold',
     color: COLORS.mutedGray,
+  },
+  photoPlaceholder: {
+    flex: 1,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  photoPlaceholderText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: COLORS.mutedGray,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
 });

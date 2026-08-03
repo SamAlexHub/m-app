@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
-import { Sparkles, Bell, ShieldCheck, MapPin, Crown, Heart, ArrowRight } from 'lucide-react-native';
+import { Sparkles, Bell, ShieldCheck, MapPin, Crown, Heart, ArrowRight, Settings } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
@@ -70,7 +70,11 @@ export const HomeScreen: React.FC = () => {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => { setSelectedProfileId('p2'); setScreen('profile'); }} style={styles.avatarBtn}>
+          <TouchableOpacity onPress={() => setScreen('settings')} style={[styles.iconBtn, { marginLeft: 8 }]}>
+            <Settings size={20} color={COLORS.accentGold} strokeWidth={1.8} style={{ alignSelf: 'center' }} />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => { setSelectedProfileId('p2'); setScreen('profile'); }} style={[styles.avatarBtn, { marginLeft: 8 }]}>
             <Image
               source={{ uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' }}
               style={styles.avatarImg}

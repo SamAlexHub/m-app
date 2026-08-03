@@ -55,13 +55,12 @@ export const MembershipScreen: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
-            <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
+            <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
           </TouchableOpacity>
           <View style={styles.badge}>
             <Crown size={12} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.badgeText}>VIP MEMBERSHIP</Text>
           </View>
-          <View style={{ width: 36 }} />
         </View>
 
         {/* Toggle */}
@@ -148,7 +147,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'flex-start',
+    gap: SPACING.sm,
     marginBottom: SPACING.md,
     paddingTop: SPACING.xs,
   },
@@ -160,7 +160,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
+    display: 'flex',
   },
   badge: {
     flexDirection: 'row',

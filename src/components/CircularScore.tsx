@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Sparkles } from 'lucide-react-native';
 import { COLORS, SHADOWS, SPACING } from '../theme/tokens';
 
 interface CircularScoreProps {
@@ -36,7 +35,6 @@ export const CircularScore: React.FC<CircularScoreProps> = ({
       >
         <View style={styles.content}>
           <View style={styles.row}>
-            {!isSmall && <Sparkles size={14} color={COLORS.accentGold} />}
             <Text style={[styles.scoreText, { fontSize: scoreFontSize }]}>{score}%</Text>
           </View>
           <Text style={[styles.matchSubtext, { fontSize: matchFontSize, marginTop: isSmall ? 1 : 2 }]}>MATCH</Text>

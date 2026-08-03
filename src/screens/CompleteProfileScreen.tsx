@@ -1,27 +1,72 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Switch } from 'react-native';
 import { ArrowLeft, Shield, Upload, CheckCircle2 } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const CompleteProfileScreen: React.FC = () => {
-  const { setScreen, setProfileVerified } = useAppStore();
-  const [fatherOcc, setFatherOcc] = useState('Chairman, Kapoor Enterprises');
-  const [motherOcc, setMotherOcc] = useState('Former Managing Director, Tech Group');
-  const [familyValues, setFamilyValues] = useState('Warm, Hospitable, Progressive Values');
-  const [ancestralOrigins, setAncestralOrigins] = useState('Punjab & New Delhi');
-  const [partnerZodiac, setPartnerZodiac] = useState('Aries, Leo, Sagittarius');
+  const { currentUserProfile, updateCurrentUserProfile, setScreen, setProfileVerified } = useAppStore();
+
+  // Personal / Physical State
+  const [height, setHeight] = useState(currentUserProfile.height || "6'1\"");
+  const [religion, setReligion] = useState(currentUserProfile.religion || "Hindu");
+  const [community, setCommunity] = useState(currentUserProfile.community || "Punjabi Khatri");
+  const [motherTongue, setMotherTongue] = useState(currentUserProfile.motherTongue || "English / Hindi");
+
+  // Job / Professional State
+  const [profession, setProfession] = useState(currentUserProfile.profession || "");
+  const [company, setCompany] = useState(currentUserProfile.company || "");
+  const [education, setEducation] = useState(currentUserProfile.education || "");
+
+  // Family Heritage State
+  const [fatherOcc, setFatherOcc] = useState(currentUserProfile.familyDetails?.father || "");
+  const [motherOcc, setMotherOcc] = useState(currentUserProfile.familyDetails?.mother || "");
+  const [background, setBackground] = useState(currentUserProfile.familyDetails?.background || "");
+  const [familyValues, setFamilyValues] = useState(currentUserProfile.familyDetails?.familyValues || "");
+  const [ancestralOrigins, setAncestralOrigins] = useState(currentUserProfile.familyDetails?.location || "");
+
+  // Astro / Horoscope State
+  const [zodiac, setZodiac] = useState(currentUserProfile.horoscope?.zodiac || "");
+  const [rashi, setRashi] = useState(currentUserProfile.horoscope?.rashi || "");
+  const [nakshatra, setNakshatra] = useState(currentUserProfile.horoscope?.nakshatra || "");
+  const [manglik, setManglik] = useState(currentUserProfile.horoscope?.manglik || false);
+
   const [isDocUploaded, setIsDocUploaded] = useState(false);
 
   const handleSave = () => {
-    // Dynamically mark user verified if they upload verification document
+    // Write back directly to the Zustand store
+    updateCurrentUserProfile({
+      height,
+      religion,
+      community,
+      motherTongue,
+      profession,
+      company,
+      education,
+      familyDetails: {
+        father: fatherOcc,
+        mother: motherOcc,
+        background: background,
+        familyValues: familyValues,
+        location: ancestralOrigins
+      },
+      horoscope: {
+        zodiac,
+        rashi,
+        nakshatra,
+        manglik,
+        gunaScore: currentUserProfile.horoscope?.gunaScore || "33 / 36"
+      }
+    });
+
     if (isDocUploaded) {
       setProfileVerified(true);
     }
+
     Alert.alert(
       "Profile Completed",
-      "Your luxury matrimony profile credentials have been updated. Our Concierge verification team will review any newly uploaded documents within 2 hours.",
+      "Your luxury matrimony profile credentials have been updated and synced in real-time.",
       [{ text: "Great", onPress: () => setScreen('profile') }]
     );
   };
@@ -38,7 +83,7 @@ export const CompleteProfileScreen: React.FC = () => {
           <View style={{ width: 36 }} />
         </View>
 
-        {/* Info card */}
+        {/* Security Alert info card */}
         <GlassCard style={styles.infoCard}>
           <Shield size={20} color={COLORS.accentGold} strokeWidth={1.8} />
           <Text style={styles.infoText}>
@@ -46,7 +91,96 @@ export const CompleteProfileScreen: React.FC = () => {
           </Text>
         </GlassCard>
 
-        {/* Section: Family details */}
+        {/* Section 1: Personal & Physical Details */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Personal & Physical Details</Text>
+          <GlassCard style={styles.formCard}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Height</Text>
+              <TextInput
+                style={styles.input}
+                value={height}
+                onChangeText={setHeight}
+                placeholder="e.g. 6ft 1in"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Religion</Text>
+              <TextInput
+                style={styles.input}
+                value={religion}
+                onChangeText={setReligion}
+                placeholder="e.g. Hindu"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Community / Caste</Text>
+              <TextInput
+                style={styles.input}
+                value={community}
+                onChangeText={setCommunity}
+                placeholder="e.g. Punjabi Khatri"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Mother Tongue</Text>
+              <TextInput
+                style={styles.input}
+                value={motherTongue}
+                onChangeText={setMotherTongue}
+                placeholder="e.g. English / Hindi"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+          </GlassCard>
+        </View>
+
+        {/* Section 2: Job & Professional Details */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Job & Professional Details</Text>
+          <GlassCard style={styles.formCard}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Your Current Job / Profession</Text>
+              <TextInput
+                style={styles.input}
+                value={profession}
+                onChangeText={setProfession}
+                placeholder="e.g. Venture Capitalist"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Company / Organisation</Text>
+              <TextInput
+                style={styles.input}
+                value={company}
+                onChangeText={setCompany}
+                placeholder="e.g. Apex Horizon Capital"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Highest Education Credentials</Text>
+              <TextInput
+                style={styles.input}
+                value={education}
+                onChangeText={setEducation}
+                placeholder="e.g. MBA, Harvard Business School"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+          </GlassCard>
+        </View>
+
+        {/* Section 3: Family Heritage & Background */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Family Heritage & Heritage Details</Text>
           <GlassCard style={styles.formCard}>
@@ -73,7 +207,18 @@ export const CompleteProfileScreen: React.FC = () => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Family Values & Lifestyle</Text>
+              <Text style={styles.label}>Family Background</Text>
+              <TextInput
+                style={styles.input}
+                value={background}
+                onChangeText={setBackground}
+                placeholder="e.g. Business Royalty & Developers"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Family Ethos & Values</Text>
               <TextInput
                 style={styles.input}
                 value={familyValues}
@@ -96,24 +241,56 @@ export const CompleteProfileScreen: React.FC = () => {
           </GlassCard>
         </View>
 
-        {/* Section: Match Expectations */}
+        {/* Section 4: Astro & Horoscope Details */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Soulmate Preference Criteria</Text>
+          <Text style={styles.sectionTitle}>Horoscope & Astro Kundali</Text>
           <GlassCard style={styles.formCard}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Preferred Zodiac Alignments</Text>
+              <Text style={styles.label}>Zodiac Sign</Text>
               <TextInput
                 style={styles.input}
-                value={partnerZodiac}
-                onChangeText={setPartnerZodiac}
-                placeholder="Partner zodiacs"
+                value={zodiac}
+                onChangeText={setZodiac}
+                placeholder="e.g. Leo"
                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Moon Sign / Rashi</Text>
+              <TextInput
+                style={styles.input}
+                value={rashi}
+                onChangeText={setRashi}
+                placeholder="e.g. Simha"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Nakshatra</Text>
+              <TextInput
+                style={styles.input}
+                value={nakshatra}
+                onChangeText={setNakshatra}
+                placeholder="e.g. Magha"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+
+            <View style={[styles.inputGroup, styles.switchRow]}>
+              <Text style={[styles.label, { marginBottom: 0 }]}>Is Manglik?</Text>
+              <Switch
+                value={manglik}
+                onValueChange={setManglik}
+                trackColor={{ false: '#767577', true: COLORS.accentGold }}
+                thumbColor={manglik ? COLORS.white : '#f4f3f4'}
               />
             </View>
           </GlassCard>
         </View>
 
-        {/* Section: Verify Document upload */}
+        {/* Section 5: Security Upload */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Concierge VIP Security Verification</Text>
           <GlassCard style={styles.formCard}>
@@ -209,6 +386,12 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   inputGroup: {},
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
   label: {
     fontSize: 9,
     fontWeight: 'bold',

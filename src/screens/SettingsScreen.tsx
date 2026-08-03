@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { ArrowLeft, ShieldCheck, EyeOff, Lock, Globe, HelpCircle, LogOut, ChevronRight } from 'lucide-react-native';
+import { ArrowLeft, ShieldCheck, EyeOff, Lock, Globe, LogOut, ChevronRight, Crown, FileText } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
@@ -66,6 +66,31 @@ export const SettingsScreen: React.FC = () => {
             </View>
             <ChevronRight size={16} color={COLORS.mutedGray} strokeWidth={1.8} />
           </View>
+        </GlassCard>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionHeader}>LEGAL & INFORMATION</Text>
+        <GlassCard style={styles.card}>
+          <TouchableOpacity onPress={() => setScreen('our-speciality')} style={styles.row}>
+            <Crown size={18} color={COLORS.accentGold} strokeWidth={1.8} />
+            <View style={styles.textCol}>
+              <Text style={styles.rowTitle}>Our Speciality</Text>
+              <Text style={styles.rowSub}>The 4 pillars of Éternité matchmaking</Text>
+            </View>
+            <ChevronRight size={16} color={COLORS.mutedGray} strokeWidth={1.8} />
+          </TouchableOpacity>
+
+          <View style={{ height: 1, backgroundColor: 'rgba(255, 255, 255, 0.08)', marginVertical: 12 }} />
+
+          <TouchableOpacity onPress={() => setScreen('terms-conditions')} style={styles.row}>
+            <FileText size={18} color={COLORS.accentGold} strokeWidth={1.8} />
+            <View style={styles.textCol}>
+              <Text style={styles.rowTitle}>Terms & Conditions</Text>
+              <Text style={styles.rowSub}>Matrimonial legal & security policies</Text>
+            </View>
+            <ChevronRight size={16} color={COLORS.mutedGray} strokeWidth={1.8} />
+          </TouchableOpacity>
         </GlassCard>
       </View>
 

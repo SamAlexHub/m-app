@@ -14,7 +14,9 @@ export type ScreenType =
   | 'success-stories'
   | 'notifications'
   | 'settings'
-  | 'complete-profile';
+  | 'complete-profile'
+  | 'terms-conditions'
+  | 'our-speciality';
 
 export type DiscoverViewMode = 'swipe' | 'grid' | 'map';
 
@@ -89,6 +91,9 @@ interface AppState {
   markNotificationAsRead: (id: string) => void;
   sendMessage: (profileId: string, message: ChatMessage) => void;
   setProfileVerified: (verified: boolean) => void;
+  currentUserProfile: Profile;
+  updateCurrentUserProfile: (profile: Partial<Profile>) => void;
+  updateUserPhoto: (index: number, url: string) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -106,6 +111,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   incognitoMode: false,
   searchQuery: '',
   isProfileVerified: false,
+  currentUserProfile: MOCK_PROFILES[1],
 
   ageRange: [24, 35],
   selectedReligion: 'All Religions',
@@ -193,4 +199,22 @@ export const useAppStore = create<AppState>((set, get) => ({
     };
   }),
   setProfileVerified: (verified) => set({ isProfileVerified: verified }),
+  updateCurrentUserProfile: (profile) => set((state) => ({
+    currentUserProfile: {
+      ...state.currentUserProfile,
+      ...profile,
+      familyDetails: profile.familyDetails ? { ...state.currentUserProfile.familyDetails, ...profile.familyDetails } : state.currentUserProfile.familyDetails,
+      horoscope: profile.horoscope ? { ...state.currentUserProfile.horoscope, ...profile.horoscope } : state.currentUserProfile.horoscope,
+    }
+  })),
+  updateUserPhoto: (index, url) => set((state) => {
+    const updatedPhotos = [...state.currentUserProfile.photos];
+    updatedPhotos[index] = url;
+    return {
+      currentUserProfile: {
+        ...state.currentUserProfile,
+        photos: updatedPhotos
+      }
+    };
+  }),
 }));

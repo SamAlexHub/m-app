@@ -14,6 +14,8 @@ import { SuccessStoriesScreen } from './screens/SuccessStoriesScreen';
 import { NotificationsScreen } from './screens/NotificationsScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { CompleteProfileScreen } from './screens/CompleteProfileScreen';
+import { OurSpecialityScreen } from './screens/OurSpecialityScreen';
+import { TermsConditionsScreen } from './screens/TermsConditionsScreen';
 
 import { FloatingBottomBar } from './components/FloatingBottomBar';
 import { DatePlannerModal } from './components/DatePlannerModal';
@@ -54,6 +56,10 @@ export const App: React.FC = () => {
         return <SettingsScreen />;
       case 'complete-profile':
         return <CompleteProfileScreen />;
+      case 'our-speciality':
+        return <OurSpecialityScreen />;
+      case 'terms-conditions':
+        return <TermsConditionsScreen />;
       default:
         return <HomeScreen />;
     }

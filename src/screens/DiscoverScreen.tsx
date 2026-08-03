@@ -39,11 +39,7 @@ export const DiscoverScreen: React.FC = () => {
 
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={() => setScreen('chat')} style={styles.actionIconBtn}>
-            <MessageCircle size={18} color={COLORS.white} strokeWidth={2} />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => setScreen('settings')} style={styles.actionIconBtn}>
-            <Settings size={18} color={COLORS.white} strokeWidth={2} />
+            <MessageCircle size={18} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
           </TouchableOpacity>
         </View>
       </View>
