@@ -2,9 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #072F2B;
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+}
+
 @layer base {
   body {
-    background-color: #062E2A;
+    background-color: #072F2B;
     color: #ffffff;
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
