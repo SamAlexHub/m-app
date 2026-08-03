@@ -16,16 +16,14 @@ export const SplashScreen: React.FC = () => {
       />
       <View style={styles.darkOverlay} />
 
-      {/* Top Tagline */}
-      <View style={styles.topContainer}>
+      <View style={styles.centerContent}>
+        {/* Top Tagline Badge */}
         <View style={styles.badge}>
           <Sparkles size={12} color={COLORS.accentGold} strokeWidth={2} />
           <Text style={styles.badgeText}>THE APPLE OF LUXURY MATRIMONY</Text>
         </View>
-      </View>
 
-      {/* Center Logo & Title */}
-      <View style={styles.centerContainer}>
+        {/* Heart Logo Emblem */}
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={() => setScreen('onboarding')}
@@ -34,23 +32,22 @@ export const SplashScreen: React.FC = () => {
           <Heart size={44} color={COLORS.accentGold} fill="rgba(216, 168, 75, 0.2)" strokeWidth={1.8} />
         </TouchableOpacity>
 
+        {/* Main Title & Subtitle */}
         <Text style={styles.titleText}>ÉTERNITÉ</Text>
         <Text style={styles.subtitleText}>HAUTE MATRIMONIE • INTERNATIONAL</Text>
 
         <Text style={styles.descText}>
           Where love, family values, and timeless elegance unite across global horizons.
         </Text>
-      </View>
 
-      {/* Bottom Button */}
-      <View style={styles.bottomContainer}>
+        {/* Centered Golden CTA Button */}
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={() => setScreen('onboarding')}
           style={styles.ctaButton}
         >
           <Text style={styles.ctaText}>Begin Your Love Story</Text>
-          <ChevronRight size={18} color={COLORS.primary} strokeWidth={2.2} />
+          <ChevronRight size={18} color={COLORS.primary} strokeWidth={2.5} style={styles.ctaIcon} />
         </TouchableOpacity>
 
         <Text style={styles.footerNote}>PRIVACY & TRUST VERIFIED • BY INVITATION ONLY</Text>
@@ -63,93 +60,104 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.primary,
-    justify: 'space-between',
+    alignItems: 'center',
+    justify: 'center',
     padding: SPACING.lg,
+    position: 'relative',
   },
   bgImage: {
     ...StyleSheet.absoluteFillObject,
   },
   darkOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(7, 47, 43, 0.75)',
+    backgroundColor: 'rgba(7, 47, 43, 0.78)',
   },
-  topContainer: {
-    paddingTop: SPACING.md,
+  centerContent: {
+    width: '100%',
+    maxWidth: 380,
     alignItems: 'center',
+    justify: 'center',
+    zIndex: 10,
   },
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
+    justify: 'center',
     gap: 6,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: RADIUS.full,
     backgroundColor: 'rgba(14, 69, 63, 0.9)',
     borderWidth: 1,
     borderColor: COLORS.darkGlassBorder,
+    marginBottom: SPACING.lg,
   },
   badgeText: {
     ...TYPOGRAPHY.subtitle,
     fontSize: 9,
-  },
-  centerContainer: {
-    alignItems: 'center',
+    textAlign: 'center',
   },
   logoCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 96,
+    height: 96,
+    borderRadius: 48,
     backgroundColor: COLORS.primary,
     borderWidth: 2,
     borderColor: COLORS.accentGold,
     alignItems: 'center',
     justify: 'center',
+    marginBottom: SPACING.md,
     ...SHADOWS.goldGlow,
   },
   titleText: {
     ...TYPOGRAPHY.titleXL,
-    fontSize: 42,
-    lineHeight: 48,
-    marginTop: SPACING.lg,
-    letterSpacing: 2,
+    fontSize: 44,
+    lineHeight: 52,
+    textAlign: 'center',
+    letterSpacing: 3,
   },
   subtitleText: {
     ...TYPOGRAPHY.subtitle,
     fontSize: 10,
     marginTop: 4,
-    letterSpacing: 3,
+    letterSpacing: 2.5,
+    textAlign: 'center',
   },
   descText: {
     ...TYPOGRAPHY.body,
     fontSize: 13,
+    lineHeight: 20,
     textAlign: 'center',
     marginTop: SPACING.md,
-    maxWidth: 280,
-  },
-  bottomContainer: {
-    paddingBottom: SPACING.lg,
-    alignItems: 'center',
+    marginBottom: SPACING.xl,
+    maxWidth: 300,
   },
   ctaButton: {
     width: '100%',
-    height: 52,
-    borderRadius: RADIUS.full,
+    maxWidth: 320,
+    height: 54,
+    borderRadius: 27,
     backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    gap: SPACING.sm,
+    paddingHorizontal: 24,
     ...SHADOWS.goldGlow,
   },
   ctaText: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '700',
     color: COLORS.primary,
+    textAlign: 'center',
+  },
+  ctaIcon: {
+    marginLeft: 8,
   },
   footerNote: {
     fontSize: 9,
     color: COLORS.mutedGray,
-    marginTop: SPACING.md,
+    marginTop: SPACING.lg,
     letterSpacing: 1,
+    textAlign: 'center',
   },
 });

@@ -126,7 +126,7 @@ export const AuthScreen: React.FC = () => {
           <Text style={styles.submitBtnText}>
             {method === 'phone' && !otpSent ? 'Send Verification OTP' : 'Enter Private Lounge'}
           </Text>
-          <ArrowRight size={16} color={COLORS.primary} strokeWidth={2.2} />
+          <ArrowRight size={16} color={COLORS.primary} strokeWidth={2.5} style={styles.btnIcon} />
         </TouchableOpacity>
       </GlassCard>
 
@@ -142,11 +142,12 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: COLORS.primary,
-    justify: 'space-between',
+    justify: 'center',
+    alignItems: 'center',
     padding: SPACING.lg,
   },
   header: {
-    paddingTop: SPACING.md,
+    paddingTop: SPACING.xs,
     alignItems: 'center',
   },
   confidentialBadge: {
@@ -165,7 +166,9 @@ const styles = StyleSheet.create({
     fontSize: 9,
   },
   card: {
-    marginTop: SPACING.lg,
+    width: '100%',
+    maxWidth: 380,
+    marginTop: SPACING.md,
   },
   titleText: {
     ...TYPOGRAPHY.titleL,
@@ -260,17 +263,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    gap: SPACING.sm,
-    height: 52,
-    borderRadius: RADIUS.full,
+    height: 54,
+    borderRadius: 27,
     backgroundColor: COLORS.accentGold,
     marginTop: SPACING.xs,
+    paddingHorizontal: 24,
     ...SHADOWS.goldGlow,
   },
   submitBtnText: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '700',
     color: COLORS.primary,
+    textAlign: 'center',
+  },
+  btnIcon: {
+    marginLeft: 8,
   },
   fingerprintBtn: {
     flexDirection: 'row',

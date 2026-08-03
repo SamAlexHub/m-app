@@ -139,7 +139,7 @@ export const HomeScreen: React.FC = () => {
               <Text style={styles.vipSub}>Senior European wedding consultants & incognito mode.</Text>
             </View>
             <View style={styles.vipArrowBtn}>
-              <ArrowRight size={20} color={COLORS.primary} strokeWidth={2.2} />
+              <ArrowRight size={20} color={COLORS.primary} strokeWidth={2.5} />
             </View>
           </View>
         </GlassCard>
@@ -354,17 +354,20 @@ const styles = StyleSheet.create({
   },
   insightBtn: {
     marginTop: SPACING.sm,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.accentGold,
     alignSelf: 'flex-start',
+    alignItems: 'center',
+    justify: 'center',
     ...SHADOWS.goldGlow,
   },
   insightBtnText: {
     fontSize: 10,
     fontWeight: 'bold',
     color: COLORS.primary,
+    textAlign: 'center',
   },
   reelContent: {
     gap: SPACING.md,

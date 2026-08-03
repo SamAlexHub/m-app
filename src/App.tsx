@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import { View, StyleSheet, SafeAreaView, StatusBar, Dimensions } from 'react-native';
 import { useAppStore } from './store/useAppStore';
 import { SplashScreen } from './screens/SplashScreen';
 import { OnboardingScreen } from './screens/OnboardingScreen';
@@ -57,23 +57,40 @@ export const App: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.outerContainer}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
-      <View style={styles.screenWrapper}>
-        {renderScreen()}
+      <View style={styles.mobileFrame}>
+        <View style={styles.screenWrapper}>
+          {renderScreen()}
+        </View>
+        {showTabBar && <FloatingBottomBar />}
+        <DatePlannerModal />
+        <VideoCallModal />
+        <FilterSheetModal />
       </View>
-      {showTabBar && <FloatingBottomBar />}
-      <DatePlannerModal />
-      <VideoCallModal />
-      <FilterSheetModal />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
+    flex: 1,
+    backgroundColor: '#041B18', // Deep luxury backdrop for web container
+    alignItems: 'center',
+    justify: 'center',
+  },
+  mobileFrame: {
+    width: '100%',
+    maxWidth: 480, // Perfect luxury mobile frame width on wide displays
     flex: 1,
     backgroundColor: COLORS.primary,
+    position: 'relative',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 30,
+    elevation: 12,
   },
   screenWrapper: {
     flex: 1,

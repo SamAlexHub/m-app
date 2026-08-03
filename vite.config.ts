@@ -5,10 +5,24 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      'react-native': 'react-native-web',
-      '@': path.resolve(__dirname, './src'),
-    },
+    alias: [
+      {
+        find: 'react-native-svg',
+        replacement: path.resolve(__dirname, './src/mocks/reactNativeSvgMock.jsx'),
+      },
+      {
+        find: 'react-native/Libraries/Utilities/codegenNativeComponent',
+        replacement: path.resolve(__dirname, './src/mocks/codegenNativeComponent.js'),
+      },
+      {
+        find: 'react-native',
+        replacement: 'react-native-web',
+      },
+      {
+        find: '@',
+        replacement: path.resolve(__dirname, './src'),
+      },
+    ],
   },
   server: {
     port: 3000,

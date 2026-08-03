@@ -51,7 +51,7 @@ export const OnboardingScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Top Controls */}
+      {/* Top Header Controls */}
       <View style={styles.headerRow}>
         {currentSlide > 0 ? (
           <TouchableOpacity onPress={() => setCurrentSlide(currentSlide - 1)} style={styles.backBtn}>
@@ -66,8 +66,8 @@ export const OnboardingScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Main Slide Card */}
-      <View style={styles.contentContainer}>
+      {/* Centered Slide Content */}
+      <View style={styles.centerContent}>
         <View style={styles.imageCard}>
           <Image source={{ uri: slide.image }} style={styles.slideImage} resizeMode="cover" />
           <View style={styles.badge}>
@@ -99,7 +99,7 @@ export const OnboardingScreen: React.FC = () => {
           <Text style={styles.nextText}>
             {currentSlide === slides.length - 1 ? 'Enter Éternité' : 'Continue'}
           </Text>
-          <ChevronRight size={18} color={COLORS.primary} strokeWidth={2.2} />
+          <ChevronRight size={18} color={COLORS.primary} strokeWidth={2.5} style={styles.btnIcon} />
         </TouchableOpacity>
       </View>
     </View>
@@ -110,14 +110,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.primary,
+    alignItems: 'center',
     justify: 'space-between',
     padding: SPACING.lg,
   },
   headerRow: {
-    paddingTop: SPACING.sm,
+    width: '100%',
+    paddingTop: SPACING.xs,
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'space-between',
+    zIndex: 10,
   },
   backBtn: {
     width: 36,
@@ -136,19 +139,22 @@ const styles = StyleSheet.create({
     ...TYPOGRAPHY.subtitle,
     fontSize: 11,
   },
-  contentContainer: {
+  centerContent: {
+    width: '100%',
+    maxWidth: 360,
     alignItems: 'center',
+    justify: 'center',
   },
   imageCard: {
-    width: 270,
-    height: 270,
-    borderRadius: RADIUS.xl, // 32px
+    width: 250,
+    height: 250,
+    borderRadius: 32,
     overflow: 'hidden',
     borderWidth: 2,
     borderColor: COLORS.darkGlassBorder,
     backgroundColor: COLORS.secondary,
     position: 'relative',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
     ...SHADOWS.soft,
   },
   slideImage: {
@@ -177,27 +183,32 @@ const styles = StyleSheet.create({
   subtitleText: {
     ...TYPOGRAPHY.subtitle,
     fontSize: 10,
+    textAlign: 'center',
   },
   titleText: {
     ...TYPOGRAPHY.titleL,
+    fontSize: 22,
     marginTop: 4,
     textAlign: 'center',
   },
   descText: {
     ...TYPOGRAPHY.body,
     fontSize: 13,
+    lineHeight: 19,
     textAlign: 'center',
-    marginTop: SPACING.sm,
-    maxWidth: 280,
+    marginTop: SPACING.xs,
+    maxWidth: 290,
   },
   footerContainer: {
-    paddingBottom: SPACING.lg,
+    width: '100%',
+    maxWidth: 320,
     alignItems: 'center',
+    paddingBottom: SPACING.sm,
   },
   dotsRow: {
     flexDirection: 'row',
     gap: 6,
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   dot: {
     width: 8,
@@ -212,18 +223,22 @@ const styles = StyleSheet.create({
   },
   nextBtn: {
     width: '100%',
-    height: 52,
-    borderRadius: RADIUS.full,
+    height: 54,
+    borderRadius: 27,
     backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
     justify: 'center',
-    gap: SPACING.sm,
+    paddingHorizontal: 24,
     ...SHADOWS.goldGlow,
   },
   nextText: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '700',
     color: COLORS.primary,
+    textAlign: 'center',
+  },
+  btnIcon: {
+    marginLeft: 8,
   },
 });
