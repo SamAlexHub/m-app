@@ -17,13 +17,11 @@ export const SplashScreen: React.FC = () => {
       <View style={styles.darkOverlay} />
 
       <View style={styles.centerContent}>
-        {/* Top Tagline Badge */}
         <View style={styles.badge}>
           <Sparkles size={12} color={COLORS.accentGold} strokeWidth={2} />
           <Text style={styles.badgeText}>THE APPLE OF LUXURY MATRIMONY</Text>
         </View>
 
-        {/* Heart Logo Emblem */}
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={() => setScreen('onboarding')}
@@ -32,15 +30,15 @@ export const SplashScreen: React.FC = () => {
           <Heart size={44} color={COLORS.accentGold} fill="rgba(216, 168, 75, 0.2)" strokeWidth={1.8} />
         </TouchableOpacity>
 
-        {/* Main Title & Subtitle */}
         <Text style={styles.titleText}>ÉTERNITÉ</Text>
         <Text style={styles.subtitleText}>HAUTE MATRIMONIE • INTERNATIONAL</Text>
 
         <Text style={styles.descText}>
           Where love, family values, and timeless elegance unite across global horizons.
         </Text>
+      </View>
 
-        {/* Centered Golden CTA Button */}
+      <View style={styles.bottomActions}>
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={() => setScreen('onboarding')}
@@ -59,9 +57,10 @@ export const SplashScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: '100%',
     backgroundColor: COLORS.primary,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     padding: SPACING.lg,
     position: 'relative',
   },
@@ -76,13 +75,14 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 380,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
+    paddingBottom: 128,
     zIndex: 10,
   },
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
     paddingHorizontal: 16,
     paddingVertical: 6,
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.accentGold,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     marginBottom: SPACING.md,
     ...SHADOWS.goldGlow,
   },
@@ -129,8 +129,16 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     textAlign: 'center',
     marginTop: SPACING.md,
-    marginBottom: SPACING.xl,
     maxWidth: 300,
+  },
+  bottomActions: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: SPACING.xl,
+    alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+    zIndex: 10,
   },
   ctaButton: {
     width: '100%',
@@ -140,7 +148,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 24,
     ...SHADOWS.goldGlow,
   },

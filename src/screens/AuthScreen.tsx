@@ -23,128 +23,167 @@ export const AuthScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.confidentialBadge}>
-          <ShieldCheck size={14} color={COLORS.accentGold} strokeWidth={2} />
-          <Text style={styles.confidentialText}>STRICT CONFIDENTIALITY GUARANTEED</Text>
-        </View>
-      </View>
+    <View style={styles.container}>
+      <View style={styles.topWash} />
+      <View style={styles.bottomShade} />
 
-      <GlassCard style={styles.card}>
-        <Text style={styles.titleText}>
-          {authMode === 'login' ? 'Welcome Back' : 'Join Éternité'}
-        </Text>
-        <Text style={styles.subtext}>
-          {authMode === 'login'
-            ? 'Sign in to access your private match invitations'
-            : 'Create your luxury matrimonial profile in minutes'}
-        </Text>
-
-        <View style={styles.pillContainer}>
-          <TouchableOpacity
-            onPress={() => setAuthMode('login')}
-            style={[styles.pill, authMode === 'login' && styles.pillActive]}
-          >
-            <Text style={[styles.pillText, authMode === 'login' && styles.pillTextActive]}>Sign In</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setAuthMode('signup')}
-            style={[styles.pill, authMode === 'signup' && styles.pillActive]}
-          >
-            <Text style={[styles.pillText, authMode === 'signup' && styles.pillTextActive]}>Register</Text>
-          </TouchableOpacity>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <View style={styles.confidentialBadge}>
+            <ShieldCheck size={14} color={COLORS.accentGold} strokeWidth={2} />
+            <Text style={styles.confidentialText}>STRICT CONFIDENTIALITY GUARANTEED</Text>
+          </View>
         </View>
 
-        <View style={styles.methodRow}>
-          <TouchableOpacity
-            onPress={() => { setMethod('phone'); setOtpSent(false); }}
-            style={[styles.methodBtn, method === 'phone' && styles.methodBtnActive]}
-          >
-            <Phone size={14} color={method === 'phone' ? COLORS.accentGold : COLORS.mutedGray} strokeWidth={1.8} />
-            <Text style={[styles.methodText, method === 'phone' && styles.methodTextActive]}>Phone OTP</Text>
-          </TouchableOpacity>
+        <GlassCard style={styles.card}>
+          <Text style={styles.titleText}>
+            {authMode === 'login' ? 'Welcome Back' : 'Join Éternité'}
+          </Text>
+          <Text style={styles.subtext}>
+            {authMode === 'login'
+              ? 'Sign in to access your private match invitations'
+              : 'Create your luxury matrimonial profile in minutes'}
+          </Text>
 
-          <TouchableOpacity
-            onPress={() => setMethod('email')}
-            style={[styles.methodBtn, method === 'email' && styles.methodBtnActive]}
-          >
-            <Mail size={14} color={method === 'email' ? COLORS.accentGold : COLORS.mutedGray} strokeWidth={1.8} />
-            <Text style={[styles.methodText, method === 'email' && styles.methodTextActive]}>Email</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.pillContainer}>
+            <TouchableOpacity
+              onPress={() => setAuthMode('login')}
+              style={[styles.pill, authMode === 'login' && styles.pillActive]}
+            >
+              <Text style={[styles.pillText, authMode === 'login' && styles.pillTextActive]}>Sign In</Text>
+            </TouchableOpacity>
 
-        {method === 'phone' ? (
-          <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>MOBILE NUMBER</Text>
-            <View style={styles.inputBox}>
-              <Phone size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-              <TextInput
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-                keyboardType="phone-pad"
-                placeholderTextColor={COLORS.mutedGray}
-                style={styles.inputText}
-              />
-            </View>
+            <TouchableOpacity
+              onPress={() => setAuthMode('signup')}
+              style={[styles.pill, authMode === 'signup' && styles.pillActive]}
+            >
+              <Text style={[styles.pillText, authMode === 'signup' && styles.pillTextActive]}>Register</Text>
+            </TouchableOpacity>
           </View>
-        ) : (
-          <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
-            <View style={styles.inputBox}>
-              <Mail size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-              <TextInput
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                placeholderTextColor={COLORS.mutedGray}
-                style={styles.inputText}
-              />
-            </View>
-          </View>
-        )}
 
-        {method === 'phone' && otpSent && (
-          <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>4-DIGIT CODE</Text>
-            <View style={styles.inputBox}>
-              <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-              <TextInput
-                value={otp}
-                onChangeText={setOtp}
-                keyboardType="number-pad"
-                maxLength={4}
-                placeholderTextColor={COLORS.mutedGray}
-                style={[styles.inputText, { letterSpacing: 6, fontWeight: 'bold' }]}
-              />
-            </View>
-          </View>
-        )}
+          <View style={styles.methodRow}>
+            <TouchableOpacity
+              onPress={() => { setMethod('phone'); setOtpSent(false); }}
+              style={[styles.methodBtn, method === 'phone' && styles.methodBtnActive]}
+            >
+              <Phone size={14} color={method === 'phone' ? COLORS.accentGold : COLORS.mutedGray} strokeWidth={1.8} />
+              <Text style={[styles.methodText, method === 'phone' && styles.methodTextActive]}>Phone OTP</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity activeOpacity={0.88} onPress={handleAuthSubmit} style={styles.submitBtn}>
-          <Text style={styles.submitBtnText}>
+            <TouchableOpacity
+              onPress={() => setMethod('email')}
+              style={[styles.methodBtn, method === 'email' && styles.methodBtnActive]}
+            >
+              <Mail size={14} color={method === 'email' ? COLORS.accentGold : COLORS.mutedGray} strokeWidth={1.8} />
+              <Text style={[styles.methodText, method === 'email' && styles.methodTextActive]}>Email</Text>
+            </TouchableOpacity>
+          </View>
+
+          {method === 'phone' ? (
+            <View style={styles.inputWrapper}>
+              <Text style={styles.inputLabel}>MOBILE NUMBER</Text>
+              <View style={styles.inputBox}>
+                <Phone size={16} color={COLORS.accentGold} strokeWidth={1.8} />
+                <TextInput
+                  value={phoneNumber}
+                  onChangeText={setPhoneNumber}
+                  keyboardType="phone-pad"
+                  placeholderTextColor={COLORS.mutedGray}
+                  style={styles.inputText}
+                />
+              </View>
+            </View>
+          ) : (
+            <View style={styles.inputWrapper}>
+              <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
+              <View style={styles.inputBox}>
+                <Mail size={16} color={COLORS.accentGold} strokeWidth={1.8} />
+                <TextInput
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  placeholderTextColor={COLORS.mutedGray}
+                  style={styles.inputText}
+                />
+              </View>
+            </View>
+          )}
+
+          {method === 'phone' && otpSent && (
+            <View style={styles.inputWrapper}>
+              <Text style={styles.inputLabel}>4-DIGIT CODE</Text>
+              <View style={styles.inputBox}>
+                <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
+                <TextInput
+                  value={otp}
+                  onChangeText={setOtp}
+                  keyboardType="number-pad"
+                  maxLength={4}
+                  placeholderTextColor={COLORS.mutedGray}
+                  style={[styles.inputText, { letterSpacing: 6, fontWeight: 'bold' }]}
+                />
+              </View>
+            </View>
+          )}
+        </GlassCard>
+      </ScrollView>
+
+      <View style={styles.bottomControls}>
+        <TouchableOpacity activeOpacity={0.88} onPress={handleAuthSubmit} style={styles.primaryButton}>
+          <Text style={styles.primaryButtonText}>
             {method === 'phone' && !otpSent ? 'Send Verification OTP' : 'Enter Private Lounge'}
           </Text>
-          <ArrowRight size={16} color={COLORS.primary} strokeWidth={2.5} style={styles.btnIcon} />
+          <ArrowRight size={18} color={COLORS.primary} strokeWidth={2.6} style={styles.buttonIcon} />
         </TouchableOpacity>
-      </GlassCard>
 
-      <TouchableOpacity onPress={() => setScreen('home')} style={styles.fingerprintBtn}>
-        <Fingerprint size={20} color={COLORS.accentGold} strokeWidth={1.8} />
-        <Text style={styles.fingerprintText}>Biometric Passcode Sign-In</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <TouchableOpacity onPress={() => setScreen('home')} style={styles.fingerprintBtn}>
+          <Fingerprint size={16} color={COLORS.accentGold} strokeWidth={1.8} />
+          <Text style={styles.fingerprintText}>Biometric Passcode Sign-In</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: COLORS.primary,
-    justify: 'center',
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.lg,
+  },
+  topWash: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '54%',
+    backgroundColor: '#0A3A34',
+    opacity: 0.96,
+  },
+  bottomShade: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '46%',
+    backgroundColor: '#041F1C',
+    opacity: 0.58,
+  },
+  scrollView: {
+    flex: 1,
+    width: '100%',
+  },
+  scrollContent: {
+    flexGrow: 1,
     alignItems: 'center',
-    padding: SPACING.lg,
+    justifyContent: 'center',
+    paddingVertical: SPACING.md,
   },
   header: {
     paddingTop: SPACING.xs,
@@ -216,7 +255,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
     paddingVertical: 10,
     borderRadius: RADIUS.md,
@@ -259,32 +298,41 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: 13,
   },
-  submitBtn: {
+  bottomControls: {
+    width: '100%',
+    alignItems: 'center',
+    paddingBottom: SPACING.xs,
+    marginTop: SPACING.md,
+  },
+  primaryButton: {
+    width: '100%',
+    maxWidth: 340,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: COLORS.accentGold,
-    marginTop: SPACING.xs,
-    paddingHorizontal: 24,
+    justifyContent: 'center',
+    paddingHorizontal: SPACING.lg,
     ...SHADOWS.goldGlow,
   },
-  submitBtnText: {
+  primaryButtonText: {
+    flexShrink: 1,
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '800',
     color: COLORS.primary,
     textAlign: 'center',
   },
-  btnIcon: {
-    marginLeft: 8,
+  buttonIcon: {
+    marginLeft: SPACING.sm,
   },
   fingerprintBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: SPACING.sm,
-    paddingVertical: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.xs,
   },
   fingerprintText: {
     fontSize: 12,

@@ -1,319 +1,294 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { ChevronRight, Sparkles, Shield, Heart, ArrowLeft } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { ArrowLeft, ChevronRight, Heart, ShieldCheck, Sparkles } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
+
+const slides = [
+  {
+    id: 1,
+    eyebrow: 'CURATED MATRIMONY',
+    title: 'Meet Families That Feel Aligned',
+    description:
+      'Discover verified profiles shaped around values, lifestyle, culture, and long-term intent.',
+    image: '/assets/3d/onboarding_1_matches.png',
+    badge: 'Verified introductions',
+    icon: Heart,
+  },
+  {
+    id: 2,
+    eyebrow: 'AI COMPATIBILITY',
+    title: 'Match With Deeper Confidence',
+    description:
+      'Blend family preferences, personality signals, and astro compatibility into one elegant shortlist.',
+    image: '/assets/3d/onboarding_2_ai.png',
+    badge: '98% refined matching',
+    icon: Sparkles,
+  },
+  {
+    id: 3,
+    eyebrow: 'PRIVATE BY DESIGN',
+    title: 'A Safer Space For Serious Connections',
+    description:
+      'Control visibility, receive trusted invitations, and move forward only when you are ready.',
+    image: '/assets/3d/onboarding_3_security.png',
+    badge: 'Privacy verified',
+    icon: ShieldCheck,
+  },
+];
 
 export const OnboardingScreen: React.FC = () => {
   const { setScreen } = useAppStore();
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = [
-    {
-      id: 1,
-      titlePrefix: 'Curated ',
-      accentWord: 'Genuine Matches',
-      subtitle: 'VERIFIED GLOBAL ELITE',
-      description: 'Connect with accomplished individuals across London, NYC, Paris, Dubai, and Mumbai.',
-      image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
-      badge: 'Bespoke Matchmaking',
-      icon: Heart
-    },
-    {
-      id: 2,
-      titlePrefix: 'AI Soulmate ',
-      accentWord: 'Compatibility',
-      subtitle: '36-GUNA ASTRO & VALUES SYNC',
-      description: 'Our proprietary algorithm harmonizes core life values, career ambitions, and Vedic charts.',
-      image: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80',
-      badge: '98% Match Precision',
-      icon: Sparkles
-    },
-    {
-      id: 3,
-      titlePrefix: 'Uncompromised ',
-      accentWord: 'Trust & Privacy',
-      subtitle: '256-BIT ENCRYPTED SHIELD',
-      description: 'Enjoy Incognito mode, family-verified access shields, and confidential video invitations.',
-      image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80',
-      badge: 'Unmatched Privacy',
-      icon: Shield
-    }
-  ];
-
-  const handleNext = () => {
-    if (currentSlide < slides.length - 1) {
-      setCurrentSlide(currentSlide + 1);
-    } else {
-      setScreen('login');
-    }
-  };
-
   const slide = slides[currentSlide];
   const Icon = slide.icon;
+  const isLastSlide = currentSlide === slides.length - 1;
+
+  const handleNext = () => {
+    if (!isLastSlide) {
+      setCurrentSlide(currentSlide + 1);
+      return;
+    }
+
+    setScreen('login');
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-      <View style={styles.cardModal}>
-        {/* Top Header */}
-        <View style={styles.headerRow}>
-          {currentSlide > 0 ? (
-            <TouchableOpacity onPress={() => setCurrentSlide(currentSlide - 1)} style={styles.backBtn}>
-              <ArrowLeft size={16} color={COLORS.white} strokeWidth={2} />
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.backBtnEmpty} />
-          )}
+    <View style={styles.container}>
+      <Image source={{ uri: slide.image }} style={styles.bgImage} resizeMode="cover" />
+      <View style={styles.darkOverlay} />
 
-          <TouchableOpacity onPress={() => setScreen('login')}>
-            <Text style={styles.skipText}>SKIP</Text>
+      <View style={styles.headerRow}>
+        {currentSlide > 0 ? (
+          <TouchableOpacity
+            activeOpacity={0.82}
+            onPress={() => setCurrentSlide(currentSlide - 1)}
+            style={styles.iconButton}
+          >
+            <ArrowLeft size={18} color={COLORS.white} strokeWidth={2.2} />
           </TouchableOpacity>
+        ) : (
+          <View style={styles.iconButtonPlaceholder} />
+        )}
+
+        <View style={styles.brandPill}>
+          <Sparkles size={12} color={COLORS.accentGold} strokeWidth={2} />
+          <Text style={styles.brandPillText}>ETERNITE</Text>
         </View>
 
-        {/* Hero Artwork */}
-        <View style={styles.heroWrapper}>
-          <Image source={{ uri: slide.image }} style={styles.heroImage} resizeMode="cover" />
-          <View style={styles.heroOverlay} />
+        <TouchableOpacity activeOpacity={0.82} onPress={() => setScreen('login')} style={styles.skipButton}>
+          <Text style={styles.skipText}>Skip</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.mainContent}>
+        <View style={styles.contentPanel}>
           <View style={styles.badge}>
-            <Icon size={12} color={COLORS.accentGold} strokeWidth={2} />
+            <Icon size={13} color={COLORS.accentGold} strokeWidth={2.1} />
             <Text style={styles.badgeText}>{slide.badge}</Text>
           </View>
-        </View>
 
-        {/* Content Details */}
-        <View style={styles.contentBody}>
-          <Text style={styles.subtitleText}>{slide.subtitle}</Text>
-          
-          <Text style={styles.titleText}>
-            {slide.titlePrefix}
-            <Text style={styles.titleAccent}>{slide.accentWord}</Text>
-          </Text>
-
+          <Text style={styles.eyebrowText}>{slide.eyebrow}</Text>
+          <Text style={styles.titleText}>{slide.title}</Text>
           <Text style={styles.descText}>{slide.description}</Text>
-
-          {/* Dots Carousel Indicator */}
-          <View style={styles.dotsRow}>
-            {slides.map((_, idx) => (
-              <View
-                key={idx}
-                style={[
-                  styles.dot,
-                  currentSlide === idx && styles.dotActive,
-                ]}
-              />
-            ))}
-          </View>
-
-          {/* Action Row matching 2nd screenshot layout (Google + Apple + Primary Action) */}
-          <View style={styles.actionRow}>
-            <TouchableOpacity activeOpacity={0.8} onPress={() => setScreen('login')} style={styles.socialBtn}>
-              <Text style={styles.socialIconText}>G</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity activeOpacity={0.8} onPress={() => setScreen('login')} style={styles.socialBtn}>
-              <Text style={styles.socialIconText}></Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity activeOpacity={0.85} onPress={handleNext} style={styles.primaryCtaBtn}>
-              <Text style={styles.primaryCtaText}>
-                {currentSlide === slides.length - 1 ? 'Create Account' : 'Continue'}
-              </Text>
-              <ChevronRight size={16} color={COLORS.primary} strokeWidth={2.5} style={styles.btnIcon} />
-            </TouchableOpacity>
-          </View>
-
-          {/* Bottom Direct Login Link */}
-          <View style={styles.loginRow}>
-            <Text style={styles.loginSubtext}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => setScreen('login')}>
-              <Text style={styles.loginLinkText}>Sign in</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </View>
-    </ScrollView>
+
+      <View style={styles.bottomControls}>
+        <View style={styles.dotsRow}>
+          {slides.map((item, idx) => (
+            <TouchableOpacity
+              key={item.id}
+              activeOpacity={0.8}
+              onPress={() => setCurrentSlide(idx)}
+              style={[styles.dot, currentSlide === idx && styles.dotActive]}
+            />
+          ))}
+        </View>
+
+        <TouchableOpacity activeOpacity={0.88} onPress={handleNext} style={styles.primaryButton}>
+          <Text style={styles.primaryButtonText}>{isLastSlide ? 'Begin Your Love Story' : 'Continue'}</Text>
+          <ChevronRight size={18} color={COLORS.primary} strokeWidth={2.6} style={styles.buttonIcon} />
+        </TouchableOpacity>
+
+        <Text style={styles.footerNote}>PRIVACY VERIFIED BY INVITATION ONLY</Text>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
+  container: {
+    flex: 1,
     backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justify: 'center',
-    padding: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.lg,
   },
-  cardModal: {
-    width: '100%',
-    maxWidth: 400,
-    backgroundColor: COLORS.secondary,
-    borderRadius: 32,
-    borderWidth: 1,
-    borderColor: COLORS.darkGlassBorder,
-    padding: SPACING.md,
-    ...SHADOWS.soft,
+  bgImage: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  darkOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(5, 33, 29, 0.84)', // Premium semi-transparent emerald wash
   },
   headerRow: {
+    minHeight: 44,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
-    marginBottom: SPACING.xs,
+    justifyContent: 'space-between',
+    zIndex: 2,
   },
-  backBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(7, 47, 43, 0.8)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+  iconButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: 'center',
-    justify: 'center',
-  },
-  backBtnEmpty: {
-    width: 32,
-  },
-  skipText: {
-    ...TYPOGRAPHY.subtitle,
-    fontSize: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 4,
-  },
-  heroWrapper: {
-    width: '100%',
-    height: 260,
-    borderRadius: 24,
-    overflow: 'hidden',
-    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    position: 'relative',
-    marginBottom: SPACING.md,
+    borderColor: 'rgba(255, 255, 255, 0.14)',
   },
-  heroImage: {
-    width: '100%',
-    height: '100%',
+  iconButtonPlaceholder: {
+    width: 38,
+    height: 38,
   },
-  heroOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(7, 47, 43, 0.25)',
-  },
-  badge: {
-    position: 'absolute',
-    top: SPACING.sm,
-    left: SPACING.sm,
+  brandPill: {
+    minHeight: 30,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
     borderRadius: RADIUS.full,
-    backgroundColor: 'rgba(7, 47, 43, 0.85)',
+    backgroundColor: 'rgba(14, 69, 63, 0.86)',
     borderWidth: 1,
     borderColor: COLORS.darkGlassBorder,
   },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: COLORS.accentGold,
-  },
-  contentBody: {
-    alignItems: 'center',
-  },
-  subtitleText: {
+  brandPillText: {
     ...TYPOGRAPHY.subtitle,
-    fontSize: 9,
+    fontSize: 10,
+    letterSpacing: 2,
+  },
+  skipButton: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  skipText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.accentGoldLight,
+  },
+  mainContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: SPACING.sm,
+  },
+  contentPanel: {
+    width: '100%',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.xs,
+  },
+  badge: {
+    minHeight: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    borderRadius: RADIUS.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(216, 168, 75, 0.28)',
+    marginBottom: SPACING.sm,
+  },
+  badgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: COLORS.accentGoldLight,
+  },
+  eyebrowText: {
+    ...TYPOGRAPHY.subtitle,
+    fontSize: 10,
+    letterSpacing: 2.2,
     textAlign: 'center',
-    letterSpacing: 1.5,
+    marginBottom: SPACING.xs,
   },
   titleText: {
-    ...TYPOGRAPHY.titleL,
-    fontSize: 22,
-    marginTop: 4,
+    ...TYPOGRAPHY.titleXL,
+    width: '100%',
+    maxWidth: 340,
+    fontSize: 31,
+    lineHeight: 37,
+    letterSpacing: 0,
     textAlign: 'center',
-  },
-  titleAccent: {
-    color: COLORS.accentGold,
   },
   descText: {
     ...TYPOGRAPHY.body,
-    fontSize: 12,
-    lineHeight: 18,
+    width: '100%',
+    maxWidth: 330,
+    fontSize: 13,
+    lineHeight: 20,
     textAlign: 'center',
-    marginTop: SPACING.xs,
-    maxWidth: 310,
+    color: COLORS.lightGray,
+    marginTop: SPACING.sm,
   },
   dotsRow: {
+    height: 22,
     flexDirection: 'row',
-    gap: 6,
-    marginVertical: SPACING.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    marginBottom: SPACING.md,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.28)',
   },
   dotActive: {
-    width: 24,
+    width: 30,
     backgroundColor: COLORS.accentGold,
     ...SHADOWS.goldGlow,
   },
-  actionRow: {
+  primaryButton: {
     width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xs,
-    marginTop: SPACING.xs,
-  },
-  socialBtn: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    alignItems: 'center',
-    justify: 'center',
-  },
-  socialIconText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.white,
-  },
-  primaryCtaBtn: {
-    flex: 1,
-    height: 46,
-    borderRadius: 23,
+    maxWidth: 340,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
-    paddingHorizontal: 16,
+    justifyContent: 'center',
+    paddingHorizontal: SPACING.lg,
     ...SHADOWS.goldGlow,
   },
-  primaryCtaText: {
-    fontSize: 14,
-    fontWeight: '700',
+  bottomControls: {
+    width: '100%',
+    alignItems: 'center',
+    paddingBottom: SPACING.xs,
+  },
+  primaryButtonText: {
+    flexShrink: 1,
+    fontSize: 15,
+    fontWeight: '800',
     color: COLORS.primary,
     textAlign: 'center',
   },
-  btnIcon: {
-    marginLeft: 6,
+  buttonIcon: {
+    marginLeft: SPACING.sm,
   },
-  loginRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justify: 'center',
-    marginTop: SPACING.md,
-  },
-  loginSubtext: {
-    fontSize: 11,
+  footerNote: {
+    fontSize: 9,
+    lineHeight: 13,
     color: COLORS.mutedGray,
-  },
-  loginLinkText: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: COLORS.white,
-    textDecorationLine: 'underline',
+    letterSpacing: 1.25,
+    textAlign: 'center',
+    marginTop: SPACING.md,
   },
 });

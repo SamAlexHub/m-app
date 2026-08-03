@@ -14,5 +14,6 @@ export const Defs = ({ children, ...props }) => <defs {...props}>{children}</def
 export const Stop = (props) => <stop {...props} />;
 export const LinearGradient = ({ children, ...props }) => <linearGradient {...props}>{children}</linearGradient>;
 export const RadialGradient = ({ children, ...props }) => <radialGradient {...props}>{children}</radialGradient>;
+export const Ellipse = (props) => <ellipse {...props} />;
 
 export default Svg;
