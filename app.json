@@ -25,11 +25,6 @@
     "web": {
       "favicon": "./public/assets/3d/splash_hero_3d.png"
     },
-    "plugins": [],
-    "extra": {
-      "eas": {
-        "projectId": "auto-generated-on-eas-build"
-      }
-    }
+    "plugins": []
   }
 }
