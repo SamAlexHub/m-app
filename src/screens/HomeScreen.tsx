@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import { Sparkles, Bell, ShieldCheck, MapPin, Crown, Heart, ArrowRight } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
@@ -9,19 +9,42 @@ import { SUCCESS_STORIES } from '../data/successStories';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const HomeScreen: React.FC = () => {
-  const { setScreen, setSelectedProfileId, notifications } = useAppStore();
+  const { setScreen, setSelectedProfileId, notifications, isProfileVerified, setProfileVerified } = useAppStore();
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const topMatch = MOCK_PROFILES[0];
+
+  const handleVerifyProfile = () => {
+    Alert.alert(
+      "Profile Verification",
+      "Upload your passport or ID to get the gold verification shield. Would you like to verify now?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Verify Now", 
+          onPress: () => {
+            setProfileVerified(true);
+            Alert.alert("Success", "Your profile has been verified by our European Concierge! The verification badge is now active.");
+          } 
+        }
+      ]
+    );
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Header */}
       <View style={styles.header}>
-        <View>
+        <View style={{ flex: 1 }}>
           <View style={styles.locationRow}>
             <MapPin size={12} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.locationText}>MONACO • LONDON • DUBAI</Text>
+            {!isProfileVerified && (
+              <TouchableOpacity onPress={handleVerifyProfile} style={styles.verifyPill}>
+                <ShieldCheck size={10} color={COLORS.redAccent} strokeWidth={2.5} />
+                <Text style={styles.verifyPillText}>Verify Profile</Text>
+              </TouchableOpacity>
+            )}
           </View>
           <Text style={styles.greetingText}>Bonjour, Devan</Text>
         </View>
@@ -62,6 +85,55 @@ export const HomeScreen: React.FC = () => {
         </View>
       </View>
 
+      {/* Verification Checklist */}
+      {!isProfileVerified && (
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionTitleRow}>
+              <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2} />
+              <Text style={styles.sectionTitle}>Verification Checklist</Text>
+            </View>
+            <Text style={styles.checklistProgress}>2 of 4 Completed</Text>
+          </View>
+
+          <GlassCard glow>
+            <View style={styles.checklistCard}>
+              <Text style={styles.checklistCardTitle}>Complete your verification tasks to unlock VIP royal profiles and match safely.</Text>
+              
+              <View style={styles.checkItemRow}>
+                <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
+                  <Text style={styles.checkIndicatorText}>✓</Text>
+                </View>
+                <Text style={styles.checkItemTextDone}>Astro & Personality Profile Check</Text>
+              </View>
+              
+              <View style={styles.checkItemRow}>
+                <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
+                  <Text style={styles.checkIndicatorText}>✓</Text>
+                </View>
+                <Text style={styles.checkItemTextDone}>Family Background Audit</Text>
+              </View>
+              
+              <TouchableOpacity onPress={handleVerifyProfile} style={styles.checkItemRow}>
+                <View style={styles.checkIndicator}>
+                  <Text style={styles.checkIndicatorText}>•</Text>
+                </View>
+                <Text style={styles.checkItemText}>Government ID Verification (Action Required)</Text>
+                <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={handleVerifyProfile} style={styles.checkItemRow}>
+                <View style={styles.checkIndicator}>
+                  <Text style={styles.checkIndicatorText}>•</Text>
+                </View>
+                <Text style={styles.checkItemText}>Professional Status Audit (Action Required)</Text>
+                <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
+              </TouchableOpacity>
+            </View>
+          </GlassCard>
+        </View>
+      )}
+
       {/* Today's AI Match */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
@@ -73,21 +145,31 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         <GlassCard glow onClick={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}>
-          <View style={styles.matchCardRow}>
-            <Image source={{ uri: topMatch.photos[0] }} style={styles.matchAvatar} />
-            <View style={styles.matchInfo}>
-              <Text style={styles.matchName}>{topMatch.name}, {topMatch.age}</Text>
-              <Text style={styles.matchSub}>{topMatch.profession} • {topMatch.location}</Text>
-              <Text style={styles.matchQuote} numberOfLines={2}>"{topMatch.matchReason}"</Text>
-
-              <TouchableOpacity
-                onPress={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}
-                style={styles.insightBtn}
-              >
-                <Text style={styles.insightBtnText}>View Compatibility Insights</Text>
-              </TouchableOpacity>
+          <View style={styles.matchCardContent}>
+            <View style={styles.matchCardTopRow}>
+              <Image source={{ uri: topMatch.photos[0] }} style={styles.matchAvatar} />
+              <View style={styles.matchInfo}>
+                <Text style={styles.matchName}>{topMatch.name}, {topMatch.age}</Text>
+                <Text style={styles.matchSub} numberOfLines={1}>{topMatch.profession} • {topMatch.location}</Text>
+                <View style={styles.sharedIntentBadge}>
+                  <Sparkles size={10} color={COLORS.accentGold} strokeWidth={2} />
+                  <Text style={styles.sharedIntentText}>AI MATCH PRINCIPLE</Text>
+                </View>
+              </View>
+              <View style={styles.scoreContainer}>
+                <CircularScore score={topMatch.aiMatchScore} size={64} label="" />
+              </View>
             </View>
-            <CircularScore score={topMatch.aiMatchScore} size={84} />
+            
+            <Text style={styles.matchQuote} numberOfLines={2}>"{topMatch.matchReason}"</Text>
+
+            <TouchableOpacity
+              onPress={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}
+              style={styles.insightBtn}
+            >
+              <Text style={styles.insightBtnText}>View Compatibility Insights</Text>
+              <ArrowRight size={12} color={COLORS.primary} strokeWidth={2.5} style={{ marginLeft: 4 }} />
+            </TouchableOpacity>
           </View>
         </GlassCard>
       </View>
@@ -184,17 +266,35 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'space-between',
     marginBottom: SPACING.md,
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    flexWrap: 'wrap',
   },
   locationText: {
     ...TYPOGRAPHY.subtitle,
     fontSize: 9,
+  },
+  verifyPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: RADIUS.full,
+    marginLeft: SPACING.sm,
+  },
+  verifyPillText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: COLORS.redAccent,
+    letterSpacing: 0.5,
   },
   greetingText: {
     ...TYPOGRAPHY.titleL,
@@ -214,7 +314,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.darkGlassBorder,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   unreadBadge: {
     position: 'absolute',
@@ -225,7 +325,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: COLORS.redAccent,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   unreadText: {
     fontSize: 9,
@@ -266,7 +366,7 @@ const styles = StyleSheet.create({
   },
   heroContent: {
     padding: SPACING.md,
-    justify: 'center',
+    justifyContent: 'center',
     flex: 1,
   },
   heroBadge: {
@@ -295,14 +395,66 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginTop: 2,
   },
+  checklistProgress: {
+    fontSize: 10,
+    color: COLORS.accentGold,
+    fontWeight: 'bold',
+  },
+  checklistCard: {
+    paddingVertical: SPACING.xs,
+  },
+  checklistCardTitle: {
+    fontSize: 11,
+    color: COLORS.lightGray,
+    lineHeight: 16,
+    marginBottom: SPACING.md,
+  },
+  checkItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    gap: 10,
+  },
+  checkIndicator: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.accentGold,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  checkIndicatorDone: {
+    backgroundColor: COLORS.accentGold,
+  },
+  checkIndicatorText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    lineHeight: 12,
+  },
+  checkItemText: {
+    fontSize: 12,
+    color: COLORS.white,
+    fontWeight: '600',
+  },
+  checkItemTextDone: {
+    fontSize: 12,
+    color: COLORS.mutedGray,
+    textDecorationLine: 'line-through',
+  },
   section: {
     marginBottom: SPACING.lg,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'space-between',
     marginBottom: SPACING.sm,
+    width: '100%',
   },
   sectionTitleRow: {
     flexDirection: 'row',
@@ -323,18 +475,23 @@ const styles = StyleSheet.create({
     color: COLORS.accentGold,
     fontWeight: 'bold',
   },
-  matchCardRow: {
+  matchCardContent: {
+    flexDirection: 'column',
+    width: '100%',
+  },
+  matchCardTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.md,
+    width: '100%',
   },
   matchAvatar: {
-    width: 72,
-    height: 90,
+    width: 64,
+    height: 80,
     borderRadius: RADIUS.md,
   },
   matchInfo: {
     flex: 1,
+    marginLeft: SPACING.md,
   },
   matchName: {
     ...TYPOGRAPHY.titleM,
@@ -342,25 +499,46 @@ const styles = StyleSheet.create({
   },
   matchSub: {
     ...TYPOGRAPHY.caption,
-    fontSize: 10,
+    fontSize: 11,
     marginTop: 2,
+  },
+  sharedIntentBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: RADIUS.full,
+    backgroundColor: 'rgba(216, 168, 75, 0.1)',
+    alignSelf: 'flex-start',
+    marginTop: SPACING.xs,
+  },
+  sharedIntentText: {
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: COLORS.accentGold,
+  },
+  scoreContainer: {
+    marginLeft: SPACING.sm,
   },
   matchQuote: {
     ...TYPOGRAPHY.body,
-    fontSize: 10,
-    lineHeight: 14,
-    marginTop: 4,
+    fontSize: 11,
+    lineHeight: 16,
+    marginTop: SPACING.md,
     fontStyle: 'italic',
+    color: COLORS.lightGray,
   },
   insightBtn: {
-    marginTop: SPACING.sm,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
+    marginTop: SPACING.md,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.accentGold,
+    flexDirection: 'row',
     alignSelf: 'flex-start',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     ...SHADOWS.goldGlow,
   },
   insightBtnText: {

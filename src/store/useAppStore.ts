@@ -52,6 +52,7 @@ interface AppState {
   userTier: 'Gold' | 'Platinum' | 'Diamond';
   incognitoMode: boolean;
   searchQuery: string;
+  isProfileVerified: boolean;
   
   // Filter settings
   ageRange: [number, number];
@@ -86,6 +87,7 @@ interface AppState {
   setMinAstroScore: (score: number) => void;
   markNotificationAsRead: (id: string) => void;
   sendMessage: (profileId: string, message: ChatMessage) => void;
+  setProfileVerified: (verified: boolean) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -102,6 +104,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   userTier: 'Diamond',
   incognitoMode: false,
   searchQuery: '',
+  isProfileVerified: false,
 
   ageRange: [24, 35],
   selectedReligion: 'All Religions',
@@ -187,5 +190,6 @@ export const useAppStore = create<AppState>((set, get) => ({
         [profileId]: [...list, message]
       }
     };
-  })
+  }),
+  setProfileVerified: (verified) => set({ isProfileVerified: verified }),
 }));

@@ -1,114 +1,99 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { ArrowLeft, Heart, ShieldCheck, MapPin, Briefcase, GraduationCap, Calendar, MessageCircle } from 'lucide-react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
+import { ArrowLeft, MoreHorizontal, ShieldCheck } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
-import { GlassCard } from '../components/GlassCard';
-import { CircularScore } from '../components/CircularScore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const ProfileScreen: React.FC = () => {
-  const { selectedProfileId, setScreen, setDatePlannerOpen, shortlistedIds, toggleShortlist } = useAppStore();
+  const { selectedProfileId, setScreen } = useAppStore();
 
   const profile = MOCK_PROFILES.find((p) => p.id === selectedProfileId) || MOCK_PROFILES[0];
-  const isShortlisted = shortlistedIds.includes(profile.id);
+  
+  // Construct clean username handle matching screenshot format
+  const username = `@${profile.name.toLowerCase().replace(/ /g, '_')}`;
+
+  const handleConnect = () => {
+    Alert.alert(
+      "Send Connection Interest",
+      `Would you like to send a matchmaking interest to ${profile.name}?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Send Now", 
+          onPress: () => {
+            Alert.alert("Success", `Your interest has been sent to ${profile.name} via Éternité Concierge! You will be notified immediately once they respond.`);
+          } 
+        }
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Cover Header */}
-        <View style={styles.coverBox}>
-          <Image source={{ uri: profile.coverPhoto }} style={styles.coverImg} />
-          <View style={styles.coverOverlay} />
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Custom Header (Back Arrow, Centered Username, Settings) */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => setScreen('discover')} style={styles.headerBtn}>
+            <ArrowLeft size={20} color={COLORS.white} strokeWidth={2} />
+          </TouchableOpacity>
+          <Text style={styles.headerUsername}>{username}</Text>
+          <TouchableOpacity style={styles.headerBtn}>
+            <MoreHorizontal size={20} color={COLORS.white} strokeWidth={2} />
+          </TouchableOpacity>
+        </View>
 
-          <View style={styles.topActions}>
-            <TouchableOpacity onPress={() => setScreen('discover')} style={styles.actionBtn}>
-              <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
-            </TouchableOpacity>
+        {/* Large Centered Square Avatar with Rounded Corners */}
+        <View style={styles.avatarWrapper}>
+          <Image source={{ uri: profile.photos[0] }} style={styles.avatarImg} />
+        </View>
 
-            <TouchableOpacity onPress={() => toggleShortlist(profile.id)} style={[styles.actionBtn, isShortlisted && styles.actionBtnLiked]}>
-              <Heart size={18} color={COLORS.white} fill={isShortlisted ? COLORS.white : 'none'} strokeWidth={2} />
-            </TouchableOpacity>
+        {/* Name and Job Subtitle */}
+        <View style={styles.detailsBlock}>
+          <View style={styles.nameRow}>
+            <Text style={styles.nameText}>{profile.name}</Text>
+            {profile.verified && (
+              <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2.5} style={{ marginLeft: 5 }} />
+            )}
+          </View>
+          <Text style={styles.subtitleText}>{profile.profession} at {profile.company}</Text>
+        </View>
+
+        {/* 3-Column Profile Stats: Age, Height, Zodiac */}
+        <View style={styles.statsContainer}>
+          <View style={styles.statsCol}>
+            <Text style={styles.statsValue}>{profile.age}</Text>
+            <Text style={styles.statsLabel}>Age</Text>
+          </View>
+          <View style={styles.statsDivider} />
+          <View style={styles.statsCol}>
+            <Text style={styles.statsValue}>{profile.height || "5'6\""}</Text>
+            <Text style={styles.statsLabel}>Height</Text>
+          </View>
+          <View style={styles.statsDivider} />
+          <View style={styles.statsCol}>
+            <Text style={styles.statsValue}>{profile.horoscope.zodiac}</Text>
+            <Text style={styles.statsLabel}>Zodiac</Text>
           </View>
         </View>
 
-        {/* Profile Card */}
-        <GlassCard style={styles.profileCard}>
-          <View style={styles.profileHeaderRow}>
-            <View style={{ flex: 1 }}>
-              <View style={styles.nameRow}>
-                <Text style={styles.nameText}>{profile.name}, {profile.age}</Text>
-                {profile.verified && <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2} />}
-              </View>
-              <Text style={styles.profText}>{profile.profession} at {profile.company}</Text>
-              <View style={styles.locRow}>
-                <MapPin size={12} color={COLORS.accentGold} strokeWidth={2} />
-                <Text style={styles.locText}>{profile.location} • {profile.height}</Text>
-              </View>
-            </View>
-            <CircularScore score={profile.aiMatchScore} size={72} />
+        {/* Primary Connect Button */}
+        <TouchableOpacity activeOpacity={0.85} onPress={handleConnect} style={styles.connectBtn}>
+          <Text style={styles.connectBtnText}>Connect Now</Text>
+        </TouchableOpacity>
+
+        {/* Masonry Photo Grid */}
+        <View style={styles.photoGrid}>
+          <View style={styles.gridColumn}>
+            <Image source={{ uri: profile.photos[0] }} style={[styles.gridPhoto, { height: 210 }]} />
+            <Image source={{ uri: profile.photos[2] }} style={[styles.gridPhoto, { height: 150 }]} />
           </View>
-
-          <Text style={styles.bioText}>"{profile.bio}"</Text>
-        </GlassCard>
-
-        {/* Astro Kundali */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Astro Kundali Compatibility</Text>
-          <GlassCard style={styles.gridBox}>
-            <View style={styles.gridItem}>
-              <Text style={styles.gridLabel}>GUNA SCORE</Text>
-              <Text style={styles.gridValGold}>{profile.horoscope.gunaScore}</Text>
-            </View>
-            <View style={styles.gridItem}>
-              <Text style={styles.gridLabel}>SUN ZODIAC</Text>
-              <Text style={styles.gridVal}>{profile.horoscope.zodiac}</Text>
-            </View>
-            <View style={styles.gridItem}>
-              <Text style={styles.gridLabel}>NAKSHATRA</Text>
-              <Text style={styles.gridVal}>{profile.horoscope.nakshatra}</Text>
-            </View>
-            <View style={styles.gridItem}>
-              <Text style={styles.gridLabel}>RASHI</Text>
-              <Text style={styles.gridVal}>{profile.horoscope.rashi}</Text>
-            </View>
-          </GlassCard>
-        </View>
-
-        {/* Career */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Career & Education</Text>
-          <GlassCard>
-            <View style={styles.infoRow}>
-              <Briefcase size={18} color={COLORS.accentGold} strokeWidth={1.8} />
-              <View>
-                <Text style={styles.infoTitle}>{profile.profession}</Text>
-                <Text style={styles.infoSub}>{profile.company}</Text>
-              </View>
-            </View>
-            <View style={[styles.infoRow, styles.borderTop]}>
-              <GraduationCap size={18} color={COLORS.accentGold} strokeWidth={1.8} />
-              <View>
-                <Text style={styles.infoTitle}>{profile.education}</Text>
-                <Text style={styles.infoSub}>Verified Alumni Credentials</Text>
-              </View>
-            </View>
-          </GlassCard>
+          <View style={styles.gridColumn}>
+            <Image source={{ uri: profile.photos[1] }} style={[styles.gridPhoto, { height: 150 }]} />
+            <Image source={{ uri: profile.photos[3] }} style={[styles.gridPhoto, { height: 210 }]} />
+          </View>
         </View>
       </ScrollView>
-
-      {/* Fixed Bottom Action Bar */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity activeOpacity={0.88} onPress={() => setScreen('chat')} style={styles.chatBtn}>
-          <MessageCircle size={16} color={COLORS.primary} strokeWidth={2} />
-          <Text style={styles.chatBtnText}>Chat Message</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity activeOpacity={0.8} onPress={() => setDatePlannerOpen(true)} style={styles.dateBtn}>
-          <Calendar size={16} color={COLORS.accentGold} strokeWidth={2} />
-          <Text style={styles.dateBtnText}>Book Date</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -119,179 +104,124 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   content: {
+    padding: SPACING.md,
     paddingBottom: 110,
   },
-  coverBox: {
-    height: 220,
-    position: 'relative',
-  },
-  coverImg: {
-    width: '100%',
-    height: '100%',
-  },
-  coverOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(7, 47, 43, 0.4)',
-  },
-  topActions: {
-    position: 'absolute',
-    top: SPACING.md,
-    left: SPACING.md,
-    right: SPACING.md,
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.md,
   },
-  actionBtn: {
+  headerBtn: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(7, 47, 43, 0.8)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
-  actionBtnLiked: {
-    backgroundColor: COLORS.redAccent,
+  headerUsername: {
+    ...TYPOGRAPHY.titleM,
+    fontSize: 15,
+    color: COLORS.white,
+    letterSpacing: 0.5,
   },
-  profileCard: {
-    marginHorizontal: SPACING.md,
-    marginTop: -40,
-  },
-  profileHeaderRow: {
-    flexDirection: 'row',
+  avatarWrapper: {
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'center',
+    marginVertical: SPACING.md,
+  },
+  avatarImg: {
+    width: 140,
+    height: 140,
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  detailsBlock: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.lg,
   },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    justifyContent: 'center',
   },
   nameText: {
     ...TYPOGRAPHY.titleL,
     fontSize: 22,
+    color: COLORS.white,
   },
-  profText: {
+  subtitleText: {
+    ...TYPOGRAPHY.caption,
     fontSize: 11,
-    fontWeight: 'bold',
-    color: COLORS.accentGold,
-    marginTop: 2,
+    marginTop: 4,
+    color: COLORS.mutedGray,
+    textAlign: 'center',
   },
-  locRow: {
+  statsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 4,
+    justifyContent: 'space-around',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: RADIUS.lg,
+    paddingVertical: 14,
+    marginBottom: SPACING.lg,
   },
-  locText: {
-    ...TYPOGRAPHY.caption,
-    fontSize: 10,
+  statsCol: {
+    alignItems: 'center',
+    flex: 1,
   },
-  bioText: {
-    ...TYPOGRAPHY.body,
-    fontSize: 11,
-    lineHeight: 16,
-    marginTop: SPACING.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    paddingTop: SPACING.sm,
+  statsDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
   },
-  section: {
-    paddingHorizontal: SPACING.md,
-    marginTop: SPACING.md,
-  },
-  sectionTitle: {
+  statsValue: {
     ...TYPOGRAPHY.titleM,
     fontSize: 16,
-    marginBottom: SPACING.sm,
-  },
-  gridBox: {
-    flexDirection: 'row',
-    justify: 'space-between',
-  },
-  gridItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  gridLabel: {
-    ...TYPOGRAPHY.subtitle,
-    fontSize: 8,
-  },
-  gridValGold: {
-    fontFamily: 'serif',
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: COLORS.accentGold,
-    marginTop: 4,
-  },
-  gridVal: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: COLORS.white,
-    marginTop: 4,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.md,
-    paddingVertical: 4,
-  },
-  borderTop: {
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    paddingTop: 10,
-    marginTop: 6,
-  },
-  infoTitle: {
-    fontSize: 12,
-    fontWeight: 'bold',
     color: COLORS.white,
   },
-  infoSub: {
+  statsLabel: {
     fontSize: 10,
     color: COLORS.mutedGray,
+    marginTop: 3,
+    fontWeight: '600',
   },
-  bottomBar: {
-    position: 'absolute',
-    bottom: SPACING.md,
-    left: SPACING.md,
-    right: SPACING.md,
-    flexDirection: 'row',
-    gap: SPACING.md,
-  },
-  chatBtn: {
-    flex: 1,
-    height: 52,
+  connectBtn: {
+    height: 50,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.accentGold,
-    flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
-    gap: 6,
+    justifyContent: 'center',
+    marginBottom: SPACING.xl,
     ...SHADOWS.goldGlow,
   },
-  chatBtnText: {
+  connectBtnText: {
     fontSize: 13,
     fontWeight: 'bold',
     color: COLORS.primary,
+    letterSpacing: 0.5,
   },
-  dateBtn: {
-    height: 52,
-    paddingHorizontal: SPACING.md,
-    borderRadius: RADIUS.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+  photoGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justify: 'center',
-    gap: 6,
+    gap: SPACING.md,
   },
-  dateBtnText: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: COLORS.white,
+  gridColumn: {
+    flex: 1,
+    gap: SPACING.md,
+  },
+  gridPhoto: {
+    width: '100%',
+    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.secondary,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
 });

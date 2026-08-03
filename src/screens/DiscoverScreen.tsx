@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { Compass, SlidersHorizontal } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
+import { Compass, SlidersHorizontal, Settings, MessageCircle, Plus } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { SwipeCard } from '../components/SwipeCard';
@@ -33,27 +33,54 @@ export const DiscoverScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header */}
+      {/* Header (Screenshot-aligned: Title + Actions) */}
       <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <Compass size={22} color={COLORS.accentGold} strokeWidth={2} />
-          <Text style={styles.titleText}>Discover Matches</Text>
-        </View>
+        <Text style={styles.headerTitle}>Éternité</Text>
 
-        <View style={styles.modePill}>
-          <TouchableOpacity
-            onPress={() => setDiscoverMode('swipe')}
-            style={[styles.pillBtn, discoverMode === 'swipe' && styles.pillBtnActive]}
-          >
-            <Text style={[styles.pillText, discoverMode === 'swipe' && styles.pillTextActive]}>Swipe</Text>
+        <View style={styles.headerActions}>
+          <View style={styles.modePill}>
+            <TouchableOpacity
+              onPress={() => setDiscoverMode('swipe')}
+              style={[styles.pillBtn, discoverMode === 'swipe' && styles.pillBtnActive]}
+            >
+              <Text style={[styles.pillText, discoverMode === 'swipe' && styles.pillTextActive]}>Feed</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setDiscoverMode('grid')}
+              style={[styles.pillBtn, discoverMode === 'grid' && styles.pillBtnActive]}
+            >
+              <Text style={[styles.pillText, discoverMode === 'grid' && styles.pillTextActive]}>Grid</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity onPress={() => setScreen('chat')} style={styles.actionIconBtn}>
+            <MessageCircle size={18} color={COLORS.white} strokeWidth={2} />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setDiscoverMode('grid')}
-            style={[styles.pillBtn, discoverMode === 'grid' && styles.pillBtnActive]}
-          >
-            <Text style={[styles.pillText, discoverMode === 'grid' && styles.pillTextActive]}>Grid</Text>
+
+          <TouchableOpacity onPress={() => setScreen('settings')} style={styles.actionIconBtn}>
+            <Settings size={18} color={COLORS.white} strokeWidth={2} />
           </TouchableOpacity>
         </View>
+      </View>
+
+      {/* Stories Reel */}
+      <View style={styles.storiesContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.storiesContent}>
+          {/* Other stories */}
+          {MOCK_PROFILES.map((p) => (
+            <TouchableOpacity
+              key={`story-${p.id}`}
+              activeOpacity={0.82}
+              onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
+              style={styles.storyWrapper}
+            >
+              <View style={styles.storyCircleGold}>
+                <Image source={{ uri: p.photos[0] }} style={styles.storyAvatar} />
+              </View>
+              <Text style={styles.storyName} numberOfLines={1}>{p.name.split(' ')[0].toLowerCase()}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
 
       {/* Filter Chips */}
@@ -136,17 +163,84 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'space-between',
     marginBottom: SPACING.md,
   },
-  titleRow: {
+  headerTitle: {
+    fontFamily: 'serif',
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: COLORS.white,
+    letterSpacing: 0.5,
+  },
+  headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
   },
-  titleText: {
-    ...TYPOGRAPHY.titleL,
-    fontSize: 22,
+  actionIconBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.secondary,
+    borderWidth: 1,
+    borderColor: COLORS.darkGlassBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  storiesContainer: {
+    marginBottom: SPACING.md,
+    marginTop: SPACING.xs,
+  },
+  storiesContent: {
+    gap: SPACING.md,
+    paddingRight: SPACING.md,
+  },
+  storyWrapper: {
+    alignItems: 'center',
+    width: 60,
+  },
+  storyCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 1.5,
+    borderColor: COLORS.mutedGray,
+    padding: 2,
+    position: 'relative',
+  },
+  storyCircleGold: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 1.8,
+    borderColor: COLORS.accentGold,
+    padding: 2.2,
+  },
+  storyAvatar: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 22,
+  },
+  storyPlusBadge: {
+    position: 'absolute',
+    bottom: -1,
+    right: -1,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: COLORS.accentGold,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+  },
+  storyName: {
+    fontSize: 9,
+    color: COLORS.lightGray,
+    marginTop: 4,
+    textAlign: 'center',
+    fontWeight: '500',
   },
   modePill: {
     flexDirection: 'row',
