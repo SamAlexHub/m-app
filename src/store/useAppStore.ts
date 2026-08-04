@@ -16,7 +16,8 @@ export type ScreenType =
   | 'settings'
   | 'complete-profile'
   | 'terms-conditions'
-  | 'our-speciality';
+  | 'our-speciality'
+  | 'system-guarantees';
 
 export type DiscoverViewMode = 'swipe' | 'grid' | 'map';
 

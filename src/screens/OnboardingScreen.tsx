@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { ArrowLeft, ChevronRight, Heart, ShieldCheck, Sparkles } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  ChevronRight,
+  Heart,
+  ShieldCheck,
+  Sparkles,
+  PhoneOff,
+  Bell,
+  Cpu,
+  Undo,
+  CreditCard,
+  Workflow,
+  Gift
+} from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
@@ -34,6 +47,53 @@ const slides = [
     image: '/assets/3d/onboarding_3_security.png',
     badge: 'Privacy verified',
     icon: ShieldCheck,
+  },
+  {
+    id: 4,
+    eyebrow: 'ETERNITE ADVANTAGES',
+    title: 'Take a Look',
+    description: '',
+    image: '/assets/3d/onboarding_4_features.png',
+    badge: 'System Guarantees',
+    icon: ShieldCheck,
+  },
+];
+
+const featureItems = [
+  {
+    icon: PhoneOff,
+    title: 'No Unwanted Calls',
+    description: 'We respect your privacy and never make unnecessary phone calls.',
+  },
+  {
+    icon: Bell,
+    title: 'Weekly Match Reminders',
+    description: 'Receive a gentle reminder every week with your latest match updates.',
+  },
+  {
+    icon: Cpu,
+    title: 'Daily AI-Powered Matches',
+    description: 'Discover a new AI-recommended profile every day based on your preferences.',
+  },
+  {
+    icon: Undo,
+    title: 'Cancel Anytime',
+    description: 'You can pause or cancel your membership whenever you choose—no commitments.',
+  },
+  {
+    icon: CreditCard,
+    title: 'Affordable Monthly Plans',
+    description: 'Choose from flexible monthly subscription plans designed to fit your budget.',
+  },
+  {
+    icon: Workflow,
+    title: '100% System-Driven Process',
+    description: 'Our matchmaking process is fully automated, ensuring a fair, transparent, and unbiased experience.',
+  },
+  {
+    icon: Gift,
+    title: 'Earn Rewards by Referring Friends',
+    description: 'Invite your friends and earn ₹200 for every successful referral.',
   },
 ];
 
@@ -91,7 +151,33 @@ export const OnboardingScreen: React.FC = () => {
 
           <Text style={styles.eyebrowText}>{slide.eyebrow}</Text>
           <Text style={styles.titleText}>{slide.title}</Text>
-          <Text style={styles.descText}>{slide.description}</Text>
+          
+          {currentSlide === 3 ? (
+            <View style={styles.singleColumnCard}>
+              {featureItems.map((item, idx) => {
+                const ItemIcon = item.icon;
+                return (
+                  <View
+                    key={idx}
+                    style={[
+                      styles.featureRow,
+                      idx === featureItems.length - 1 && { borderBottomWidth: 0 }
+                    ]}
+                  >
+                    <View style={styles.featureIconContainer}>
+                      <ItemIcon size={12} color={COLORS.accentGold} strokeWidth={2.2} />
+                    </View>
+                    <Text style={styles.featureTextFlow}>
+                      <Text style={styles.featureTitle}>{item.title} — </Text>
+                      <Text style={styles.featureDesc}>{item.description}</Text>
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          ) : (
+            <Text style={styles.descText}>{slide.description}</Text>
+          )}
         </View>
       </View>
 
@@ -188,6 +274,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingBottom: SPACING.sm,
   },
+
   contentPanel: {
     width: '100%',
     alignItems: 'center',
@@ -236,6 +323,49 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: COLORS.lightGray,
     marginTop: SPACING.sm,
+  },
+  singleColumnCard: {
+    width: '100%',
+    borderRadius: RADIUS.md,
+    backgroundColor: 'rgba(14, 69, 63, 0.65)',
+    borderWidth: 1,
+    borderColor: 'rgba(216, 168, 75, 0.25)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    marginTop: 8,
+  },
+  featureRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    width: '100%',
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  featureIconContainer: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(216, 168, 75, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(216, 168, 75, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  featureTextFlow: {
+    flex: 1,
+    lineHeight: 19.5,
+  },
+  featureTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.accentGoldLight,
+  },
+  featureDesc: {
+    fontSize: 13,
+    color: COLORS.lightGray,
   },
   dotsRow: {
     height: 22,

@@ -16,6 +16,7 @@ import { SettingsScreen } from './screens/SettingsScreen';
 import { CompleteProfileScreen } from './screens/CompleteProfileScreen';
 import { OurSpecialityScreen } from './screens/OurSpecialityScreen';
 import { TermsConditionsScreen } from './screens/TermsConditionsScreen';
+import { SystemGuaranteesScreen } from './screens/SystemGuaranteesScreen';
 
 import { FloatingBottomBar } from './components/FloatingBottomBar';
 import { DatePlannerModal } from './components/DatePlannerModal';
@@ -60,6 +61,8 @@ export const App: React.FC = () => {
         return <OurSpecialityScreen />;
       case 'terms-conditions':
         return <TermsConditionsScreen />;
+      case 'system-guarantees':
+        return <SystemGuaranteesScreen />;
       default:
         return <HomeScreen />;
     }

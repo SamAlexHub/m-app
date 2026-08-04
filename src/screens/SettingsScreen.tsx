@@ -91,6 +91,17 @@ export const SettingsScreen: React.FC = () => {
             </View>
             <ChevronRight size={16} color={COLORS.mutedGray} strokeWidth={1.8} />
           </TouchableOpacity>
+
+          <View style={{ height: 1, backgroundColor: 'rgba(255, 255, 255, 0.08)', marginVertical: 12 }} />
+
+          <TouchableOpacity onPress={() => setScreen('system-guarantees')} style={styles.row}>
+            <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={1.8} />
+            <View style={styles.textCol}>
+              <Text style={styles.rowTitle}>System Guarantees</Text>
+              <Text style={styles.rowSub}>Our 7 promises & match guarantees</Text>
+            </View>
+            <ChevronRight size={16} color={COLORS.mutedGray} strokeWidth={1.8} />
+          </TouchableOpacity>
         </GlassCard>
       </View>
 

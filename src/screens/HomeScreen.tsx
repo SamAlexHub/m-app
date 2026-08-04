@@ -32,7 +32,7 @@ export const HomeScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -83,7 +83,8 @@ export const HomeScreen: React.FC = () => {
         </View>
       </View>
 
-      {/* Hero Card */}
+      <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent}>
+        {/* Hero Card */}
       <View style={styles.heroCard}>
         <Image
           source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80' }}
@@ -258,6 +259,7 @@ export const HomeScreen: React.FC = () => {
         </GlassCard>
       </View>
     </ScrollView>
+  </View>
   );
 };
 
@@ -266,15 +268,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary,
   },
-  content: {
-    padding: SPACING.md,
+  scrollFeed: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: SPACING.md,
     paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    zIndex: 10,
   },
   headerLeft: {
     flex: 1,
