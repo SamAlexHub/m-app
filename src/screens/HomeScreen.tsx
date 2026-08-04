@@ -212,25 +212,6 @@ export const HomeScreen: React.FC = () => {
         </ScrollView>
       </View>
 
-      {/* VIP Membership Banner */}
-      <View style={styles.section}>
-        <GlassCard glow onClick={() => setScreen('membership')}>
-          <View style={styles.vipRow}>
-            <View style={styles.vipTextCol}>
-              <View style={styles.vipBadge}>
-                <Crown size={12} color={COLORS.accentGold} strokeWidth={2} />
-                <Text style={styles.vipBadgeText}>DIAMOND VIP MEMBERSHIP</Text>
-              </View>
-              <Text style={styles.vipTitle}>Unlock Private Matchmaker Concierge</Text>
-              <Text style={styles.vipSub}>Senior European wedding consultants & incognito mode.</Text>
-            </View>
-            <View style={styles.vipArrowBtn}>
-              <ArrowRight size={20} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
-            </View>
-          </View>
-        </GlassCard>
-      </View>
-
       {/* Success Stories */}
       <View style={[styles.section, { marginBottom: SPACING.xl }]}>
         <View style={styles.sectionHeader}>
