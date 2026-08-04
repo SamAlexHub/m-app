@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.darkGlassBorder,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'space-between',
   },
   userInfo: {
     flexDirection: 'row',
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     borderRadius: 17,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   profileRow: {
     flexDirection: 'row',
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.darkGlassBorder,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   chatArea: {
     flex: 1,
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   encryptBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 5,
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: COLORS.accentGold,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   voiceText: {
     fontSize: 11,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   },
   giftsTray: {
     flexDirection: 'row',
-    justify: 'space-around',
+    justifyContent: 'space-around',
     padding: SPACING.sm,
     backgroundColor: COLORS.secondary,
     borderTopWidth: 1,
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   textInput: {
     flex: 1,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     backgroundColor: COLORS.accentGold,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     ...SHADOWS.goldGlow,
   },
 });

@@ -63,7 +63,7 @@ export const MembershipScreen: React.FC = () => {
         <View style={{ width: 36 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Billing Toggle */}
         <View style={styles.toggleContainer}>
           <TouchableOpacity

@@ -90,6 +90,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheetContainer: {
+    width: '100%',
+    maxWidth: 480,
+    alignSelf: 'center',
     backgroundColor: COLORS.secondary,
     borderTopLeftRadius: RADIUS.xl, // 32px
     borderTopRightRadius: RADIUS.xl,
