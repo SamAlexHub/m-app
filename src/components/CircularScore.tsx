@@ -48,7 +48,7 @@ export const CircularScore: React.FC<CircularScoreProps> = ({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   circle: {
     backgroundColor: COLORS.secondary,

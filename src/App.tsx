@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   mobileFrame: {
     width: '100%',

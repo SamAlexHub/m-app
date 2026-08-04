@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../theme/tokens';
 
 interface GlassCardProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   glow?: boolean;
   borderGold?: boolean;
   onClick?: () => void;
@@ -32,7 +32,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     ...(glow ? SHADOWS.goldGlow : SHADOWS.soft),
     position: 'relative',
     overflow: 'hidden',
-    ...style,
+    ...StyleSheet.flatten(style),
   };
 
   if (onClick) {

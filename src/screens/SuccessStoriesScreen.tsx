@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
-import { ArrowLeft, Heart, Sparkles, MapPin } from 'lucide-react-native';
+import { ArrowLeft, Heart, MapPin } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { SUCCESS_STORIES } from '../data/successStories';
 import { GlassCard } from '../components/GlassCard';
@@ -10,7 +10,8 @@ export const SuccessStoriesScreen: React.FC = () => {
   const { setScreen } = useAppStore();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
           <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
@@ -22,7 +23,8 @@ export const SuccessStoriesScreen: React.FC = () => {
         <View style={{ width: 36 }} />
       </View>
 
-      <Text style={styles.title}>Couples United by Éternité</Text>
+      <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.title}>Couples United by Éternité</Text>
       <Text style={styles.sub}>Real Love Stories • Real European Weddings</Text>
 
       <View style={styles.list}>
@@ -31,7 +33,6 @@ export const SuccessStoriesScreen: React.FC = () => {
             <Image source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80' }} style={styles.coverImage} />
 
             <View style={styles.matchBadge}>
-              <Sparkles size={10} color={COLORS.primary} strokeWidth={2} />
               <Text style={styles.matchBadgeText}>{story.matchScore}% Match</Text>
             </View>
 
@@ -52,6 +53,7 @@ export const SuccessStoriesScreen: React.FC = () => {
         ))}
       </View>
     </ScrollView>
+  </View>
   );
 };
 
@@ -60,16 +62,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary,
   },
-  content: {
-    padding: SPACING.md,
+  scrollFeed: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: SPACING.md,
     paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
-    marginBottom: SPACING.md,
-    paddingTop: SPACING.xs,
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    zIndex: 10,
   },
   backBtn: {
     width: 36,
@@ -79,7 +87,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   badge: {
     flexDirection: 'row',
@@ -140,7 +148,7 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     flexDirection: 'row',
-    justify: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'baseline',
   },
   coupleNames: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
-import { Sparkles, Bell, ShieldCheck, MapPin, Crown, Heart, ArrowRight, Settings } from 'lucide-react-native';
+import { Bell, ShieldCheck, MapPin, Crown, Heart, ArrowRight, Settings } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
@@ -89,7 +89,6 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.heroOverlay} />
         <View style={styles.heroContent}>
           <View style={styles.heroBadge}>
-            <Sparkles size={10} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.heroBadgeText}>EXCLUSIVE MATCHMAKING</Text>
           </View>
           <Text style={styles.heroTitle}>Where Modern Romance Meets Timeless Values</Text>
@@ -142,7 +141,7 @@ export const HomeScreen: React.FC = () => {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <View style={styles.sectionTitleRow}>
-            <Sparkles size={18} color={COLORS.accentGold} strokeWidth={2} />
+            <Heart size={18} color={COLORS.accentGold} strokeWidth={2} />
             <Text style={styles.sectionTitle}>Today’s AI Soulmate</Text>
           </View>
           <Text style={styles.refreshText}>Refreshes at midnight</Text>
@@ -156,7 +155,6 @@ export const HomeScreen: React.FC = () => {
                 <Text style={styles.matchName}>{topMatch.name}, {topMatch.age}</Text>
                 <Text style={styles.matchSub} numberOfLines={1}>{topMatch.profession} • {topMatch.location}</Text>
                 <View style={styles.sharedIntentBadge}>
-                  <Sparkles size={10} color={COLORS.accentGold} strokeWidth={2} />
                   <Text style={styles.sharedIntentText}>AI MATCH PRINCIPLE</Text>
                 </View>
               </View>
@@ -602,7 +600,7 @@ const styles = StyleSheet.create({
   vipRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'space-between',
   },
   vipTextCol: {
     flex: 1,

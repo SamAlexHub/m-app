@@ -5,7 +5,6 @@ import {
   ChevronRight,
   Heart,
   ShieldCheck,
-  Sparkles,
   PhoneOff,
   Bell,
   Cpu,
@@ -36,7 +35,7 @@ const slides = [
       'Blend family preferences, personality signals, and astro compatibility into one elegant shortlist.',
     image: '/assets/3d/onboarding_2_ai.png',
     badge: '98% refined matching',
-    icon: Sparkles,
+    icon: Cpu,
   },
   {
     id: 3,
@@ -133,7 +132,7 @@ export const OnboardingScreen: React.FC = () => {
         )}
 
         <View style={styles.brandPill}>
-          <Sparkles size={12} color={COLORS.accentGold} strokeWidth={2} />
+          <Heart size={12} color={COLORS.accentGold} fill={COLORS.accentGold} strokeWidth={2} />
           <Text style={styles.brandPillText}>ETERNITE</Text>
         </View>
 

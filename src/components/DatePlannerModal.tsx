@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, Image, ScrollView } from 'react-native';
-import { Sparkles, X, CheckCircle2 } from 'lucide-react-native';
+import { Crown, X, CheckCircle2 } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
@@ -31,7 +31,7 @@ export const DatePlannerModal: React.FC = () => {
         <View style={styles.sheetContainer}>
           <View style={styles.header}>
             <View style={styles.titleRow}>
-              <Sparkles size={18} color={COLORS.accentGold} strokeWidth={2} />
+              <Crown size={18} color={COLORS.accentGold} strokeWidth={2} />
               <Text style={styles.titleText}>VIP Luxury Date Planner</Text>
             </View>
             <TouchableOpacity onPress={() => setDatePlannerOpen(false)} style={styles.closeBtn}>
@@ -73,7 +73,6 @@ export const DatePlannerModal: React.FC = () => {
               ))}
 
               <TouchableOpacity activeOpacity={0.88} onPress={handlePropose} style={styles.submitButton}>
-                <Sparkles size={16} color={COLORS.primary} strokeWidth={2} />
                 <Text style={styles.submitText}>Send VIP Invitation</Text>
               </TouchableOpacity>
             </ScrollView>
@@ -88,7 +87,7 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justify: 'flex-end',
+    justifyContent: 'flex-end',
   },
   sheetContainer: {
     backgroundColor: COLORS.secondary,
@@ -102,7 +101,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'space-between',
     paddingBottom: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
@@ -121,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   scrollContent: {
     marginTop: SPACING.md,
@@ -172,7 +171,7 @@ const styles = StyleSheet.create({
   submitButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: SPACING.sm,
     height: 52,
     borderRadius: RADIUS.full,

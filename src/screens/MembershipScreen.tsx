@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { Crown, Sparkles, Check, ArrowLeft } from 'lucide-react-native';
+import { Crown, Check, ArrowLeft } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const MembershipScreen: React.FC = () => {
-  const { setUserTier, setScreen } = useAppStore();
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
+  const { userTier, setUserTier, setScreen } = useAppStore();
   const [selectedPlan, setSelectedPlan] = useState<'Gold' | 'Platinum' | 'Diamond'>('Diamond');
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
 
   const plans = [
     {
-      id: 'Gold',
       name: 'Gold Privilege',
+      tier: 'Gold' as const,
       priceMonthly: '$149',
       priceAnnual: '$89',
       tag: 'ESSENTIAL LUXURY',
@@ -21,11 +21,11 @@ export const MembershipScreen: React.FC = () => {
         'Direct Messaging & Audio Notes',
         'Verified Profile Badge',
         'Basic Astro Kundali Sync',
-      ]
+      ],
     },
     {
-      id: 'Platinum',
       name: 'Platinum Elite',
+      tier: 'Platinum' as const,
       priceMonthly: '$299',
       priceAnnual: '$179',
       tag: 'MOST POPULAR',
@@ -33,11 +33,11 @@ export const MembershipScreen: React.FC = () => {
         'Everything in Gold',
         'Unlimited HD Video Calling',
         'Incognito Profile Shield',
-      ]
+      ],
     },
     {
-      id: 'Diamond',
       name: 'Diamond Concierge',
+      tier: 'Diamond' as const,
       priceMonthly: '$599',
       priceAnnual: '$349',
       tag: 'ROYAL VIP SERVICE',
@@ -45,25 +45,26 @@ export const MembershipScreen: React.FC = () => {
         'Everything in Platinum',
         'Dedicated Senior Matchmaker',
         'Private Date Planner Concierge',
-      ]
-    }
+      ],
+    },
   ];
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
-            <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
-          </TouchableOpacity>
-          <View style={styles.badge}>
-            <Crown size={12} color={COLORS.accentGold} strokeWidth={2} />
-            <Text style={styles.badgeText}>VIP MEMBERSHIP</Text>
-          </View>
+      {/* Sticky Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => setScreen('profile')} style={styles.backBtn}>
+          <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
+        </TouchableOpacity>
+        <View style={styles.badge}>
+          <Crown size={12} color={COLORS.accentGold} strokeWidth={2} />
+          <Text style={styles.badgeText}>VIP MEMBERSHIP</Text>
         </View>
+        <View style={{ width: 36 }} />
+      </View>
 
-        {/* Toggle */}
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Billing Toggle */}
         <View style={styles.toggleContainer}>
           <TouchableOpacity
             onPress={() => setBillingCycle('monthly')}
@@ -71,7 +72,6 @@ export const MembershipScreen: React.FC = () => {
           >
             <Text style={[styles.toggleText, billingCycle === 'monthly' && styles.toggleTextActive]}>Monthly</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             onPress={() => setBillingCycle('annual')}
             style={[styles.toggleBtn, billingCycle === 'annual' && styles.toggleBtnActive]}
@@ -80,39 +80,42 @@ export const MembershipScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Cards */}
-        {plans.map((plan) => {
-          const isSelected = selectedPlan === plan.id;
-
+        {/* Plan Cards */}
+        {plans.map((p) => {
+          const isSelected = selectedPlan === p.tier;
           return (
-            <GlassCard
-              key={plan.id}
-              glow={isSelected}
-              onClick={() => setSelectedPlan(plan.id as any)}
-              style={styles.planCard}
+            <TouchableOpacity
+              key={p.name}
+              activeOpacity={0.88}
+              onPress={() => setSelectedPlan(p.tier)}
             >
-              <View style={styles.planHeader}>
-                <View>
-                  <Text style={styles.planTag}>{plan.tag}</Text>
-                  <Text style={styles.planName}>{plan.name}</Text>
-                </View>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={styles.planPrice}>
-                    {billingCycle === 'annual' ? plan.priceAnnual : plan.priceMonthly}
-                  </Text>
-                  <Text style={styles.planPer}>/ month</Text>
-                </View>
-              </View>
-
-              <View style={styles.featureList}>
-                {plan.features.map((f, i) => (
-                  <View key={i} style={styles.featureRow}>
-                    <Check size={14} color={COLORS.accentGold} strokeWidth={2} />
-                    <Text style={styles.featureText}>{f}</Text>
+              <GlassCard
+                glow={isSelected}
+                style={[styles.planCard, isSelected && styles.planCardSelected]}
+              >
+                <View style={styles.planHeader}>
+                  <View>
+                    <Text style={styles.planTag}>{p.tag}</Text>
+                    <Text style={styles.planName}>{p.name}</Text>
                   </View>
-                ))}
-              </View>
-            </GlassCard>
+                  <View style={{ alignItems: 'flex-end' }}>
+                    <Text style={styles.planPrice}>
+                      {billingCycle === 'annual' ? p.priceAnnual : p.priceMonthly}
+                    </Text>
+                    <Text style={styles.planPer}>/ month</Text>
+                  </View>
+                </View>
+
+                <View style={styles.featureList}>
+                  {p.features.map((f, idx) => (
+                    <View key={idx} style={styles.featureRow}>
+                      <Check size={12} color={COLORS.accentGold} strokeWidth={3} />
+                      <Text style={styles.featureText}>{f}</Text>
+                    </View>
+                  ))}
+                </View>
+              </GlassCard>
+            </TouchableOpacity>
           );
         })}
       </ScrollView>
@@ -127,7 +130,6 @@ export const MembershipScreen: React.FC = () => {
           }}
           style={styles.subBtn}
         >
-          <Sparkles size={16} color={COLORS.primary} strokeWidth={2} />
           <Text style={styles.subBtnText}>Subscribe to {selectedPlan} Membership</Text>
         </TouchableOpacity>
       </View>
@@ -147,10 +149,12 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    gap: SPACING.sm,
-    marginBottom: SPACING.md,
-    paddingTop: SPACING.xs,
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    zIndex: 10,
   },
   backBtn: {
     width: 36,
@@ -208,9 +212,13 @@ const styles = StyleSheet.create({
   planCard: {
     marginBottom: SPACING.md,
   },
+  planCardSelected: {
+    borderColor: COLORS.accentGold,
+    borderWidth: 1.5,
+  },
   planHeader: {
     flexDirection: 'row',
-    justify: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: SPACING.md,
   },
@@ -259,7 +267,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: SPACING.sm,
     ...SHADOWS.goldGlow,
   },

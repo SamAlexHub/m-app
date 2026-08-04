@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.primary,
-    justify: 'space-between',
+    justifyContent: 'space-between',
     padding: SPACING.lg,
   },
   bgImage: {
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   topRow: {
     paddingTop: SPACING.xl,
     flexDirection: 'row',
-    justify: 'center',
+    justifyContent: 'center',
   },
   encryptBadge: {
     flexDirection: 'row',
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   controlRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: SPACING.lg,
     paddingBottom: SPACING.xl,
   },
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   controlBtnActive: {
     backgroundColor: 'rgba(239, 68, 68, 0.8)',
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     backgroundColor: COLORS.redAccent,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     ...SHADOWS.soft,
   },
 });

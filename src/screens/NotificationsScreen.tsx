@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
-import { ArrowLeft, Bell, Sparkles } from 'lucide-react-native';
+import { ArrowLeft, Bell } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
@@ -42,7 +42,7 @@ export const NotificationsScreen: React.FC = () => {
                 <Image source={{ uri: n.avatar }} style={styles.avatar} />
               ) : (
                 <View style={styles.iconBox}>
-                  <Sparkles size={16} color={COLORS.primary} strokeWidth={2} />
+                  <Bell size={16} color={COLORS.primary} strokeWidth={2} />
                 </View>
               )}
 
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   badge: {
     flexDirection: 'row',
@@ -147,14 +147,14 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     backgroundColor: COLORS.accentGold,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   textCol: {
     flex: 1,
   },
   cardHeader: {
     flexDirection: 'row',
-    justify: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'baseline',
   },
   cardTitle: {

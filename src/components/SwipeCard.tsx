@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Heart, Sparkles, ShieldCheck, MessageCircle, Send, Bookmark } from 'lucide-react-native';
+import { Heart, ShieldCheck, MessageCircle, Send, Bookmark } from 'lucide-react-native';
 import { Profile } from '../data/profiles';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
@@ -30,7 +30,6 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         
         {/* Glassmorphic Overlay pill bottom-left */}
         <View style={styles.imageOverlayPill}>
-          <Sparkles size={11} color={COLORS.accentGold} strokeWidth={2.5} />
           <Text style={styles.imageOverlayText}>{profile.aiMatchScore}% Match</Text>
         </View>
 

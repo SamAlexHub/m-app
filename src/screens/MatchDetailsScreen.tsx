@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
+    justifyContent: 'space-between',
     marginBottom: SPACING.md,
     paddingTop: SPACING.xs,
   },
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   reportBadge: {
     flexDirection: 'row',
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   matrixRow: {},
   matrixLabelRow: {
     flexDirection: 'row',
-    justify: 'space-between',
+    justifyContent: 'space-between',
     marginBottom: 4,
   },
   matrixLabel: {
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accentGold,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
     ...SHADOWS.goldGlow,
   },
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.2)',
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
   },
   videoBtnText: {

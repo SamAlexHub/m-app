@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Heart, Sparkles, ChevronRight } from 'lucide-react-native';
+import { Heart, ChevronRight } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
@@ -18,7 +18,6 @@ export const SplashScreen: React.FC = () => {
 
       <View style={styles.centerContent}>
         <View style={styles.badge}>
-          <Sparkles size={12} color={COLORS.accentGold} strokeWidth={2} />
           <Text style={styles.badgeText}>THE APPLE OF LUXURY MATRIMONY</Text>
         </View>
 

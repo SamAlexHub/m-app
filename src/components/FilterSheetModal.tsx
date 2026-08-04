@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView } from 'react-native';
-import { SlidersHorizontal, X, Sparkles } from 'lucide-react-native';
+import { SlidersHorizontal, X } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
@@ -63,7 +63,6 @@ export const FilterSheetModal: React.FC = () => {
 
           <View style={styles.footer}>
             <TouchableOpacity activeOpacity={0.88} onPress={() => setFilterModalOpen(false)} style={styles.applyBtn}>
-              <Sparkles size={16} color={COLORS.primary} strokeWidth={2} />
               <Text style={styles.applyText}>Apply Filters & View Matches</Text>
             </TouchableOpacity>
           </View>
