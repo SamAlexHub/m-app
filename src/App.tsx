@@ -27,7 +27,7 @@ import { COLORS } from './theme/tokens';
 export const App: React.FC = () => {
   const { currentScreen } = useAppStore();
 
-  const showTabBar = ['home', 'discover', 'match-details', 'chat', 'profile'].includes(currentScreen);
+  const showTabBar = ['home', 'discover', 'settings', 'chat', 'profile'].includes(currentScreen);
 
   const renderScreen = () => {
     switch (currentScreen) {

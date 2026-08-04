@@ -9,7 +9,7 @@ export const SettingsScreen: React.FC = () => {
   const { setScreen, incognitoMode, toggleIncognito, userTier } = useAppStore();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
           <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
@@ -20,7 +20,8 @@ export const SettingsScreen: React.FC = () => {
         </View>
       </View>
 
-      <Text style={styles.title}>App Settings</Text>
+      <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.title}>App Settings</Text>
       <Text style={styles.sub}>Tier Status: {userTier} VIP Member</Text>
 
       <View style={styles.section}>
@@ -110,6 +111,7 @@ export const SettingsScreen: React.FC = () => {
         <Text style={styles.signOutText}>Sign Out of Éternité</Text>
       </TouchableOpacity>
     </ScrollView>
+  </View>
   );
 };
 
@@ -118,8 +120,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary,
   },
-  content: {
-    padding: SPACING.md,
+  scrollFeed: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: SPACING.md,
     paddingBottom: 90,
   },
   header: {
@@ -127,8 +132,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     gap: SPACING.sm,
-    marginBottom: SPACING.md,
-    paddingTop: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    zIndex: 10,
   },
   backBtn: {
     width: 36,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { Home, Search, Plus, Heart } from 'lucide-react-native';
+import { Home, Search, Plus, Settings } from 'lucide-react-native';
 import { useAppStore, ScreenType } from '../store/useAppStore';
 import { COLORS, RADIUS } from '../theme/tokens';
 
@@ -11,7 +11,7 @@ export const FloatingBottomBar: React.FC = () => {
     { id: 'home', icon: Home },
     { id: 'discover', icon: Search },
     { id: 'membership', icon: Plus, isAdd: true },
-    { id: 'match-details', icon: Heart },
+    { id: 'settings', icon: Settings },
     { id: 'profile', isProfile: true },
   ];
 

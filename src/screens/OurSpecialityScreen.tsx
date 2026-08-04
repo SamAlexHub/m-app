@@ -33,9 +33,8 @@ export const OurSpecialityScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
+      {/* Header */}
+      <View style={styles.header}>
           <TouchableOpacity onPress={() => setScreen('settings')} style={styles.backBtn}>
             <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
           </TouchableOpacity>
@@ -43,7 +42,8 @@ export const OurSpecialityScreen: React.FC = () => {
           <View style={{ width: 36 }} />
         </View>
 
-        {/* Hero Section */}
+        <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* Hero Section */}
         <View style={styles.heroSection}>
           <Crown size={32} color={COLORS.accentGold} strokeWidth={1.5} style={styles.heroIcon} />
           <Text style={styles.heroTitle}>The Éternité Standard</Text>
@@ -79,16 +79,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary,
   },
-  content: {
-    padding: SPACING.md,
+  scrollFeed: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: SPACING.md,
     paddingBottom: 40,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: SPACING.lg,
-    paddingTop: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    zIndex: 10,
   },
   backBtn: {
     width: 36,

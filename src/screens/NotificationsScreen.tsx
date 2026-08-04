@@ -9,7 +9,7 @@ export const NotificationsScreen: React.FC = () => {
   const { notifications, markNotificationAsRead, setScreen, setSelectedProfileId } = useAppStore();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
           <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
@@ -21,7 +21,8 @@ export const NotificationsScreen: React.FC = () => {
         <View style={{ width: 36 }} />
       </View>
 
-      <Text style={styles.title}>Notifications & Alerts</Text>
+      <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.title}>Notifications & Alerts</Text>
       <Text style={styles.sub}>Your Private Match Updates</Text>
 
       <View style={styles.list}>
@@ -59,6 +60,7 @@ export const NotificationsScreen: React.FC = () => {
         ))}
       </View>
     </ScrollView>
+  </View>
   );
 };
 
@@ -67,16 +69,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary,
   },
-  content: {
-    padding: SPACING.md,
+  scrollFeed: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: SPACING.md,
     paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'space-between',
-    marginBottom: SPACING.md,
-    paddingTop: SPACING.xs,
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    zIndex: 10,
   },
   backBtn: {
     width: 36,

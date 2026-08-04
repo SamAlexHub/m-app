@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal } from 'react-native';
-import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload } from 'lucide-react-native';
+import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
@@ -73,9 +73,8 @@ export const ProfileScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Custom Header */}
-        <View style={styles.header}>
+      {/* Custom Header */}
+      <View style={styles.header}>
           <TouchableOpacity onPress={() => setScreen('home')} style={styles.headerBtn}>
             <ArrowLeft size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
           </TouchableOpacity>
@@ -90,7 +89,7 @@ export const ProfileScreen: React.FC = () => {
             )}
             {isOwnProfile ? (
               <TouchableOpacity onPress={handleLogout} style={[styles.headerBtn, { marginLeft: 8 }]}>
-                <LogOut size={16} color={COLORS.redAccent} strokeWidth={2} style={{ alignSelf: 'center' }} />
+                <Power size={18} color={COLORS.redAccent} strokeWidth={2} style={{ alignSelf: 'center' }} />
               </TouchableOpacity>
             ) : (
               <TouchableOpacity style={[styles.headerBtn, { marginLeft: 8 }]}>
@@ -99,6 +98,8 @@ export const ProfileScreen: React.FC = () => {
             )}
           </View>
         </View>
+
+        <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
         {/* Large Centered Square Avatar with Rounded Corners & Edit Pencil */}
         <View style={styles.avatarWrapper}>
@@ -146,11 +147,6 @@ export const ProfileScreen: React.FC = () => {
           <View style={styles.actionColumn}>
             <TouchableOpacity activeOpacity={0.85} onPress={() => setScreen('complete-profile')} style={styles.completeBtn}>
               <Text style={styles.completeBtnText}>Complete Profile</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity activeOpacity={0.8} onPress={handleLogout} style={styles.logoutBtn}>
-              <LogOut size={14} color={COLORS.redAccent} strokeWidth={2} style={{ marginRight: 6 }} />
-              <Text style={styles.logoutBtnText}>Sign Out of Éternité</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -304,15 +300,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary,
   },
-  content: {
-    padding: SPACING.md,
+  scrollFeed: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: SPACING.md,
     paddingBottom: 110,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    zIndex: 10,
   },
   headerRightActions: {
     flexDirection: 'row',
