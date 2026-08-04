@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TextInput } from 'react-native';
 import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
+import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 const MOCK_EDIT_POOL = [
@@ -14,8 +15,10 @@ const MOCK_EDIT_POOL = [
 ];
 
 export const ProfileScreen: React.FC = () => {
-  const { selectedProfileId, setScreen, isProfileVerified, currentUserProfile, updateUserPhoto } = useAppStore();
+  const { selectedProfileId, setScreen, isProfileVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto } = useAppStore();
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [introText, setIntroText] = useState('');
 
   // If selectedProfileId is empty or is the current user ('p2'), display Devan M. Kapoor's own profile.
   const isOwnProfile = !selectedProfileId || selectedProfileId === 'p2';
@@ -27,18 +30,16 @@ export const ProfileScreen: React.FC = () => {
   const username = `@${profile.name.toLowerCase().replace(/ /g, '_')}`;
 
   const handleConnect = () => {
+    setIntroText(currentUserProfile.connectIntro || '');
+    setConnectModalOpen(true);
+  };
+
+  const handleSendInvitation = () => {
+    updateCurrentUserProfile({ connectIntro: introText });
     Alert.alert(
-      "Send Connection Interest",
-      `Would you like to send a matchmaking interest to ${profile.name}?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Send Now", 
-          onPress: () => {
-            Alert.alert("Success", `Your interest has been sent to ${profile.name} via Éternité Concierge! You will be notified immediately once they respond.`);
-          } 
-        }
-      ]
+      "Invitation Sent",
+      `Your matchmaking interest with your personalized introduction has been sent to ${profile.name} via Éternité Concierge!`,
+      [{ text: "OK", onPress: () => setConnectModalOpen(false) }]
     );
   };
 
@@ -289,6 +290,44 @@ export const ProfileScreen: React.FC = () => {
               </View>
             </ScrollView>
           </View>
+        </View>
+      </Modal>
+
+      {/* Personalized Connection Modal Popup */}
+      <Modal visible={connectModalOpen} animationType="fade" transparent>
+        <View style={styles.centerModalOverlay}>
+          <GlassCard style={styles.centerModalContent}>
+            <Text style={styles.centerModalTitle}>Introduce Yourself</Text>
+            <Text style={styles.centerModalSub}>
+              Send a personalized message to {profile.name} along with your concierge connection request:
+            </Text>
+
+            <TextInput
+              style={styles.introTextInput}
+              value={introText}
+              onChangeText={setIntroText}
+              multiline
+              numberOfLines={6}
+              placeholder="Tell them about yourself, your career, expectations..."
+              placeholderTextColor="rgba(255, 255, 255, 0.35)"
+            />
+
+            <View style={styles.centerModalActions}>
+              <TouchableOpacity
+                onPress={() => setConnectModalOpen(false)}
+                style={styles.cancelBtn}
+              >
+                <Text style={styles.cancelBtnText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleSendInvitation}
+                style={styles.sendBtn}
+              >
+                <Text style={styles.sendBtnText}>Send Request</Text>
+              </TouchableOpacity>
+            </View>
+          </GlassCard>
         </View>
       </Modal>
     </View>
@@ -587,5 +626,80 @@ const styles = StyleSheet.create({
     color: COLORS.mutedGray,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  centerModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.lg,
+  },
+  centerModalContent: {
+    width: '100%',
+    maxWidth: 380,
+    padding: SPACING.lg,
+    backgroundColor: COLORS.secondary,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  centerModalTitle: {
+    ...TYPOGRAPHY.titleM,
+    color: COLORS.accentGold,
+    fontSize: 18,
+    marginBottom: SPACING.xs,
+    textAlign: 'center',
+  },
+  centerModalSub: {
+    ...TYPOGRAPHY.body,
+    fontSize: 12,
+    lineHeight: 18,
+    color: COLORS.lightGray,
+    textAlign: 'center',
+    marginBottom: SPACING.md,
+  },
+  introTextInput: {
+    width: '100%',
+    height: 140,
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: RADIUS.md,
+    color: COLORS.white,
+    padding: SPACING.sm,
+    fontSize: 12,
+    lineHeight: 18,
+    textAlignVertical: 'top',
+    marginBottom: SPACING.md,
+  },
+  centerModalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: SPACING.sm,
+  },
+  cancelBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  cancelBtnText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: COLORS.white,
+  },
+  sendBtn: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentGold,
+    ...SHADOWS.goldGlow,
+  },
+  sendBtnText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: COLORS.primary,
   },
 });

@@ -31,6 +31,7 @@ export const CompleteProfileScreen: React.FC = () => {
   const [rashi, setRashi] = useState(currentUserProfile.horoscope?.rashi || "");
   const [nakshatra, setNakshatra] = useState(currentUserProfile.horoscope?.nakshatra || "");
   const [manglik, setManglik] = useState(currentUserProfile.horoscope?.manglik || false);
+  const [connectIntro, setConnectIntro] = useState(currentUserProfile.connectIntro || "");
 
   const [isDocUploaded, setIsDocUploaded] = useState(false);
 
@@ -38,6 +39,7 @@ export const CompleteProfileScreen: React.FC = () => {
     // Write back directly to the Zustand store
     updateCurrentUserProfile({
       height,
+      connectIntro,
       religion,
       community,
       motherTongue,
@@ -73,9 +75,8 @@ export const CompleteProfileScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
+      {/* Header */}
+      <View style={styles.header}>
           <TouchableOpacity onPress={() => setScreen('profile')} style={styles.backBtn}>
             <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
           </TouchableOpacity>
@@ -83,7 +84,8 @@ export const CompleteProfileScreen: React.FC = () => {
           <View style={{ width: 36 }} />
         </View>
 
-        {/* Security Alert info card */}
+        <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* Security Alert info card */}
         <GlassCard style={styles.infoCard}>
           <Shield size={20} color={COLORS.accentGold} strokeWidth={1.8} />
           <Text style={styles.infoText}>
@@ -290,6 +292,28 @@ export const CompleteProfileScreen: React.FC = () => {
           </GlassCard>
         </View>
 
+        {/* Section Connection Introduction */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Connection Introduction Statement</Text>
+          <GlassCard style={styles.formCard}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Personalized Intro Message</Text>
+              <TextInput
+                style={[styles.input, { height: 120, textAlignVertical: 'top', paddingTop: 10 }]}
+                value={connectIntro}
+                onChangeText={setConnectIntro}
+                placeholder="Write who you are, your job, what you are looking for, ambitions..."
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+                multiline
+                numberOfLines={5}
+              />
+              <Text style={{ fontSize: 9, color: COLORS.mutedGray, marginTop: 6, lineHeight: 13 }}>
+                This statement will pre-fill the personalized popup invitation when you initiate a match connection interest.
+              </Text>
+            </View>
+          </GlassCard>
+        </View>
+
         {/* Section 5: Security Upload */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Concierge VIP Security Verification</Text>
@@ -331,16 +355,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary,
   },
-  content: {
-    padding: SPACING.md,
+  scrollFeed: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: SPACING.md,
     paddingBottom: 40,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: SPACING.md,
-    paddingTop: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    zIndex: 10,
   },
   backBtn: {
     width: 36,

@@ -16,6 +16,7 @@ export interface Profile {
   aiMatchScore: number; // e.g. 98
   matchReason: string;
   bio: string;
+  connectIntro?: string;
   photos: string[];
   coverPhoto: string;
   compatibilityRadar: {
@@ -139,6 +140,7 @@ export const MOCK_PROFILES: Profile[] = [
     aiMatchScore: 96,
     matchReason: 'Exceptional alignment on global lifestyle, entrepreneurial drive, and family integrity.',
     bio: 'Former athlete turned VC investing in clean tech and health. Raised between NYC and New Delhi with a deep love for family dinners, chess, and weekend tennis.',
+    connectIntro: 'Bonjour! I am Devan M. Kapoor, a Venture Capitalist and founder of Apex Horizon Capital. I am looking for an ambitious and elegant partner who values family traditions and intellectual growth. My ambition is to build global ventures while nurturing deep, meaningful personal relationships.',
     photos: [
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80',
