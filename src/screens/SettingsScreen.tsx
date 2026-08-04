@@ -41,36 +41,6 @@ export const SettingsScreen: React.FC = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionHeader}>SECURITY</Text>
-        <GlassCard style={styles.card}>
-          <View style={styles.row}>
-            <Lock size={18} color={COLORS.accentGold} strokeWidth={1.8} />
-            <View style={styles.textCol}>
-              <Text style={styles.rowTitle}>Face ID / Biometric Lock</Text>
-              <Text style={styles.rowSub}>Require Face ID every time app launches</Text>
-            </View>
-            <View style={[styles.toggleTrack, styles.toggleTrackActive]}>
-              <View style={[styles.toggleThumb, styles.toggleThumbActive]} />
-            </View>
-          </View>
-        </GlassCard>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionHeader}>PREFERENCES</Text>
-        <GlassCard style={styles.card}>
-          <View style={styles.row}>
-            <Globe size={18} color={COLORS.accentGold} strokeWidth={1.8} />
-            <View style={styles.textCol}>
-              <Text style={styles.rowTitle}>App Language</Text>
-              <Text style={styles.rowSub}>English (UK)</Text>
-            </View>
-            <ChevronRight size={16} color={COLORS.mutedGray} strokeWidth={1.8} />
-          </View>
-        </GlassCard>
-      </View>
-
-      <View style={styles.section}>
         <Text style={styles.sectionHeader}>LEGAL & INFORMATION</Text>
         <GlassCard style={styles.card}>
           <TouchableOpacity onPress={() => setScreen('our-speciality')} style={styles.row}>
