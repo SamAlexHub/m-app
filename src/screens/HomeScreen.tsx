@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import { Bell, ShieldCheck, MapPin, Crown, Heart, ArrowRight, Settings } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
@@ -7,12 +7,16 @@ import { GlassCard } from '../components/GlassCard';
 import { CircularScore } from '../components/CircularScore';
 import { SUCCESS_STORIES } from '../data/successStories';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
+import { EmailOtpModal } from '../components/EmailOtpModal';
 
 export const HomeScreen: React.FC = () => {
-  const { setScreen, setSelectedProfileId, notifications, isProfileVerified, setProfileVerified } = useAppStore();
+  const { setScreen, setSelectedProfileId, notifications, isProfileVerified, setProfileVerified, isEmailVerified } = useAppStore();
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const topMatch = MOCK_PROFILES[0];
+
+  const completedCount = (isEmailVerified ? 1 : 0) + 1 + (isProfileVerified ? 1 : 0);
 
   const handleVerifyProfile = () => {
     Alert.alert(
@@ -81,160 +85,185 @@ export const HomeScreen: React.FC = () => {
 
       <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent}>
         {/* Hero Card */}
-      <View style={styles.heroCard}>
-        <Image
-          source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80' }}
-          style={styles.heroImage}
-        />
-        <View style={styles.heroOverlay} />
-        <View style={styles.heroContent}>
-          <View style={styles.heroBadge}>
-            <Text style={styles.heroBadgeText}>EXCLUSIVE MATCHMAKING</Text>
+        <View style={styles.heroCard}>
+          <Image
+            source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80' }}
+            style={styles.heroImage}
+          />
+          <View style={styles.heroOverlay} />
+          <View style={styles.heroContent}>
+            <View style={styles.heroBadge}>
+              <Text style={styles.heroBadgeText}>EXCLUSIVE MATCHMAKING</Text>
+            </View>
+            <Text style={styles.heroTitle}>Where Modern Romance Meets Timeless Values</Text>
+            <Text style={styles.heroSub}>Curated soulmate recommendations verified by European Concierge.</Text>
           </View>
-          <Text style={styles.heroTitle}>Where Modern Romance Meets Timeless Values</Text>
-          <Text style={styles.heroSub}>Curated soulmate recommendations verified by European Concierge.</Text>
         </View>
-      </View>
 
-      {/* Verification Checklist */}
-      {!isProfileVerified && (
+        {/* Verification Checklist */}
+        {(!isProfileVerified || !isEmailVerified) && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <View style={styles.sectionTitleRow}>
+                <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2} />
+                <Text style={styles.sectionTitle}>Verification Checklist</Text>
+              </View>
+              <Text style={styles.checklistProgress}>{completedCount} of 3 Completed</Text>
+            </View>
+
+            <GlassCard glow>
+              <View style={styles.checklistCard}>
+                <Text style={styles.checklistCardTitle}>Complete your verification tasks to unlock VIP royal profiles and match safely.</Text>
+                
+                {/* Email Verification Item */}
+                {isEmailVerified ? (
+                  <View style={styles.checkItemRow}>
+                    <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
+                      <Text style={styles.checkIndicatorText}>✓</Text>
+                    </View>
+                    <Text style={styles.checkItemTextDone}>Email Verification Completed</Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity onPress={() => setEmailModalOpen(true)} style={styles.checkItemRow}>
+                    <View style={styles.checkIndicator}>
+                      <Text style={styles.checkIndicatorText}>•</Text>
+                    </View>
+                    <Text style={styles.checkItemText}>Email Verification (Action Required)</Text>
+                    <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
+                  </TouchableOpacity>
+                )}
+                
+                {/* Mobile Phone Verification Item */}
+                <View style={styles.checkItemRow}>
+                  <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
+                    <Text style={styles.checkIndicatorText}>✓</Text>
+                  </View>
+                  <Text style={styles.checkItemTextDone}>Mobile Phone Verification Completed</Text>
+                </View>
+                
+                {/* Government ID Verification Item */}
+                {isProfileVerified ? (
+                  <View style={styles.checkItemRow}>
+                    <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
+                      <Text style={styles.checkIndicatorText}>✓</Text>
+                    </View>
+                    <Text style={styles.checkItemTextDone}>Government ID Verification Completed</Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity onPress={handleVerifyProfile} style={styles.checkItemRow}>
+                    <View style={styles.checkIndicator}>
+                      <Text style={styles.checkIndicatorText}>•</Text>
+                    </View>
+                    <Text style={styles.checkItemText}>Government ID Verification (Action Required)</Text>
+                    <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </GlassCard>
+          </View>
+        )}
+
+        {/* Today's AI Match */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleRow}>
-              <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2} />
-              <Text style={styles.sectionTitle}>Verification Checklist</Text>
+              <Heart size={18} color={COLORS.accentGold} strokeWidth={2} />
+              <Text style={styles.sectionTitle}>Today’s AI Soulmate</Text>
             </View>
-            <Text style={styles.checklistProgress}>2 of 3 Completed</Text>
+            <Text style={styles.refreshText}>Refreshes at midnight</Text>
           </View>
 
-          <GlassCard glow>
-            <View style={styles.checklistCard}>
-              <Text style={styles.checklistCardTitle}>Complete your verification tasks to unlock VIP royal profiles and match safely.</Text>
-              
-              <View style={styles.checkItemRow}>
-                <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
-                  <Text style={styles.checkIndicatorText}>✓</Text>
+          <GlassCard glow onClick={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}>
+            <View style={styles.matchCardContent}>
+              <View style={styles.matchCardTopRow}>
+                <Image source={{ uri: topMatch.photos[0] }} style={styles.matchAvatar} />
+                <View style={styles.matchInfo}>
+                  <Text style={styles.matchName}>{topMatch.name}, {topMatch.age}</Text>
+                  <Text style={styles.matchSub} numberOfLines={1}>{topMatch.profession} • {topMatch.location}</Text>
+                  <View style={styles.sharedIntentBadge}>
+                    <Text style={styles.sharedIntentText}>AI MATCH PRINCIPLE</Text>
+                  </View>
                 </View>
-                <Text style={styles.checkItemTextDone}>Email Verification Completed</Text>
+                <View style={styles.scoreContainer}>
+                  <CircularScore score={topMatch.aiMatchScore} size={64} label="" />
+                </View>
               </View>
               
-              <View style={styles.checkItemRow}>
-                <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
-                  <Text style={styles.checkIndicatorText}>✓</Text>
-                </View>
-                <Text style={styles.checkItemTextDone}>Mobile Phone Verification Completed</Text>
-              </View>
-              
-              <TouchableOpacity onPress={handleVerifyProfile} style={styles.checkItemRow}>
-                <View style={styles.checkIndicator}>
-                  <Text style={styles.checkIndicatorText}>•</Text>
-                </View>
-                <Text style={styles.checkItemText}>Government ID Verification (Action Required)</Text>
-                <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
+              <Text style={styles.matchQuote} numberOfLines={2}>"{topMatch.matchReason}"</Text>
+
+              <TouchableOpacity
+                onPress={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}
+                style={styles.insightBtn}
+              >
+                <Text style={styles.insightBtnText}>View Compatibility Insights</Text>
+                <ArrowRight size={12} color={COLORS.primary} strokeWidth={2.5} style={{ marginLeft: 4 }} />
               </TouchableOpacity>
             </View>
           </GlassCard>
         </View>
-      )}
 
-      {/* Today's AI Match */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <View style={styles.sectionTitleRow}>
-            <Heart size={18} color={COLORS.accentGold} strokeWidth={2} />
-            <Text style={styles.sectionTitle}>Today’s AI Soulmate</Text>
+        {/* Verified Profiles Horizontal Reel */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionTitleRow}>
+              <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2} />
+              <Text style={styles.sectionTitle}>Verified Royal Profiles</Text>
+            </View>
+            <TouchableOpacity onPress={() => setScreen('discover')}>
+              <Text style={styles.viewAllText}>View All</Text>
+            </TouchableOpacity>
           </View>
-          <Text style={styles.refreshText}>Refreshes at midnight</Text>
-        </View>
 
-        <GlassCard glow onClick={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}>
-          <View style={styles.matchCardContent}>
-            <View style={styles.matchCardTopRow}>
-              <Image source={{ uri: topMatch.photos[0] }} style={styles.matchAvatar} />
-              <View style={styles.matchInfo}>
-                <Text style={styles.matchName}>{topMatch.name}, {topMatch.age}</Text>
-                <Text style={styles.matchSub} numberOfLines={1}>{topMatch.profession} • {topMatch.location}</Text>
-                <View style={styles.sharedIntentBadge}>
-                  <Text style={styles.sharedIntentText}>AI MATCH PRINCIPLE</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.reelContent}>
+            {MOCK_PROFILES.map((p) => (
+              <TouchableOpacity
+                key={p.id}
+                activeOpacity={0.85}
+                onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
+                style={styles.reelCard}
+              >
+                <Image source={{ uri: p.photos[0] }} style={styles.reelImage} />
+                <View style={styles.reelOverlay} />
+                <View style={styles.reelBadge}>
+                  <Text style={styles.reelBadgeText}>{p.aiMatchScore}%</Text>
                 </View>
-              </View>
-              <View style={styles.scoreContainer}>
-                <CircularScore score={topMatch.aiMatchScore} size={64} label="" />
-              </View>
-            </View>
-            
-            <Text style={styles.matchQuote} numberOfLines={2}>"{topMatch.matchReason}"</Text>
-
-            <TouchableOpacity
-              onPress={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}
-              style={styles.insightBtn}
-            >
-              <Text style={styles.insightBtnText}>View Compatibility Insights</Text>
-              <ArrowRight size={12} color={COLORS.primary} strokeWidth={2.5} style={{ marginLeft: 4 }} />
-            </TouchableOpacity>
-          </View>
-        </GlassCard>
-      </View>
-
-      {/* Verified Profiles Horizontal Reel */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <View style={styles.sectionTitleRow}>
-            <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2} />
-            <Text style={styles.sectionTitle}>Verified Royal Profiles</Text>
-          </View>
-          <TouchableOpacity onPress={() => setScreen('discover')}>
-            <Text style={styles.viewAllText}>View All</Text>
-          </TouchableOpacity>
+                <View style={styles.reelFooter}>
+                  <Text style={styles.reelName}>{p.name}</Text>
+                  <Text style={styles.reelSub} numberOfLines={1}>{p.profession}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.reelContent}>
-          {MOCK_PROFILES.map((p) => (
-            <TouchableOpacity
-              key={p.id}
-              activeOpacity={0.85}
-              onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
-              style={styles.reelCard}
-            >
-              <Image source={{ uri: p.photos[0] }} style={styles.reelImage} />
-              <View style={styles.reelOverlay} />
-              <View style={styles.reelBadge}>
-                <Text style={styles.reelBadgeText}>{p.aiMatchScore}%</Text>
-              </View>
-              <View style={styles.reelFooter}>
-                <Text style={styles.reelName}>{p.name}</Text>
-                <Text style={styles.reelSub} numberOfLines={1}>{p.profession}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Success Stories */}
-      <View style={[styles.section, { marginBottom: SPACING.xl }]}>
-        <View style={styles.sectionHeader}>
-          <View style={styles.sectionTitleRow}>
-            <Heart size={18} color={COLORS.redAccent} fill={COLORS.redAccent} />
-            <Text style={styles.sectionTitle}>Royal Success Stories</Text>
-          </View>
-          <TouchableOpacity onPress={() => setScreen('success-stories')}>
-            <Text style={styles.viewAllText}>Explore All</Text>
-          </TouchableOpacity>
-        </View>
-
-        <GlassCard onClick={() => setScreen('success-stories')}>
-          <View style={styles.storyRow}>
-            <Image source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&q=80' }} style={styles.storyImg} />
-            <View style={styles.storyContent}>
-              <Text style={styles.storyLoc}>VILLA D’ESTE, LAKE COMO</Text>
-              <Text style={styles.storyCouple}>{SUCCESS_STORIES[0].coupleNames}</Text>
-              <Text style={styles.storyQuote} numberOfLines={2}>"{SUCCESS_STORIES[0].quote}"</Text>
+        {/* Success Stories */}
+        <View style={[styles.section, { marginBottom: SPACING.xl }]}>
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionTitleRow}>
+              <Heart size={18} color={COLORS.redAccent} fill={COLORS.redAccent} />
+              <Text style={styles.sectionTitle}>Royal Success Stories</Text>
             </View>
+            <TouchableOpacity onPress={() => setScreen('success-stories')}>
+              <Text style={styles.viewAllText}>Explore All</Text>
+            </TouchableOpacity>
           </View>
-        </GlassCard>
-      </View>
-    </ScrollView>
-  </View>
+
+          <GlassCard onClick={() => setScreen('success-stories')}>
+            <View style={styles.storyRow}>
+              <Image source={{ uri: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&q=80' }} style={styles.storyImg} />
+              <View style={styles.storyContent}>
+                <Text style={styles.storyLoc}>VILLA D’ESTE, LAKE COMO</Text>
+                <Text style={styles.storyCouple}>{SUCCESS_STORIES[0].coupleNames}</Text>
+                <Text style={styles.storyQuote} numberOfLines={2}>"{SUCCESS_STORIES[0].quote}"</Text>
+              </View>
+            </View>
+          </GlassCard>
+        </View>
+      </ScrollView>
+
+      {/* Email Verification Modal Popup */}
+      <EmailOtpModal visible={emailModalOpen} onClose={() => setEmailModalOpen(false)} />
+    </View>
   );
 };
 
@@ -596,44 +625,6 @@ const styles = StyleSheet.create({
   reelSub: {
     fontSize: 9,
     color: COLORS.lightGray,
-  },
-  vipRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  vipTextCol: {
-    flex: 1,
-    paddingRight: SPACING.md,
-  },
-  vipBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginBottom: 4,
-  },
-  vipBadgeText: {
-    ...TYPOGRAPHY.subtitle,
-    fontSize: 9,
-  },
-  vipTitle: {
-    ...TYPOGRAPHY.titleM,
-    fontSize: 16,
-  },
-  vipSub: {
-    ...TYPOGRAPHY.caption,
-    fontSize: 10,
-    marginTop: 2,
-  },
-  vipArrowBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.accentGold,
-    alignItems: 'center',
-    justifyContent: 'center',
-    display: 'flex',
-    ...SHADOWS.goldGlow,
   },
   storyRow: {
     flexDirection: 'row',

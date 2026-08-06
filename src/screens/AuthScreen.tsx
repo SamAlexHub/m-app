@@ -1,29 +1,96 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 'react-native';
-import { Mail, Phone, Lock, Fingerprint, ArrowRight, ShieldCheck } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, CheckSquare, Square, Fingerprint, CheckCircle2 } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
+import { apiService } from '../services/api';
 
 export const AuthScreen: React.FC = () => {
-  const { setScreen } = useAppStore();
+  const { setScreen, setAuthToken, setCurrentUser } = useAppStore();
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const [method, setMethod] = useState<'phone' | 'email'>('phone');
-  const [phoneNumber, setPhoneNumber] = useState('+44 7700 900077');
+  
+  // Form states
   const [email, setEmail] = useState('victoria@sterling.com');
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState('8899');
+  const [password, setPassword] = useState('your_secure_password_123');
+  const [confirmPassword, setConfirmPassword] = useState('your_secure_password_123');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
-  const handleAuthSubmit = () => {
-    if (!otpSent && method === 'phone') {
-      setOtpSent(true);
+  // 4-Digit Email OTP Verification State
+  const [emailOtpSent, setEmailOtpSent] = useState(false);
+  const [emailOtp, setEmailOtp] = useState('');
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [infoMsg, setInfoMsg] = useState('');
+
+  // Handle Email & Password Submit
+  const handleAuthSubmit = async () => {
+    setErrorMsg('');
+    setInfoMsg('');
+
+    if (!email || !email.includes('@')) {
+      setErrorMsg('Please enter a valid email address');
       return;
     }
-    setScreen('home');
+
+    if (!password || password.length < 6) {
+      setErrorMsg('Password must be at least 6 characters');
+      return;
+    }
+
+    if (authMode === 'signup' && password !== confirmPassword) {
+      setErrorMsg('Passwords do not match');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      if (authMode === 'signup') {
+        if (!emailOtpSent) {
+          // Step 1: Initial Registration (isEmailVerified = false initially)
+          const res = await apiService.registerEmail(email.trim(), password);
+          setAuthToken(res.token);
+          setCurrentUser(res.user);
+          setEmailOtpSent(true);
+          setEmailOtp(res.mockEmailOtp || '8899');
+          setInfoMsg(`Registration successful! A 4-digit code was sent to ${email}. (Dev Code: ${res.mockEmailOtp || '8899'})`);
+        } else {
+          // Step 2: Verify 4-Digit Email OTP
+          if (!emailOtp || emailOtp.length < 4) {
+            setErrorMsg('Please enter the 4-digit code sent to your email');
+            return;
+          }
+          await apiService.verifyEmailOtp(email.trim(), emailOtp);
+          setIsEmailVerified(true);
+          setInfoMsg('Email verified successfully! Entering Private Lounge...');
+          setTimeout(() => {
+            setScreen('home');
+          }, 600);
+        }
+      } else {
+        // Email Login
+        const res = await apiService.loginEmail(email.trim(), password);
+        setAuthToken(res.token);
+        setCurrentUser(res.user);
+        setInfoMsg('Email login successful! Redirecting...');
+        setTimeout(() => {
+          setScreen('home');
+        }, 400);
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Authentication failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
+      {/* Dark Luxury Gradient Overlays */}
       <View style={styles.topWash} />
       <View style={styles.bottomShade} />
 
@@ -32,6 +99,7 @@ export const AuthScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Header Confidential Badge */}
         <View style={styles.header}>
           <View style={styles.confidentialBadge}>
             <ShieldCheck size={14} color={COLORS.accentGold} strokeWidth={2} />
@@ -39,7 +107,9 @@ export const AuthScreen: React.FC = () => {
           </View>
         </View>
 
+        {/* Main Luxury Glass Card */}
         <GlassCard style={styles.card}>
+          {/* Card Title & Description */}
           <Text style={styles.titleText}>
             {authMode === 'login' ? 'Welcome Back' : 'Join Éternité'}
           </Text>
@@ -49,95 +119,161 @@ export const AuthScreen: React.FC = () => {
               : 'Create your luxury matrimonial profile in minutes'}
           </Text>
 
+          {/* Mode Selector Switcher (Log In vs Register) */}
           <View style={styles.pillContainer}>
             <TouchableOpacity
-              onPress={() => setAuthMode('login')}
+              onPress={() => {
+                setAuthMode('login');
+                setEmailOtpSent(false);
+                setErrorMsg('');
+                setInfoMsg('');
+              }}
               style={[styles.pill, authMode === 'login' && styles.pillActive]}
             >
               <Text style={[styles.pillText, authMode === 'login' && styles.pillTextActive]}>Sign In</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => setAuthMode('signup')}
+              onPress={() => {
+                setAuthMode('signup');
+                setEmailOtpSent(false);
+                setErrorMsg('');
+                setInfoMsg('');
+              }}
               style={[styles.pill, authMode === 'signup' && styles.pillActive]}
             >
               <Text style={[styles.pillText, authMode === 'signup' && styles.pillTextActive]}>Register</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.methodRow}>
-            <TouchableOpacity
-              onPress={() => { setMethod('phone'); setOtpSent(false); }}
-              style={[styles.methodBtn, method === 'phone' && styles.methodBtnActive]}
-            >
-              <Phone size={14} color={method === 'phone' ? COLORS.accentGold : COLORS.mutedGray} strokeWidth={1.8} />
-              <Text style={[styles.methodText, method === 'phone' && styles.methodTextActive]}>Phone OTP</Text>
-            </TouchableOpacity>
+          {/* Feedback Banners */}
+          {errorMsg ? <Text style={styles.errorText}>⚠️ {errorMsg}</Text> : null}
+          {infoMsg ? <Text style={styles.infoText}>ℹ️ {infoMsg}</Text> : null}
 
-            <TouchableOpacity
-              onPress={() => setMethod('email')}
-              style={[styles.methodBtn, method === 'email' && styles.methodBtnActive]}
-            >
-              <Mail size={14} color={method === 'email' ? COLORS.accentGold : COLORS.mutedGray} strokeWidth={1.8} />
-              <Text style={[styles.methodText, method === 'email' && styles.methodTextActive]}>Email</Text>
-            </TouchableOpacity>
-          </View>
-
-          {method === 'phone' ? (
+          {/* Email Verification Step for Registration */}
+          {authMode === 'signup' && emailOtpSent ? (
             <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>MOBILE NUMBER</Text>
+              <Text style={styles.inputLabel}>VERIFY EMAIL (4-DIGIT CODE SENT TO EMAIL)</Text>
               <View style={styles.inputBox}>
-                <Phone size={16} color={COLORS.accentGold} strokeWidth={1.8} />
+                <CheckCircle2 size={16} color={COLORS.accentGold} strokeWidth={1.8} />
                 <TextInput
-                  value={phoneNumber}
-                  onChangeText={setPhoneNumber}
-                  keyboardType="phone-pad"
-                  placeholderTextColor={COLORS.mutedGray}
-                  style={styles.inputText}
-                />
-              </View>
-            </View>
-          ) : (
-            <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
-              <View style={styles.inputBox}>
-                <Mail size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-                <TextInput
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  placeholderTextColor={COLORS.mutedGray}
-                  style={styles.inputText}
-                />
-              </View>
-            </View>
-          )}
-
-          {method === 'phone' && otpSent && (
-            <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>4-DIGIT CODE</Text>
-              <View style={styles.inputBox}>
-                <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-                <TextInput
-                  value={otp}
-                  onChangeText={setOtp}
+                  value={emailOtp}
+                  onChangeText={setEmailOtp}
                   keyboardType="number-pad"
                   maxLength={4}
+                  placeholder="8899"
                   placeholderTextColor={COLORS.mutedGray}
                   style={[styles.inputText, { letterSpacing: 6, fontWeight: 'bold' }]}
                 />
               </View>
             </View>
+          ) : (
+            <>
+              {/* Email Address Input */}
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
+                <View style={styles.inputBox}>
+                  <Mail size={16} color={COLORS.accentGold} strokeWidth={1.8} />
+                  <TextInput
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    placeholder="victoria@sterling.com"
+                    placeholderTextColor={COLORS.mutedGray}
+                    style={styles.inputText}
+                  />
+                </View>
+              </View>
+
+              {/* Password Input */}
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputLabel}>PASSWORD</Text>
+                <View style={styles.inputBox}>
+                  <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
+                  <TextInput
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    placeholder="••••••••"
+                    placeholderTextColor={COLORS.mutedGray}
+                    style={styles.inputText}
+                  />
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                    {showPassword ? (
+                      <EyeOff size={16} color={COLORS.mutedGray} />
+                    ) : (
+                      <Eye size={16} color={COLORS.mutedGray} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Confirm Password (Sign Up Mode) */}
+              {authMode === 'signup' && (
+                <View style={styles.inputWrapper}>
+                  <Text style={styles.inputLabel}>CONFIRM PASSWORD</Text>
+                  <View style={styles.inputBox}>
+                    <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
+                    <TextInput
+                      value={confirmPassword}
+                      onChangeText={setConfirmPassword}
+                      secureTextEntry={!showConfirmPassword}
+                      placeholder="••••••••"
+                      placeholderTextColor={COLORS.mutedGray}
+                      style={styles.inputText}
+                    />
+                    <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                      {showConfirmPassword ? (
+                        <EyeOff size={16} color={COLORS.mutedGray} />
+                      ) : (
+                        <Eye size={16} color={COLORS.mutedGray} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </>
           )}
+
+          {/* Remember Me Toggle */}
+          <View style={styles.optionsRow}>
+            <TouchableOpacity
+              style={styles.rememberBox}
+              onPress={() => setRememberMe(!rememberMe)}
+              activeOpacity={0.7}
+            >
+              {rememberMe ? (
+                <CheckSquare size={16} color={COLORS.accentGold} />
+              ) : (
+                <Square size={16} color={COLORS.mutedGray} />
+              )}
+              <Text style={styles.rememberText}>Remember Login Credentials</Text>
+            </TouchableOpacity>
+          </View>
         </GlassCard>
       </ScrollView>
 
+      {/* Bottom Action Controls */}
       <View style={styles.bottomControls}>
-        <TouchableOpacity activeOpacity={0.88} onPress={handleAuthSubmit} style={styles.primaryButton}>
-          <Text style={styles.primaryButtonText}>
-            {method === 'phone' && !otpSent ? 'Send Verification OTP' : 'Enter Private Lounge'}
-          </Text>
-          <ArrowRight size={18} color={COLORS.primary} strokeWidth={2.6} style={styles.buttonIcon} />
+        <TouchableOpacity
+          activeOpacity={0.88}
+          onPress={handleAuthSubmit}
+          style={styles.primaryButton}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color={COLORS.primary} size="small" />
+          ) : (
+            <>
+              <Text style={styles.primaryButtonText}>
+                {authMode === 'signup'
+                  ? (!emailOtpSent ? 'Send Email 4-Digit Code' : 'Verify Email Code')
+                  : 'Enter Private Lounge'}
+              </Text>
+              <ArrowRight size={18} color={COLORS.primary} strokeWidth={2.6} style={styles.buttonIcon} />
+            </>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => setScreen('home')} style={styles.fingerprintBtn}>
@@ -246,34 +382,6 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: 'bold',
   },
-  methodRow: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-    marginBottom: SPACING.md,
-  },
-  methodBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 10,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-  },
-  methodBtnActive: {
-    borderColor: COLORS.accentGold,
-    backgroundColor: 'rgba(216, 168, 75, 0.1)',
-  },
-  methodText: {
-    fontSize: 11,
-    color: COLORS.mutedGray,
-  },
-  methodTextActive: {
-    color: COLORS.accentGold,
-    fontWeight: 'bold',
-  },
   inputWrapper: {
     marginBottom: SPACING.md,
   },
@@ -297,6 +405,33 @@ const styles = StyleSheet.create({
     flex: 1,
     color: COLORS.white,
     fontSize: 13,
+  },
+  optionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.sm,
+  },
+  rememberBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  rememberText: {
+    fontSize: 11,
+    color: COLORS.lightGray,
+  },
+  errorText: {
+    fontSize: 11,
+    color: '#FF6B6B',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  infoText: {
+    fontSize: 11,
+    color: COLORS.accentGold,
+    textAlign: 'center',
+    marginBottom: 8,
   },
   bottomControls: {
     width: '100%',

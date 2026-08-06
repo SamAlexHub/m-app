@@ -6,7 +6,10 @@ import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const CompleteProfileScreen: React.FC = () => {
-  const { currentUserProfile, updateCurrentUserProfile, setScreen, setProfileVerified } = useAppStore();
+  const { currentUserProfile, updateCurrentUserProfile, setScreen, setProfileVerified, authToken } = useAppStore();
+
+  // Gender State (male / female - Required Feature)
+  const [gender, setGender] = useState<'male' | 'female'>('male');
 
   // Personal / Physical State
   const [height, setHeight] = useState(currentUserProfile.height || "6'1\"");
@@ -34,43 +37,67 @@ export const CompleteProfileScreen: React.FC = () => {
   const [connectIntro, setConnectIntro] = useState(currentUserProfile.connectIntro || "");
 
   const [isDocUploaded, setIsDocUploaded] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const handleSave = () => {
-    // Write back directly to the Zustand store
-    updateCurrentUserProfile({
-      height,
-      connectIntro,
-      religion,
-      community,
-      motherTongue,
-      profession,
-      company,
-      education,
-      familyDetails: {
-        father: fatherOcc,
-        mother: motherOcc,
-        background: background,
-        familyValues: familyValues,
-        location: ancestralOrigins
-      },
-      horoscope: {
-        zodiac,
-        rashi,
-        nakshatra,
-        manglik,
-        gunaScore: currentUserProfile.horoscope?.gunaScore || "33 / 36"
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      // 1. Sync to backend API if token is present
+      if (authToken) {
+        await apiService.completeProfile(
+          {
+            fullName: currentUserProfile.name || "Devan M. Kapoor",
+            gender,
+            personalDetails: { height, religion, communityCaste: community, motherTongue },
+            professionalDetails: { currentJob: profession, company, education },
+            familyDetails: { fatherOccupation: fatherOcc, motherOccupation: motherOcc, familyBackground: background, familyEthos: familyValues, ancestralOrigins },
+            horoscopeDetails: { zodiacSign: zodiac, moonSignRashi: rashi, nakshatra, isManglik: manglik },
+            bioIntro: connectIntro,
+          },
+          authToken
+        );
       }
-    });
 
-    if (isDocUploaded) {
-      setProfileVerified(true);
+      // 2. Update local state
+      updateCurrentUserProfile({
+        height,
+        connectIntro,
+        religion,
+        community,
+        motherTongue,
+        profession,
+        company,
+        education,
+        familyDetails: {
+          father: fatherOcc,
+          mother: motherOcc,
+          background: background,
+          familyValues: familyValues,
+          location: ancestralOrigins
+        },
+        horoscope: {
+          zodiac,
+          rashi,
+          nakshatra,
+          manglik,
+          gunaScore: currentUserProfile.horoscope?.gunaScore || "33 / 36"
+        }
+      });
+
+      if (isDocUploaded) {
+        setProfileVerified(true);
+      }
+
+      Alert.alert(
+        "Profile Completed",
+        "Your luxury matrimony profile credentials have been saved to your MongoDB database and local app.",
+        [{ text: "Great", onPress: () => setScreen('profile') }]
+      );
+    } catch (err: any) {
+      Alert.alert("Error Saving Profile", err.message || "Something went wrong while saving profile to server");
+    } finally {
+      setSaving(false);
     }
-
-    Alert.alert(
-      "Profile Completed",
-      "Your luxury matrimony profile credentials have been updated and synced in real-time.",
-      [{ text: "Great", onPress: () => setScreen('profile') }]
-    );
   };
 
   return (
@@ -97,6 +124,41 @@ export const CompleteProfileScreen: React.FC = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Personal & Physical Details</Text>
           <GlassCard style={styles.formCard}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>GENDER (REQUIRED)</Text>
+              <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
+                <TouchableOpacity
+                  onPress={() => setGender('male')}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 10,
+                    borderRadius: RADIUS.md,
+                    backgroundColor: gender === 'male' ? COLORS.accentGold : 'rgba(255, 255, 255, 0.05)',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: gender === 'male' ? COLORS.accentGold : 'rgba(255, 255, 255, 0.15)'
+                  }}
+                >
+                  <Text style={{ fontSize: 13, fontWeight: '700', color: gender === 'male' ? COLORS.primary : COLORS.white }}>Male</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setGender('female')}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 10,
+                    borderRadius: RADIUS.md,
+                    backgroundColor: gender === 'female' ? COLORS.accentGold : 'rgba(255, 255, 255, 0.05)',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: gender === 'female' ? COLORS.accentGold : 'rgba(255, 255, 255, 0.15)'
+                  }}
+                >
+                  <Text style={{ fontSize: 13, fontWeight: '700', color: gender === 'female' ? COLORS.primary : COLORS.white }}>Female</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Height</Text>
               <TextInput

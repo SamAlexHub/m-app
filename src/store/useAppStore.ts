@@ -57,6 +57,7 @@ interface AppState {
   incognitoMode: boolean;
   searchQuery: string;
   isProfileVerified: boolean;
+  isEmailVerified: boolean;
   
   // Filter settings
   ageRange: [number, number];
@@ -92,9 +93,16 @@ interface AppState {
   markNotificationAsRead: (id: string) => void;
   sendMessage: (profileId: string, message: ChatMessage) => void;
   setProfileVerified: (verified: boolean) => void;
+  setEmailVerified: (verified: boolean) => void;
   currentUserProfile: Profile;
   updateCurrentUserProfile: (profile: Partial<Profile>) => void;
   updateUserPhoto: (index: number, url: string) => void;
+  
+  // Auth state
+  authToken: string | null;
+  currentUser: any | null;
+  setAuthToken: (token: string | null) => void;
+  setCurrentUser: (user: any | null) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -112,6 +120,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   incognitoMode: false,
   searchQuery: '',
   isProfileVerified: false,
+  isEmailVerified: false,
   currentUserProfile: MOCK_PROFILES[1],
 
   ageRange: [24, 35],
@@ -200,6 +209,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     };
   }),
   setProfileVerified: (verified) => set({ isProfileVerified: verified }),
+  setEmailVerified: (verified) => set({ isEmailVerified: verified }),
   updateCurrentUserProfile: (profile) => set((state) => ({
     currentUserProfile: {
       ...state.currentUserProfile,
@@ -218,4 +228,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
     };
   }),
+
+  // Auth Store implementation
+  authToken: null,
+  currentUser: null,
+  setAuthToken: (token) => set({ authToken: token }),
+  setCurrentUser: (user) => set((state) => ({
+    currentUser: user,
+    isEmailVerified: user?.isEmailVerified ?? state.isEmailVerified,
+  })),
 }));

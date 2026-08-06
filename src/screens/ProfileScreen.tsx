@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TextInput } from 'react-native';
-import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power } from 'lucide-react-native';
+import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power, ArrowRight } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
+import { EmailOtpModal } from '../components/EmailOtpModal';
 
 const MOCK_EDIT_POOL = [
   'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80',
@@ -15,9 +16,10 @@ const MOCK_EDIT_POOL = [
 ];
 
 export const ProfileScreen: React.FC = () => {
-  const { selectedProfileId, setScreen, isProfileVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto } = useAppStore();
+  const { selectedProfileId, setScreen, isProfileVerified, isEmailVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto } = useAppStore();
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [introText, setIntroText] = useState('');
 
   // If selectedProfileId is empty or is the current user ('p2'), display Devan M. Kapoor's own profile.
@@ -76,31 +78,31 @@ export const ProfileScreen: React.FC = () => {
     <View style={styles.container}>
       {/* Custom Header */}
       <View style={styles.header}>
-          <TouchableOpacity onPress={() => setScreen('home')} style={styles.headerBtn}>
-            <ArrowLeft size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
-          </TouchableOpacity>
-          
-          <Text style={styles.headerUsername}>{isOwnProfile ? "My Profile" : username}</Text>
-          
-          <View style={styles.headerRightActions}>
-            {!isOwnProfile && (
-              <TouchableOpacity onPress={() => setDetailsModalOpen(true)} style={styles.headerBtn}>
-                <Eye size={18} color={COLORS.accentGold} strokeWidth={2.2} style={{ alignSelf: 'center' }} />
-              </TouchableOpacity>
-            )}
-            {isOwnProfile ? (
-              <TouchableOpacity onPress={handleLogout} style={[styles.headerBtn, { marginLeft: 8 }]}>
-                <Power size={18} color={COLORS.redAccent} strokeWidth={2} style={{ alignSelf: 'center' }} />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={[styles.headerBtn, { marginLeft: 8 }]}>
-                <MoreHorizontal size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
-              </TouchableOpacity>
-            )}
-          </View>
+        <TouchableOpacity onPress={() => setScreen('home')} style={styles.headerBtn}>
+          <ArrowLeft size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
+        </TouchableOpacity>
+        
+        <Text style={styles.headerUsername}>{isOwnProfile ? "My Profile" : username}</Text>
+        
+        <View style={styles.headerRightActions}>
+          {!isOwnProfile && (
+            <TouchableOpacity onPress={() => setDetailsModalOpen(true)} style={styles.headerBtn}>
+              <Eye size={18} color={COLORS.accentGold} strokeWidth={2.2} style={{ alignSelf: 'center' }} />
+            </TouchableOpacity>
+          )}
+          {isOwnProfile ? (
+            <TouchableOpacity onPress={handleLogout} style={[styles.headerBtn, { marginLeft: 8 }]}>
+              <Power size={18} color={COLORS.redAccent} strokeWidth={2} style={{ alignSelf: 'center' }} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={[styles.headerBtn, { marginLeft: 8 }]}>
+              <MoreHorizontal size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
+            </TouchableOpacity>
+          )}
         </View>
+      </View>
 
-        <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
         {/* Large Centered Square Avatar with Rounded Corners & Edit Pencil */}
         <View style={styles.avatarWrapper}>
@@ -124,6 +126,18 @@ export const ProfileScreen: React.FC = () => {
           </View>
           <Text style={styles.subtitleText}>{profile.profession} at {profile.company}</Text>
         </View>
+
+        {/* Email Verification Action Banner if Not Verified */}
+        {isOwnProfile && !isEmailVerified && (
+          <TouchableOpacity onPress={() => setEmailModalOpen(true)} style={styles.emailVerifyBanner}>
+            <ShieldCheck size={16} color={COLORS.accentGold} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.emailVerifyTitle}>Email Verification Required</Text>
+              <Text style={styles.emailVerifySub}>Tap to enter 4-digit code sent to your email</Text>
+            </View>
+            <ArrowRight size={14} color={COLORS.accentGold} />
+          </TouchableOpacity>
+        )}
 
         {/* 3-Column Profile Stats: Age, Height, Zodiac */}
         <View style={styles.statsContainer}>
@@ -250,7 +264,7 @@ export const ProfileScreen: React.FC = () => {
         </View>
       </ScrollView>
 
-      {/* Profile Details Modal Popup (Candidate Information) */}
+      {/* Profile Details Modal Popup */}
       <Modal visible={detailsModalOpen} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -330,6 +344,9 @@ export const ProfileScreen: React.FC = () => {
           </GlassCard>
         </View>
       </Modal>
+
+      {/* Email Verification Modal Popup */}
+      <EmailOtpModal visible={emailModalOpen} onClose={() => setEmailModalOpen(false)} />
     </View>
   );
 };
@@ -427,7 +444,7 @@ const styles = StyleSheet.create({
   detailsBlock: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   nameRow: {
     flexDirection: 'row',
@@ -445,6 +462,27 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: COLORS.mutedGray,
     textAlign: 'center',
+  },
+  emailVerifyBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: 'rgba(216, 168, 75, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(216, 168, 75, 0.35)',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: RADIUS.md,
+    marginBottom: SPACING.md,
+  },
+  emailVerifyTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: COLORS.accentGold,
+  },
+  emailVerifySub: {
+    fontSize: 10,
+    color: COLORS.lightGray,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -495,21 +533,6 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     letterSpacing: 0.5,
   },
-  logoutBtn: {
-    height: 48,
-    borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.4)',
-    backgroundColor: 'rgba(239, 68, 68, 0.06)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  logoutBtnText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: COLORS.redAccent,
-  },
   connectBtn: {
     height: 50,
     borderRadius: RADIUS.full,
@@ -545,7 +568,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  // Modal popups styling
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.75)',
