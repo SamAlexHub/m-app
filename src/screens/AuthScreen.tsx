@@ -51,20 +51,21 @@ export const AuthScreen: React.FC = () => {
       setLoading(true);
       if (authMode === 'signup') {
         if (!emailOtpSent) {
-          // Step 1: Initial Registration (isEmailVerified = false initially)
-          const res = await apiService.registerEmail(email.trim(), password);
-          setAuthToken(res.token);
-          setCurrentUser(res.user);
+          // Step 1: Initial Registration (POST /api/v1/auth/register)
+          const res = await apiService.register({ email: email.trim(), password });
+          if (res.data?.token) setAuthToken(res.data.token);
+          if (res.data?.user) setCurrentUser(res.data.user);
           setEmailOtpSent(true);
-          setEmailOtp(res.mockEmailOtp || '8899');
-          setInfoMsg(`Registration successful! A 4-digit code was sent to ${email}. (Dev Code: ${res.mockEmailOtp || '8899'})`);
+          setInfoMsg(`Registration successful! OTP verification code sent to ${email}.`);
         } else {
-          // Step 2: Verify 4-Digit Email OTP
+          // Step 2: Verify Email OTP (POST /api/v1/auth/verify-email-otp)
           if (!emailOtp || emailOtp.length < 4) {
-            setErrorMsg('Please enter the 4-digit code sent to your email');
+            setErrorMsg('Please enter the OTP code sent to your email');
             return;
           }
-          await apiService.verifyEmailOtp(email.trim(), emailOtp);
+          const res = await apiService.verifyEmailOtp(email.trim(), emailOtp);
+          if (res.token) setAuthToken(res.token);
+          if (res.user) setCurrentUser(res.user);
           setIsEmailVerified(true);
           setInfoMsg('Email verified successfully! Entering Private Lounge...');
           setTimeout(() => {
@@ -72,11 +73,11 @@ export const AuthScreen: React.FC = () => {
           }, 600);
         }
       } else {
-        // Email Login
-        const res = await apiService.loginEmail(email.trim(), password);
-        setAuthToken(res.token);
-        setCurrentUser(res.user);
-        setInfoMsg('Email login successful! Redirecting...');
+        // Step 3: Login User (POST /api/v1/auth/login)
+        const res = await apiService.login(email.trim(), password);
+        if (res.token) setAuthToken(res.token);
+        if (res.user) setCurrentUser(res.user);
+        setInfoMsg('Login successful! Redirecting...');
         setTimeout(() => {
           setScreen('home');
         }, 400);
