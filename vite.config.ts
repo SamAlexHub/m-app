@@ -11,6 +11,10 @@ export default defineConfig({
         replacement: path.resolve(__dirname, './src/mocks/reactNativeSvgMock.jsx'),
       },
       {
+        find: 'expo-image-picker',
+        replacement: path.resolve(__dirname, './src/mocks/expoImagePickerMock.js'),
+      },
+      {
         find: 'react-native/Libraries/Utilities/codegenNativeComponent',
         replacement: path.resolve(__dirname, './src/mocks/codegenNativeComponent.js'),
       },

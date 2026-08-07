@@ -6,6 +6,8 @@ import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 import { EmailOtpModal } from '../components/EmailOtpModal';
+import { UploadPhotoModal } from '../components/UploadPhotoModal';
+import { apiService } from '../services/api';
 
 const MOCK_EDIT_POOL = [
   'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80',
@@ -16,10 +18,12 @@ const MOCK_EDIT_POOL = [
 ];
 
 export const ProfileScreen: React.FC = () => {
-  const { selectedProfileId, setScreen, isProfileVerified, isEmailVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto } = useAppStore();
+  const { selectedProfileId, setScreen, isProfileVerified, isEmailVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto, authToken } = useAppStore();
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [editingPhotoIndex, setEditingPhotoIndex] = useState(0);
   const [introText, setIntroText] = useState('');
 
   // If selectedProfileId is empty or is the current user ('p2'), display Devan M. Kapoor's own profile.
@@ -57,21 +61,15 @@ export const ProfileScreen: React.FC = () => {
   };
 
   const handleEditPhoto = (index: number) => {
-    Alert.alert(
-      "Update Photo",
-      "Choose a photo to upload to your matrimonial profile card.",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Select from Library", 
-          onPress: () => {
-            const randomUrl = MOCK_EDIT_POOL[Math.floor(Math.random() * MOCK_EDIT_POOL.length)];
-            updateUserPhoto(index, randomUrl);
-            Alert.alert("Success", "Photo updated and synced successfully!");
-          } 
-        }
-      ]
-    );
+    setEditingPhotoIndex(index);
+    setUploadModalOpen(true);
+  };
+
+  const handleSavePhoto = async (newUrl: string) => {
+    updateUserPhoto(editingPhotoIndex, newUrl);
+    if (authToken) {
+      await apiService.addPhoto(newUrl, editingPhotoIndex === 0, authToken);
+    }
   };
 
   return (
@@ -133,7 +131,7 @@ export const ProfileScreen: React.FC = () => {
             <ShieldCheck size={16} color={COLORS.accentGold} />
             <View style={{ flex: 1 }}>
               <Text style={styles.emailVerifyTitle}>Email Verification Required</Text>
-              <Text style={styles.emailVerifySub}>Tap to enter 4-digit code sent to your email</Text>
+              <Text style={styles.emailVerifySub}>Tap to enter 6-digit code sent to your email</Text>
             </View>
             <ArrowRight size={14} color={COLORS.accentGold} />
           </TouchableOpacity>
@@ -347,6 +345,15 @@ export const ProfileScreen: React.FC = () => {
 
       {/* Email Verification Modal Popup */}
       <EmailOtpModal visible={emailModalOpen} onClose={() => setEmailModalOpen(false)} />
+
+      {/* Upload Photo Modal Popup */}
+      <UploadPhotoModal
+        visible={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        photoIndex={editingPhotoIndex}
+        currentPhotoUrl={profile.photos[editingPhotoIndex]}
+        onSavePhoto={handleSavePhoto}
+      />
     </View>
   );
 };

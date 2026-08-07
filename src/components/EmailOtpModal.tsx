@@ -28,8 +28,8 @@ export const EmailOtpModal: React.FC<EmailOtpModalProps> = ({ visible, onClose }
       setLoading(true);
       const res = await apiService.sendEmailOtp(userEmail);
       setOtpSent(true);
-      setOtpCode(res.mockEmailOtp || '8899');
-      setInfoMsg(`4-digit verification code sent to ${userEmail}! (Dev Code: ${res.mockEmailOtp || '8899'})`);
+      setOtpCode(res.mockEmailOtp || '889900');
+      setInfoMsg(`6-digit verification code sent to ${userEmail}! (Dev Code: ${res.mockEmailOtp || '889900'})`);
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to send verification code');
     } finally {
@@ -38,8 +38,8 @@ export const EmailOtpModal: React.FC<EmailOtpModalProps> = ({ visible, onClose }
   };
 
   const handleVerifyOtp = async () => {
-    if (!otpCode || otpCode.length < 4) {
-      setErrorMsg('Please enter the 4-digit code');
+    if (!otpCode || otpCode.length < 6) {
+      setErrorMsg('Please enter the 6-digit code');
       return;
     }
 
@@ -57,7 +57,7 @@ export const EmailOtpModal: React.FC<EmailOtpModalProps> = ({ visible, onClose }
         setInfoMsg('');
       }, 700);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Invalid 4-digit verification code');
+      setErrorMsg(err.message || 'Invalid 6-digit verification code');
     } finally {
       setLoading(false);
     }
@@ -78,7 +78,7 @@ export const EmailOtpModal: React.FC<EmailOtpModalProps> = ({ visible, onClose }
           </View>
 
           <Text style={styles.subtitle}>
-            Complete 4-digit email verification to activate full VIP matchmaking features for:
+            Complete 6-digit email verification to activate full VIP matchmaking features for:
           </Text>
 
           <View style={styles.emailBadge}>
@@ -99,20 +99,20 @@ export const EmailOtpModal: React.FC<EmailOtpModalProps> = ({ visible, onClose }
               {loading ? (
                 <ActivityIndicator color={COLORS.primary} size="small" />
               ) : (
-                <Text style={styles.actionBtnText}>Send 4-Digit Verification Code</Text>
+                <Text style={styles.actionBtnText}>Send 6-Digit Verification Code</Text>
               )}
             </TouchableOpacity>
           ) : (
             <View style={styles.otpSection}>
-              <Text style={styles.inputLabel}>ENTER 4-DIGIT EMAIL CODE</Text>
+              <Text style={styles.inputLabel}>ENTER 6-DIGIT EMAIL CODE</Text>
               <View style={styles.inputBox}>
                 <Lock size={16} color={COLORS.accentGold} />
                 <TextInput
                   value={otpCode}
                   onChangeText={setOtpCode}
                   keyboardType="number-pad"
-                  maxLength={4}
-                  placeholder="8899"
+                  maxLength={6}
+                  placeholder="889900"
                   placeholderTextColor={COLORS.mutedGray}
                   style={styles.otpInput}
                 />

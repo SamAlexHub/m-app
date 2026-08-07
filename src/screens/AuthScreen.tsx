@@ -18,7 +18,7 @@ export const AuthScreen: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
-  // 4-Digit Email OTP Verification State
+  // 6-Digit Email OTP Verification State
   const [emailOtpSent, setEmailOtpSent] = useState(false);
   const [emailOtp, setEmailOtp] = useState('');
   const [isEmailVerified, setIsEmailVerified] = useState(false);
@@ -59,8 +59,8 @@ export const AuthScreen: React.FC = () => {
           setInfoMsg(`Registration successful! OTP verification code sent to ${email}.`);
         } else {
           // Step 2: Verify Email OTP (POST /api/v1/auth/verify-email-otp)
-          if (!emailOtp || emailOtp.length < 4) {
-            setErrorMsg('Please enter the OTP code sent to your email');
+          if (!emailOtp || emailOtp.length < 6) {
+            setErrorMsg('Please enter the 6-digit OTP code sent to your email');
             return;
           }
           const res = await apiService.verifyEmailOtp(email.trim(), emailOtp);
@@ -154,15 +154,15 @@ export const AuthScreen: React.FC = () => {
           {/* Email Verification Step for Registration */}
           {authMode === 'signup' && emailOtpSent ? (
             <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>VERIFY EMAIL (4-DIGIT CODE SENT TO EMAIL)</Text>
+              <Text style={styles.inputLabel}>VERIFY EMAIL (6-DIGIT CODE SENT TO EMAIL)</Text>
               <View style={styles.inputBox}>
                 <CheckCircle2 size={16} color={COLORS.accentGold} strokeWidth={1.8} />
                 <TextInput
                   value={emailOtp}
                   onChangeText={setEmailOtp}
                   keyboardType="number-pad"
-                  maxLength={4}
-                  placeholder="8899"
+                  maxLength={6}
+                  placeholder="889900"
                   placeholderTextColor={COLORS.mutedGray}
                   style={[styles.inputText, { letterSpacing: 6, fontWeight: 'bold' }]}
                 />
@@ -269,7 +269,7 @@ export const AuthScreen: React.FC = () => {
             <>
               <Text style={styles.primaryButtonText}>
                 {authMode === 'signup'
-                  ? (!emailOtpSent ? 'Send Email 4-Digit Code' : 'Verify Email Code')
+                  ? (!emailOtpSent ? 'Send Email 6-Digit Code' : 'Verify Email Code')
                   : 'Enter Private Lounge'}
               </Text>
               <ArrowRight size={18} color={COLORS.primary} strokeWidth={2.6} style={styles.buttonIcon} />
