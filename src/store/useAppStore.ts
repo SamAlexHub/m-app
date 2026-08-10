@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MOCK_PROFILES, Profile } from '../data/profiles';
 
 export type ScreenType =
@@ -105,8 +107,10 @@ interface AppState {
   setCurrentUser: (user: any | null) => void;
 }
 
-export const useAppStore = create<AppState>((set, get) => ({
-  currentScreen: 'splash', // Start at Splash screen -> Onboarding -> Login -> Home
+export const useAppStore = create<AppState>()(
+  persist(
+    (set, get) => ({
+      currentScreen: 'splash', // Start at Splash screen -> Login -> Home
   selectedProfileId: 'p1',
   discoverMode: 'swipe',
   swipeIndex: 0,
@@ -236,5 +240,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCurrentUser: (user) => set((state) => ({
     currentUser: user,
     isEmailVerified: user?.isEmailVerified ?? state.isEmailVerified,
-  })),
-}));
+  }))
+  }),
+  {
+    name: 'app-storage',
+    storage: createJSONStorage(() => AsyncStorage),
+    partialize: (state) => ({
+      authToken: state.authToken,
+      currentUser: state.currentUser,
+      currentUserProfile: state.currentUserProfile,
+      isEmailVerified: state.isEmailVerified,
+      isProfileVerified: state.isProfileVerified
+    }),
+  }
+));

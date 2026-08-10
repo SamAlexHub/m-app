@@ -69,10 +69,32 @@ export const AuthScreen: React.FC = () => {
           if (res.profile) {
             updateCurrentUserProfile({
               name: `${res.profile.firstName || ''} ${res.profile.lastName || ''}`.trim(),
+              height: res.profile.height || '',
+              religion: res.profile.religion?._id || res.profile.religion || '',
+              community: res.profile.caste || '',
+              motherTongue: res.profile.motherTongue || '',
               profession: res.profile.occupation || '',
               company: res.profile.company || '',
-              height: res.profile.height || '',
-              photos: res.profile.photos ? [...res.profile.photos, ...Array(5 - res.profile.photos.length).fill('')].slice(0, 5) : Array(5).fill(''),
+              education: res.profile.education || '',
+              connectIntro: res.profile.personalizedIntro || '',
+              familyDetails: {
+                father: res.profile.fatherProfession || '',
+                mother: res.profile.motherProfession || '',
+                background: res.profile.familyBackground || '',
+                familyValues: res.profile.familyValues || '',
+                location: res.profile.ancestralOrigin || ''
+              },
+              horoscope: {
+                zodiac: res.profile.zodiacSign || '',
+                rashi: res.profile.moonSign || '',
+                nakshatra: res.profile.nakshatra || '',
+                manglik: res.profile.isManglik || false,
+                gunaScore: "33 / 36"
+              },
+              vipVerificationDoc: res.profile.vipVerificationDoc || { documentType: 'Aadhar', documentNumber: '', status: 'pending' },
+              photos: res.profile.photos && res.profile.photos.length > 0 
+                ? [...res.profile.photos, ...Array(5 - res.profile.photos.length).fill('')].slice(0, 5) 
+                : Array(5).fill(''),
             });
           } else {
             updateCurrentUserProfile({ name: '', profession: '', company: '', height: '', photos: Array(5).fill('') });
@@ -91,10 +113,32 @@ export const AuthScreen: React.FC = () => {
         if (res.profile) {
           updateCurrentUserProfile({
             name: `${res.profile.firstName || ''} ${res.profile.lastName || ''}`.trim(),
+            height: res.profile.height || '',
+            religion: res.profile.religion?._id || res.profile.religion || '',
+            community: res.profile.caste || '',
+            motherTongue: res.profile.motherTongue || '',
             profession: res.profile.occupation || '',
             company: res.profile.company || '',
-            height: res.profile.height || '',
-            photos: res.profile.photos ? [...res.profile.photos, ...Array(5 - res.profile.photos.length).fill('')].slice(0, 5) : Array(5).fill(''),
+            education: res.profile.education || '',
+            connectIntro: res.profile.personalizedIntro || '',
+            familyDetails: {
+              father: res.profile.fatherProfession || '',
+              mother: res.profile.motherProfession || '',
+              background: res.profile.familyBackground || '',
+              familyValues: res.profile.familyValues || '',
+              location: res.profile.ancestralOrigin || ''
+            },
+            horoscope: {
+              zodiac: res.profile.zodiacSign || '',
+              rashi: res.profile.moonSign || '',
+              nakshatra: res.profile.nakshatra || '',
+              manglik: res.profile.isManglik || false,
+              gunaScore: "33 / 36"
+            },
+            vipVerificationDoc: res.profile.vipVerificationDoc || { documentType: 'Aadhar', documentNumber: '', status: 'pending' },
+            photos: res.profile.photos && res.profile.photos.length > 0 
+              ? [...res.profile.photos, ...Array(5 - res.profile.photos.length).fill('')].slice(0, 5) 
+              : Array(5).fill(''),
           });
         } else {
           updateCurrentUserProfile({ name: '', profession: '', company: '', height: '', photos: Array(5).fill('') });

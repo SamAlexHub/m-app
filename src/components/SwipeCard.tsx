@@ -33,18 +33,6 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
           <Text style={styles.imageOverlayText}>{profile.aiMatchScore}% Match</Text>
         </View>
 
-        {/* Top Badges */}
-        <View style={styles.topRow}>
-          {profile.verified && (
-            <View style={styles.verifiedBadge}>
-              <ShieldCheck size={10} color={COLORS.accentGold} strokeWidth={2.5} />
-              <Text style={styles.verifiedText}>ROYAL</Text>
-            </View>
-          )}
-          <View style={styles.tierBadge}>
-            <Text style={styles.tierText}>{profile.vipTier} VIP</Text>
-          </View>
-        </View>
       </View>
 
       {/* Action Row below the Photo (Heart, MessageCircle, Send, Bookmark) */}

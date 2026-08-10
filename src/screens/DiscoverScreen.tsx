@@ -18,6 +18,7 @@ export const DiscoverScreen: React.FC = () => {
     setFilterModalOpen,
     likeProfile,
     passProfile,
+    currentUserProfile,
   } = useAppStore();
 
   const [activeChip, setActiveChip] = useState('Highest AI Match');
@@ -29,7 +30,8 @@ export const DiscoverScreen: React.FC = () => {
     'London & Paris',
   ];
 
-  const currentProfile = MOCK_PROFILES[swipeIndex % MOCK_PROFILES.length];
+  const filteredProfiles = MOCK_PROFILES.filter((p) => p.id !== currentUserProfile?.id);
+  const currentProfile = filteredProfiles.length > 0 ? filteredProfiles[swipeIndex % filteredProfiles.length] : MOCK_PROFILES[0];
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -91,7 +93,7 @@ export const DiscoverScreen: React.FC = () => {
       <View style={styles.storiesContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.storiesContent}>
           {/* Other stories */}
-          {MOCK_PROFILES.map((p) => (
+          {filteredProfiles.map((p) => (
             <TouchableOpacity
               key={`story-${p.id}`}
               activeOpacity={0.82}

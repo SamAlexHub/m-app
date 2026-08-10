@@ -16,7 +16,11 @@ export const CompleteProfileScreen: React.FC = () => {
   const [firstName, setFirstName] = useState(currentUserProfile.name ? currentUserProfile.name.split(' ')[0] : "");
   const [lastName, setLastName] = useState(currentUserProfile.name ? currentUserProfile.name.split(' ').slice(1).join(' ') : "");
   const [height, setHeight] = useState(currentUserProfile.height || "6'1\"");
-  const [religion, setReligion] = useState(currentUserProfile.religion || "Hindu");
+  const [religion, setReligion] = useState(
+    typeof currentUserProfile.religion === 'object' && currentUserProfile.religion?._id
+      ? currentUserProfile.religion._id
+      : (currentUserProfile.religion || "")
+  );
   const [community, setCommunity] = useState(currentUserProfile.community || "Punjabi Khatri");
   const [motherTongue, setMotherTongue] = useState(currentUserProfile.motherTongue || "English / Hindi");
 
@@ -41,7 +45,11 @@ export const CompleteProfileScreen: React.FC = () => {
   const [docType, setDocType] = useState(currentUserProfile.vipVerificationDoc?.documentType || "Aadhar");
   const [docNumber, setDocNumber] = useState(currentUserProfile.vipVerificationDoc?.documentNumber || "");
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [docOptions, setDocOptions] = useState<any[]>([]);
+  const [religionOptions, setReligionOptions] = useState<any[]>([]);
+  const [religionSearch, setReligionSearch] = useState("");
+  const [religionDropdownOpen, setReligionDropdownOpen] = useState(false);
 
   useEffect(() => {
     if (authToken) {
@@ -55,6 +63,17 @@ export const CompleteProfileScreen: React.FC = () => {
           }
         })
         .catch(err => console.error("Failed to load document options:", err));
+        
+      apiService.getMasterOptions('religion', authToken)
+        .then(res => {
+          if (res.data && res.data.length > 0) {
+            setReligionOptions(res.data);
+            if (!religion && res.data.length > 0) {
+              setReligion(res.data[0]._id);
+            }
+          }
+        })
+        .catch(err => console.error("Failed to load religion options:", err));
     }
   }, [authToken, currentUserProfile.vipVerificationDoc?.documentType]);
 
@@ -70,6 +89,22 @@ export const CompleteProfileScreen: React.FC = () => {
 
     console.log("handleSave triggered");
     console.log("Current authToken:", authToken);
+
+    // Validation
+    const newErrors: Record<string, string> = {};
+    if (!firstName.trim()) newErrors.firstName = "First name is required";
+    if (!lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!height.trim()) newErrors.height = "Height is required";
+    if (!profession.trim()) newErrors.profession = "Profession is required";
+    if (!company.trim()) newErrors.company = "Company is required";
+    if (!docNumber.trim()) newErrors.docNumber = `Please enter your ${docType} number`;
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
+
     setSaving(true);
     try {
       // 1. Sync to backend API if token is present
@@ -153,22 +188,24 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>First Name</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.firstName && styles.inputError]}
                 value={firstName}
                 onChangeText={setFirstName}
                 placeholder="e.g. Devan"
                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
               />
+              {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Last Name</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.lastName && styles.inputError]}
                 value={lastName}
                 onChangeText={setLastName}
                 placeholder="e.g. Kapoor"
                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
               />
+              {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>GENDER (REQUIRED)</Text>
@@ -208,23 +245,25 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Height</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.height && styles.inputError]}
                 value={height}
                 onChangeText={setHeight}
                 placeholder="e.g. 6ft 1in"
                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
               />
+              {errors.height && <Text style={styles.errorText}>{errors.height}</Text>}
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Religion</Text>
-              <TextInput
-                style={styles.input}
-                value={religion}
-                onChangeText={setReligion}
-                placeholder="e.g. Hindu"
-                placeholderTextColor="rgba(255, 255, 255, 0.3)"
-              />
+              <TouchableOpacity
+                style={[styles.input, { justifyContent: 'center' }]}
+                onPress={() => setReligionDropdownOpen(true)}
+              >
+                <Text style={{ color: religion ? COLORS.white : 'rgba(255, 255, 255, 0.3)' }}>
+                  {religion ? religionOptions.find(opt => opt._id === religion)?.label : "Select Religion"}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.inputGroup}>
@@ -258,23 +297,25 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Your Current Job / Profession</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.profession && styles.inputError]}
                 value={profession}
                 onChangeText={setProfession}
                 placeholder="e.g. Venture Capitalist"
                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
               />
+              {errors.profession && <Text style={styles.errorText}>{errors.profession}</Text>}
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Company / Organisation</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.company && styles.inputError]}
                 value={company}
                 onChangeText={setCompany}
                 placeholder="e.g. Apex Horizon Capital"
                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
               />
+              {errors.company && <Text style={styles.errorText}>{errors.company}</Text>}
             </View>
 
             <View style={styles.inputGroup}>
@@ -459,12 +500,13 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>{docType.toUpperCase()} NUMBER</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.docNumber && styles.inputError]}
                 value={docNumber}
                 onChangeText={setDocNumber}
                 placeholder={`Enter your ${docType} number`}
                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
               />
+              {errors.docNumber && <Text style={styles.errorText}>{errors.docNumber}</Text>}
             </View>
           </GlassCard>
         </View>
@@ -481,6 +523,52 @@ export const CompleteProfileScreen: React.FC = () => {
           </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Religion Searchable Dropdown Modal */}
+      {religionDropdownOpen && (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 100, justifyContent: 'center', alignItems: 'center', padding: SPACING.lg }]}>
+          <GlassCard style={{ width: '100%', maxHeight: '80%', padding: SPACING.md }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.md }}>
+              <Text style={{ ...TYPOGRAPHY.titleM, color: COLORS.accentGold, fontSize: 16 }}>Select Religion</Text>
+              <TouchableOpacity onPress={() => setReligionDropdownOpen(false)}>
+                <Text style={{ color: COLORS.white, fontSize: 16, fontWeight: 'bold' }}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              style={[styles.input, { marginBottom: SPACING.md, backgroundColor: 'rgba(255,255,255,0.08)' }]}
+              placeholder="Search religion..."
+              placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              value={religionSearch}
+              onChangeText={setReligionSearch}
+              autoFocus
+            />
+            <ScrollView style={{ flexShrink: 1 }} showsVerticalScrollIndicator={false}>
+              {religionOptions.filter(opt => opt.label.toLowerCase().includes(religionSearch.toLowerCase())).map(opt => (
+                <TouchableOpacity
+                  key={opt._id}
+                  style={{
+                    paddingVertical: SPACING.md,
+                    borderBottomWidth: 1,
+                    borderBottomColor: 'rgba(255,255,255,0.1)'
+                  }}
+                  onPress={() => {
+                    setReligion(opt._id);
+                    setReligionDropdownOpen(false);
+                    setReligionSearch('');
+                  }}
+                >
+                  <Text style={{ color: religion === opt._id ? COLORS.accentGold : COLORS.white, fontSize: 14 }}>
+                    {opt.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+              {religionOptions.filter(opt => opt.label.toLowerCase().includes(religionSearch.toLowerCase())).length === 0 && (
+                <Text style={{ color: COLORS.mutedGray, textAlign: 'center', marginTop: SPACING.md }}>No religions found</Text>
+              )}
+            </ScrollView>
+          </GlassCard>
+        </View>
+      )}
     </View>
   );
 };
@@ -574,6 +662,17 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     paddingHorizontal: SPACING.sm,
     fontSize: 12,
+  },
+  inputError: {
+    borderColor: '#ef4444',
+    backgroundColor: 'rgba(239, 68, 68, 0.05)',
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 10,
+    marginTop: 4,
+    marginLeft: 2,
+    fontWeight: '600',
   },
   uploadInfo: {
     ...TYPOGRAPHY.body,

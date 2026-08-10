@@ -5,7 +5,7 @@ import { useAppStore, ScreenType } from '../store/useAppStore';
 import { COLORS, RADIUS } from '../theme/tokens';
 
 export const FloatingBottomBar: React.FC = () => {
-  const { currentScreen, setScreen, setSelectedProfileId } = useAppStore();
+  const { currentScreen, setScreen, setSelectedProfileId, currentUserProfile } = useAppStore();
 
   const navItems = [
     { id: 'home', icon: Home },
@@ -33,7 +33,7 @@ export const FloatingBottomBar: React.FC = () => {
                 style={styles.navItem}
               >
                 <Image
-                  source={{ uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' }}
+                  source={{ uri: (currentUserProfile?.photos && currentUserProfile.photos.length > 0) ? currentUserProfile.photos[0] : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' }}
                   style={[styles.avatarIcon, isActive && styles.avatarIconActive]}
                 />
                 <View style={styles.dotContainer}>
