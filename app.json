@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Éternité Matrimony",
-    "slug": "eternite-matrimony",
+    "name": "Evervow Matrimony",
+    "slug": "evervow-matrimony",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,14 +13,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.eternite.matrimony"
+      "bundleIdentifier": "com.evervow.matrimony"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#062E2A"
       },
-      "package": "com.eternite.matrimony"
+      "package": "com.evervow.matrimony"
     },
     "web": {
       "favicon": "./assets/icon.png"

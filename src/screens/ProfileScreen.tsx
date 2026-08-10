@@ -65,7 +65,7 @@ export const ProfileScreen: React.FC = () => {
     updateCurrentUserProfile({ connectIntro: introText });
     Alert.alert(
       "Invitation Sent",
-      `Your matchmaking interest with your personalized introduction has been sent to ${profile.name} via Éternité Concierge!`,
+      `Your matchmaking interest with your personalized introduction has been sent to ${profile.name} via Evervow Concierge!`,
       [{ text: "OK", onPress: () => setConnectModalOpen(false) }]
     );
   };
@@ -73,7 +73,7 @@ export const ProfileScreen: React.FC = () => {
   const handleLogout = () => {
     Alert.alert(
       "Sign Out",
-      "Are you sure you want to sign out of your Éternité luxury account?",
+      "Are you sure you want to sign out of your Evervow luxury account?",
       [
         { text: "Cancel", style: "cancel" },
         { text: "Sign Out", onPress: () => setScreen('login') }

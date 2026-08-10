@@ -44,7 +44,7 @@ export const DatePlannerModal: React.FC = () => {
               <CheckCircle2 size={56} color={COLORS.accentGold} strokeWidth={1.8} />
               <Text style={styles.submittedTitle}>Invitation Dispatched</Text>
               <Text style={styles.submittedSubtext}>
-                Your date invitation to {selectedVenue} has been dispatched via Éternité Concierge.
+                Your date invitation to {selectedVenue} has been dispatched via Evervow Concierge.
               </Text>
             </View>
           ) : (

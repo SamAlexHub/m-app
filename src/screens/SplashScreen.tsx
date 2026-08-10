@@ -93,7 +93,7 @@ export const SplashScreen: React.FC = () => {
           <Heart size={44} color={COLORS.accentGold} fill="rgba(216, 168, 75, 0.2)" strokeWidth={1.8} />
         </TouchableOpacity>
 
-        <Text style={styles.titleText}>ÉTERNITÉ</Text>
+        <Text style={styles.titleText}>EVERVOW</Text>
         <Text style={styles.subtitleText}>HAUTE MATRIMONIE • INTERNATIONAL</Text>
 
         <Text style={styles.descText}>

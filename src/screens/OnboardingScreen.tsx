@@ -49,7 +49,7 @@ const slides = [
   },
   {
     id: 4,
-    eyebrow: 'ETERNITE ADVANTAGES',
+    eyebrow: 'EVERVOW ADVANTAGES',
     title: 'Take a Look',
     description: '',
     image: '/assets/3d/onboarding_4_features.png',
@@ -133,7 +133,7 @@ export const OnboardingScreen: React.FC = () => {
 
         <View style={styles.brandPill}>
           <Heart size={12} color={COLORS.accentGold} fill={COLORS.accentGold} strokeWidth={2} />
-          <Text style={styles.brandPillText}>ETERNITE</Text>
+          <Text style={styles.brandPillText}>EVERVOW</Text>
         </View>
 
         <TouchableOpacity activeOpacity={0.82} onPress={() => setScreen('login')} style={styles.skipButton}>

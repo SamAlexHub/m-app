@@ -37,7 +37,7 @@ export const DiscoverScreen: React.FC = () => {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Header (Screenshot-aligned: Title + Actions) */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Éternité</Text>
+        <Text style={styles.headerTitle}>Evervow</Text>
 
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={() => setScreen('chat')} style={styles.actionIconBtn}>

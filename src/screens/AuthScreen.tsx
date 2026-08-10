@@ -178,7 +178,7 @@ export const AuthScreen: React.FC = () => {
         <GlassCard style={styles.card}>
           {/* Card Title & Description */}
           <Text style={styles.titleText}>
-            {authMode === 'login' ? 'Welcome Back' : 'Join Éternité'}
+            {authMode === 'login' ? 'Welcome Back' : 'Join Evervow'}
           </Text>
           <Text style={styles.subtext}>
             {authMode === 'login'

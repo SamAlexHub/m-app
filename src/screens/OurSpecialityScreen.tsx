@@ -46,7 +46,7 @@ export const OurSpecialityScreen: React.FC = () => {
           {/* Hero Section */}
         <View style={styles.heroSection}>
           <Crown size={32} color={COLORS.accentGold} strokeWidth={1.5} style={styles.heroIcon} />
-          <Text style={styles.heroTitle}>The Éternité Standard</Text>
+          <Text style={styles.heroTitle}>The Evervow Standard</Text>
           <Text style={styles.heroSub}>
             Redefining luxury matrimonial matches for royalty, global leaders, and high-net-worth families.
           </Text>
