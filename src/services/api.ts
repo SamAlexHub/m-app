@@ -4,11 +4,32 @@ const API_BASE_URL = __DEV__
   ? (Platform.OS === 'android' ? 'http://10.0.2.2:5000/api/v1' : 'http://localhost:5000/api/v1')
   : 'https://ever-vow-api.onrender.com/api/v1';
 
-import { generateReactNativeHelpers } from "@uploadthing/expo";
 
-export const { uploadFiles } = generateReactNativeHelpers({
-  url: `${API_BASE_URL}/upload`,
-});
+// Custom photo upload using FormData (no third-party SDK needed)
+export const uploadPhoto = async (fileUri: string, fileName: string, token: string): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', {
+    uri: fileUri,
+    name: fileName || 'photo.jpg',
+    type: 'image/jpeg',
+  } as any);
+
+  const response = await fetch(`${API_BASE_URL}/upload/photo`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+    body: formData,
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.url) {
+    throw new Error(data.message || 'Photo upload failed');
+  }
+  return data.url;
+};
+
 
 export interface User {
   id?: string;

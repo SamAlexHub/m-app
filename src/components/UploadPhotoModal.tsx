@@ -15,7 +15,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Upload, X, Check, Image as ImageIcon, Link as LinkIcon, Sparkles } from 'lucide-react-native';
 import { COLORS, RADIUS, SPACING } from '../theme/tokens';
 import { GlassCard } from './GlassCard';
-import { uploadFiles } from '../services/api';
+import { uploadPhoto } from '../services/api';
+import { useAppStore } from '../store/useAppStore';
 
 const PRESET_PHOTOS = [
   'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80',
@@ -44,9 +45,11 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
   onSavePhoto,
 }) => {
   const [selectedUrl, setSelectedUrl] = useState<string>(currentPhotoUrl || '');
+  const [selectedUri, setSelectedUri] = useState<string>('');
+  const [selectedFileName, setSelectedFileName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const [actualFile, setActualFile] = useState<File | null>(null);
+  const { authToken } = useAppStore();
 
   useEffect(() => {
     setSelectedUrl(currentPhotoUrl || PRESET_PHOTOS[0]);
@@ -80,22 +83,9 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const asset = result.assets[0];
         setSelectedUrl(asset.uri);
+        setSelectedUri(asset.uri);
+        setSelectedFileName(asset.fileName || asset.uri.split('/').pop() || 'photo.jpg');
         setFeedback({ type: 'success', message: 'Photo selected from gallery!' });
-        
-        // Convert URI to Blob to mock File for UploadThing in React Native
-        const response = await fetch(asset.uri);
-        const blob = await response.blob();
-        
-        // Assign name and type to the blob so it works like a File
-        const fileName = asset.fileName || asset.uri.split('/').pop() || 'upload.jpg';
-        const fileType = asset.mimeType || 'image/jpeg';
-        
-        const nativeFile = Object.assign(blob, {
-          name: fileName,
-          type: fileType,
-        }) as unknown as File;
-        
-        setActualFile(nativeFile);
       }
     } catch (err: any) {
       setFeedback({ type: 'error', message: 'Failed to pick image: ' + err.message });
@@ -111,27 +101,23 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
     }
     try {
       setLoading(true);
-      
       let finalUrl = selectedUrl;
-      
-      if (actualFile) {
-        setFeedback({ type: 'success', message: 'Uploading securely...' });
-        const res = await uploadFiles("profilePhoto", {
-          files: [actualFile],
-        });
-        
-        if (res && res.length > 0 && res[0].url) {
-          finalUrl = res[0].url;
-        } else {
-          throw new Error('Upload failed to return URL');
+
+      // If a native file was selected (uri is a local device path), upload it
+      if (selectedUri && !selectedUri.startsWith('http')) {
+        if (!authToken) {
+          throw new Error('You must be logged in to upload photos');
         }
+        setFeedback({ type: 'success', message: 'Uploading securely...' });
+        finalUrl = await uploadPhoto(selectedUri, selectedFileName, authToken);
       }
 
       await onSavePhoto(finalUrl);
-      setFeedback({ type: 'success', message: 'Photo saved and synced successfully!' });
+      setFeedback({ type: 'success', message: 'Photo saved successfully!' });
       setTimeout(() => {
         onClose();
-        setActualFile(null);
+        setSelectedUri('');
+        setSelectedFileName('');
       }, 500);
     } catch (err: any) {
       setFeedback({ type: 'error', message: err.message || 'Failed to save photo' });
