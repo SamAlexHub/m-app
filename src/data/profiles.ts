@@ -16,6 +16,7 @@ export interface Profile {
   aiMatchScore: number; // e.g. 98
   matchReason: string;
   bio: string;
+  connectIntro?: string;
   vipVerificationDoc?: {
     documentType: string;
     documentNumber: string;
