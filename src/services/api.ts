@@ -33,7 +33,8 @@ export interface ProfileData {
   maritalStatus?: string;
   personalizedIntro?: string;
   vipVerificationDoc?: {
-    url?: string;
+    documentType?: string;
+    documentNumber?: string;
     status?: string;
   };
   height?: string;
@@ -447,6 +448,21 @@ export const apiService = {
     const data = await response.json();
     if (!response.ok || !data.success) {
       throw new Error(data.message || "Failed to delete user");
+    }
+    return data;
+  },
+
+  // 4.1 Get Master Options (GET /api/v1/master/options/:category)
+  async getMasterOptions(category: string, token: string): Promise<{ success: boolean; data: any[] }> {
+    const response = await fetch(`${API_BASE_URL}/master/options/${category}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Failed to fetch master options");
     }
     return data;
   },

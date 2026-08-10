@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Switch } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Switch, ActivityIndicator } from 'react-native';
 import { ArrowLeft, Shield, Upload, CheckCircle2 } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { apiService } from '../services/api';
@@ -38,9 +38,25 @@ export const CompleteProfileScreen: React.FC = () => {
   const [nakshatra, setNakshatra] = useState(currentUserProfile.horoscope?.nakshatra || "");
   const [manglik, setManglik] = useState(currentUserProfile.horoscope?.manglik || false);
   const [connectIntro, setConnectIntro] = useState(currentUserProfile.connectIntro || "");
-
-  const [isDocUploaded, setIsDocUploaded] = useState(false);
+  const [docType, setDocType] = useState(currentUserProfile.vipVerificationDoc?.documentType || "Aadhar");
+  const [docNumber, setDocNumber] = useState(currentUserProfile.vipVerificationDoc?.documentNumber || "");
   const [saving, setSaving] = useState(false);
+  const [docOptions, setDocOptions] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (authToken) {
+      apiService.getMasterOptions('documentType', authToken)
+        .then(res => {
+          if (res.data && res.data.length > 0) {
+            setDocOptions(res.data);
+            if (!currentUserProfile.vipVerificationDoc?.documentType) {
+              setDocType(res.data[0].value);
+            }
+          }
+        })
+        .catch(err => console.error("Failed to load document options:", err));
+    }
+  }, [authToken, currentUserProfile.vipVerificationDoc?.documentType]);
 
   const handleSave = async () => {
     if (!authToken) {
@@ -67,6 +83,7 @@ export const CompleteProfileScreen: React.FC = () => {
           familyDetails: { fatherOccupation: fatherOcc, motherOccupation: motherOcc, familyBackground: background, familyEthos: familyValues, ancestralOrigins },
           horoscopeDetails: { zodiacSign: zodiac, moonSignRashi: rashi, nakshatra, isManglik: manglik },
           bioIntro: connectIntro,
+          vipVerificationDoc: { documentType: docType, documentNumber: docNumber, status: 'pending' },
         },
         authToken
       );
@@ -96,10 +113,11 @@ export const CompleteProfileScreen: React.FC = () => {
           nakshatra,
           manglik,
           gunaScore: currentUserProfile.horoscope?.gunaScore || "33 / 36"
-        }
+        },
+        vipVerificationDoc: { documentType: docType, documentNumber: docNumber, status: 'pending' }
       });
 
-      if (isDocUploaded) {
+      if (docNumber) {
         setProfileVerified(true);
       }
 
@@ -404,30 +422,50 @@ export const CompleteProfileScreen: React.FC = () => {
           </GlassCard>
         </View>
 
-        {/* Section 5: Security Upload */}
+        {/* Section 5: Security Verification */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Concierge VIP Security Verification</Text>
           <GlassCard style={styles.formCard}>
             <Text style={styles.uploadInfo}>
-              Upload a copy of your Government Issued ID (Passport, National ID) to activate your gold checkmark badge immediately.
+              Please select your document type and enter its number to activate your gold checkmark badge.
             </Text>
             
-            <TouchableOpacity
-              onPress={() => setIsDocUploaded(true)}
-              style={[styles.uploadBox, isDocUploaded && styles.uploadBoxDone]}
-            >
-              {isDocUploaded ? (
-                <>
-                  <CheckCircle2 size={24} color={COLORS.accentGold} strokeWidth={2} />
-                  <Text style={styles.uploadTextDone}>passport_devan_kapoor.pdf uploaded</Text>
-                </>
-              ) : (
-                <>
-                  <Upload size={24} color={COLORS.mutedGray} strokeWidth={1.8} />
-                  <Text style={styles.uploadText}>Select Passport / National ID Document</Text>
-                </>
-              )}
-            </TouchableOpacity>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>DOCUMENT TYPE</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 4 }}>
+                {docOptions.length > 0 ? docOptions.map((opt) => (
+                  <TouchableOpacity
+                    key={opt.value}
+                    onPress={() => setDocType(opt.value)}
+                    style={{
+                      flex: 1,
+                      minWidth: '45%',
+                      paddingVertical: 10,
+                      borderRadius: RADIUS.md,
+                      backgroundColor: docType === opt.value ? COLORS.accentGold : 'rgba(255, 255, 255, 0.05)',
+                      alignItems: 'center',
+                      borderWidth: 1,
+                      borderColor: docType === opt.value ? COLORS.accentGold : 'rgba(255, 255, 255, 0.15)'
+                    }}
+                  >
+                    <Text style={{ fontSize: 13, fontWeight: '700', color: docType === opt.value ? COLORS.primary : COLORS.white }}>{opt.label}</Text>
+                  </TouchableOpacity>
+                )) : (
+                  <ActivityIndicator color={COLORS.accentGold} />
+                )}
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>{docType.toUpperCase()} NUMBER</Text>
+              <TextInput
+                style={styles.input}
+                value={docNumber}
+                onChangeText={setDocNumber}
+                placeholder={`Enter your ${docType} number`}
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
           </GlassCard>
         </View>
 
