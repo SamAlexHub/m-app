@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TextInput } from 'react-native';
 import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power, ArrowRight } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
@@ -34,6 +34,27 @@ export const ProfileScreen: React.FC = () => {
   
   // Construct clean username handle matching screenshot format
   const username = `@${profile.name.toLowerCase().replace(/ /g, '_')}`;
+
+  // Fetch photos on mount
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      if (isOwnProfile && authToken) {
+        try {
+          const res = await apiService.getUserPhotos(authToken);
+          if (res.success && res.data) {
+            // Backend returns array of {url, isMain}. Map to string array.
+            const photoUrls = res.data.map((p: any) => p.url);
+            // Maintain array of 5 to match UI placeholders
+            const formattedPhotos = [...photoUrls, ...Array(5 - photoUrls.length).fill('')];
+            updateCurrentUserProfile({ photos: formattedPhotos.slice(0, 5) });
+          }
+        } catch (e) {
+          console.error("Failed to fetch user photos", e);
+        }
+      }
+    };
+    fetchPhotos();
+  }, [isOwnProfile, authToken]);
 
   const handleConnect = () => {
     setIntroText(currentUserProfile.connectIntro || '');
@@ -105,7 +126,13 @@ export const ProfileScreen: React.FC = () => {
         {/* Large Centered Square Avatar with Rounded Corners & Edit Pencil */}
         <View style={styles.avatarWrapper}>
           <View style={styles.avatarContainer}>
-            <Image source={{ uri: profile.photos[0] }} style={styles.avatarImg} />
+            {profile.photos && profile.photos[0] ? (
+              <Image source={{ uri: profile.photos[0] }} style={styles.avatarImg} />
+            ) : (
+              <View style={[styles.avatarImg, { backgroundColor: 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center' }]}>
+                <Upload size={24} color="rgba(255, 255, 255, 0.2)" />
+              </View>
+            )}
             {isOwnProfile && (
               <TouchableOpacity onPress={() => handleEditPhoto(0)} style={styles.pencilOverlayAvatar}>
                 <Pencil size={11} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
@@ -186,11 +213,11 @@ export const ProfileScreen: React.FC = () => {
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               )}
-              {isOwnProfile && profile.photos[1] && (
+              {isOwnProfile && profile.photos[1] ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
-              )}
+              ) : null}
             </TouchableOpacity>
 
             {/* Slot 3 (Index 3) */}
@@ -207,11 +234,11 @@ export const ProfileScreen: React.FC = () => {
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               )}
-              {isOwnProfile && profile.photos[3] && (
+              {isOwnProfile && profile.photos[3] ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
-              )}
+              ) : null}
             </TouchableOpacity>
           </View>
 
@@ -231,11 +258,11 @@ export const ProfileScreen: React.FC = () => {
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               )}
-              {isOwnProfile && profile.photos[2] && (
+              {isOwnProfile && profile.photos[2] ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
-              )}
+              ) : null}
             </TouchableOpacity>
 
             {/* Slot 4 (Index 4) */}
@@ -252,11 +279,11 @@ export const ProfileScreen: React.FC = () => {
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               )}
-              {isOwnProfile && profile.photos[4] && (
+              {isOwnProfile && profile.photos[4] ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
-              )}
+              ) : null}
             </TouchableOpacity>
           </View>
         </View>

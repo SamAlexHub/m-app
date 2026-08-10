@@ -43,9 +43,7 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
   currentPhotoUrl,
   onSavePhoto,
 }) => {
-  const [activeTab, setActiveTab] = useState<'upload' | 'url' | 'presets'>('upload');
   const [selectedUrl, setSelectedUrl] = useState<string>(currentPhotoUrl || '');
-  const [customUrlInput, setCustomUrlInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [actualFile, setActualFile] = useState<File | null>(null);
@@ -104,14 +102,7 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
     }
   };
 
-  const handleApplyUrl = () => {
-    if (!customUrlInput.trim()) {
-      setFeedback({ type: 'error', message: 'Please enter a valid image URL' });
-      return;
-    }
-    setSelectedUrl(customUrlInput.trim());
-    setFeedback({ type: 'success', message: 'Image URL applied!' });
-  };
+
 
   const handleSave = async () => {
     if (!selectedUrl) {
@@ -123,7 +114,7 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
       
       let finalUrl = selectedUrl;
       
-      if (activeTab === 'upload' && actualFile) {
+      if (actualFile) {
         setFeedback({ type: 'success', message: 'Uploading securely...' });
         const res = await uploadFiles("profilePhoto", {
           files: [actualFile],
@@ -180,109 +171,36 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
             </Text>
           ) : null}
 
-          {/* Tabs Navigation */}
-          <View style={styles.tabContainer}>
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'upload' && styles.activeTab]}
-              onPress={() => setActiveTab('upload')}
-            >
-              <Upload size={14} color={activeTab === 'upload' ? COLORS.primary : COLORS.mutedGray} />
-              <Text style={[styles.tabText, activeTab === 'upload' && styles.activeTabText]}>Upload File</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'url' && styles.activeTab]}
-              onPress={() => setActiveTab('url')}
-            >
-              <LinkIcon size={14} color={activeTab === 'url' ? COLORS.primary : COLORS.mutedGray} />
-              <Text style={[styles.tabText, activeTab === 'url' && styles.activeTabText]}>Image URL</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'presets' && styles.activeTab]}
-              onPress={() => setActiveTab('presets')}
-            >
-              <Sparkles size={14} color={activeTab === 'presets' ? COLORS.primary : COLORS.mutedGray} />
-              <Text style={[styles.tabText, activeTab === 'presets' && styles.activeTabText]}>Presets</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Tab Content */}
+          {/* Upload Area */}
           <View style={styles.tabContent}>
-            {activeTab === 'upload' && (
-              <View style={styles.uploadTabContent}>
-                <Text style={styles.tabDescription}>
-                  Select any photo from your device gallery or computer files.
-                </Text>
+            <View style={styles.uploadTabContent}>
+              <Text style={styles.tabDescription}>
+                Select any photo from your device gallery or computer files.
+              </Text>
 
-                {Platform.OS === 'web' ? (
-                  <label style={webInputStyle}>
-                    <Upload size={22} color={COLORS.accentGold} />
-                    <span style={{ color: COLORS.white, marginTop: 8, fontSize: 13, fontWeight: '600' }}>
-                      Click to Browse & Upload Photo
-                    </span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.mobileBrowseBtn}
-                    onPress={handleNativeImagePick}
-                  >
-                    <Upload size={20} color={COLORS.primary} />
-                    <Text style={styles.mobileBrowseBtnText}>Browse Device Gallery</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
-
-            {activeTab === 'url' && (
-              <View style={styles.urlTabContent}>
-                <Text style={styles.tabDescription}>Paste an external HTTP/HTTPS image URL.</Text>
-                <View style={styles.inputBox}>
-                  <LinkIcon size={16} color={COLORS.accentGold} />
-                  <TextInput
-                    value={customUrlInput}
-                    onChangeText={setCustomUrlInput}
-                    placeholder="https://example.com/photo.jpg"
-                    placeholderTextColor={COLORS.mutedGray}
-                    style={styles.urlInput}
-                    autoCapitalize="none"
+              {Platform.OS === 'web' ? (
+                <label style={webInputStyle}>
+                  <Upload size={22} color={COLORS.accentGold} />
+                  <span style={{ color: COLORS.white, marginTop: 8, fontSize: 13, fontWeight: '600' }}>
+                    Click to Browse & Upload Photo
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    style={{ display: 'none' }}
                   />
-                </View>
-                <TouchableOpacity style={styles.applyBtn} onPress={handleApplyUrl}>
-                  <Text style={styles.applyBtnText}>Apply Image URL</Text>
+                </label>
+              ) : (
+                <TouchableOpacity
+                  style={styles.mobileBrowseBtn}
+                  onPress={handleNativeImagePick}
+                >
+                  <Upload size={20} color={COLORS.primary} />
+                  <Text style={styles.mobileBrowseBtnText}>Browse Device Gallery</Text>
                 </TouchableOpacity>
-              </View>
-            )}
-
-            {activeTab === 'presets' && (
-              <ScrollView style={{ maxHeight: 150 }} showsVerticalScrollIndicator={false}>
-                <View style={styles.presetsGrid}>
-                  {PRESET_PHOTOS.map((url, idx) => (
-                    <TouchableOpacity
-                      key={idx}
-                      onPress={() => setSelectedUrl(url)}
-                      style={[
-                        styles.presetThumbContainer,
-                        selectedUrl === url && styles.presetThumbSelected,
-                      ]}
-                    >
-                      <Image source={{ uri: url }} style={styles.presetThumb} />
-                      {selectedUrl === url && (
-                        <View style={styles.checkBadge}>
-                          <Check size={10} color={COLORS.primary} strokeWidth={3} />
-                        </View>
-                      )}
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </ScrollView>
-            )}
+              )}
+            </View>
           </View>
 
           {/* Action Buttons */}

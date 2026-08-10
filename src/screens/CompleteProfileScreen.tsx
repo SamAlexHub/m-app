@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Switch } from 'react-native';
 import { ArrowLeft, Shield, Upload, CheckCircle2 } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
+import { apiService } from '../services/api';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
@@ -12,6 +13,8 @@ export const CompleteProfileScreen: React.FC = () => {
   const [gender, setGender] = useState<'male' | 'female'>('male');
 
   // Personal / Physical State
+  const [firstName, setFirstName] = useState(currentUserProfile.name ? currentUserProfile.name.split(' ')[0] : "");
+  const [lastName, setLastName] = useState(currentUserProfile.name ? currentUserProfile.name.split(' ').slice(1).join(' ') : "");
   const [height, setHeight] = useState(currentUserProfile.height || "6'1\"");
   const [religion, setReligion] = useState(currentUserProfile.religion || "Hindu");
   const [community, setCommunity] = useState(currentUserProfile.community || "Punjabi Khatri");
@@ -40,26 +43,38 @@ export const CompleteProfileScreen: React.FC = () => {
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
+    if (!authToken) {
+      Alert.alert(
+        "Session Expired",
+        "You are currently logged out. Please sign in to save your profile.",
+        [{ text: "Go to Login", onPress: () => setScreen('auth') }]
+      );
+      return;
+    }
+
+    console.log("handleSave triggered");
+    console.log("Current authToken:", authToken);
     setSaving(true);
     try {
       // 1. Sync to backend API if token is present
-      if (authToken) {
-        await apiService.completeProfile(
-          {
-            fullName: currentUserProfile.name || "Devan M. Kapoor",
-            gender,
-            personalDetails: { height, religion, communityCaste: community, motherTongue },
-            professionalDetails: { currentJob: profession, company, education },
-            familyDetails: { fatherOccupation: fatherOcc, motherOccupation: motherOcc, familyBackground: background, familyEthos: familyValues, ancestralOrigins },
-            horoscopeDetails: { zodiacSign: zodiac, moonSignRashi: rashi, nakshatra, isManglik: manglik },
-            bioIntro: connectIntro,
-          },
-          authToken
-        );
-      }
+      console.log("Auth token present, making API call to completeProfile...");
+      await apiService.completeProfile(
+        {
+          fullName: `${firstName} ${lastName}`.trim(),
+          gender,
+          personalDetails: { height, religion, communityCaste: community, motherTongue },
+          professionalDetails: { currentJob: profession, company, education },
+          familyDetails: { fatherOccupation: fatherOcc, motherOccupation: motherOcc, familyBackground: background, familyEthos: familyValues, ancestralOrigins },
+          horoscopeDetails: { zodiacSign: zodiac, moonSignRashi: rashi, nakshatra, isManglik: manglik },
+          bioIntro: connectIntro,
+        },
+        authToken
+      );
+      console.log("API call completeProfile successful");
 
       // 2. Update local state
       updateCurrentUserProfile({
+        name: `${firstName} ${lastName}`.trim(),
         height,
         connectIntro,
         religion,
@@ -112,18 +127,31 @@ export const CompleteProfileScreen: React.FC = () => {
         </View>
 
         <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          {/* Security Alert info card */}
-        <GlassCard style={styles.infoCard}>
-          <Shield size={20} color={COLORS.accentGold} strokeWidth={1.8} />
-          <Text style={styles.infoText}>
-            Éternité guarantees 100% verified profiles. Complete your ancestral background and secure verification to unlock premium matches.
-          </Text>
-        </GlassCard>
 
         {/* Section 1: Personal & Physical Details */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Personal & Physical Details</Text>
           <GlassCard style={styles.formCard}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>First Name</Text>
+              <TextInput
+                style={styles.input}
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="e.g. Devan"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Last Name</Text>
+              <TextInput
+                style={styles.input}
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="e.g. Kapoor"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+            </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>GENDER (REQUIRED)</Text>
               <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
@@ -404,8 +432,15 @@ export const CompleteProfileScreen: React.FC = () => {
         </View>
 
         {/* Save CTA */}
-        <TouchableOpacity activeOpacity={0.88} onPress={handleSave} style={styles.saveBtn}>
-          <Text style={styles.saveBtnText}>Save Profile Credentials</Text>
+        <TouchableOpacity 
+          activeOpacity={0.88} 
+          onPress={handleSave} 
+          style={[styles.saveBtn, saving && { opacity: 0.7 }]}
+          disabled={saving}
+        >
+          <Text style={styles.saveBtnText}>
+            {saving ? "Saving..." : "Save Profile Credentials"}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

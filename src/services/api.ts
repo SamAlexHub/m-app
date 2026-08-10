@@ -94,20 +94,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      // Dev fallback
-      return {
-        success: true,
-        message: "Registration successful! An OTP code has been sent to your email for verification.",
-        data: {
-          userId: "usr_" + Date.now(),
-          email: payload.email,
-          phone: payload.phone || null,
-          role: "user",
-          isEmailVerified: false,
-          isMobileVerified: false,
-          isVerified: false,
-        },
-      };
+      throw err;
     }
   },
 
@@ -152,25 +139,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: "Email address verified successfully!",
-        token: "mock_jwt_token_" + Date.now(),
-        user: {
-          id: "usr_verified_" + Date.now(),
-          email,
-          role: "user",
-          isEmailVerified: true,
-          isMobileVerified: false,
-          isVerified: true,
-          status: "active",
-        },
-        profile: {
-          firstName: "Devan",
-          lastName: "Kapoor",
-          gender: "male",
-        },
-      };
+      throw err;
     }
   },
 
@@ -216,21 +185,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: "Mobile number verified successfully!",
-        token: "mock_jwt_token_mobile_" + Date.now(),
-        user: {
-          id: "usr_" + Date.now(),
-          email: email || "user@example.com",
-          phone: phone || "+15550192834",
-          role: "user",
-          isEmailVerified: true,
-          isMobileVerified: true,
-          isVerified: true,
-          status: "active",
-        },
-      };
+      throw err;
     }
   },
 
@@ -251,26 +206,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: "Login successful!",
-        token: "mock_jwt_token_login_" + Date.now(),
-        user: {
-          id: "usr_" + Date.now(),
-          email,
-          phone: "+15550192834",
-          role: "user",
-          isEmailVerified: true,
-          isMobileVerified: true,
-          isVerified: true,
-          status: "active",
-        },
-        profile: {
-          firstName: "Devan",
-          lastName: "M. Kapoor",
-          profileCompletion: 95,
-        },
-      };
+      throw err;
     }
   },
 
@@ -300,20 +236,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        data: {
-          firstName: "Devan",
-          lastName: "Kapoor",
-          gender: "male",
-          occupation: "Tech Entrepreneur & Investor",
-          company: "Sterling Holdings",
-          education: "MBA, Stanford University",
-          city: "Mumbai",
-          country: "India",
-          profileCompletion: 95,
-        },
-      };
+      throw err;
     }
   },
 
@@ -353,6 +276,9 @@ export const apiService = {
       }
       if (profileData.bioIntro) payload.personalizedIntro = profileData.bioIntro;
 
+      console.log("Preparing to fetch:", `${API_BASE_URL}/profiles`);
+      console.log("Payload:", payload);
+
       const response = await fetch(`${API_BASE_URL}/profiles`, {
         method: "POST",
         headers: {
@@ -361,7 +287,10 @@ export const apiService = {
         },
         body: JSON.stringify(payload),
       });
+
+      console.log("Fetch response status:", response.status);
       const data = await response.json();
+      console.log("Fetch response data:", data);
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Failed to save profile");
       }
@@ -370,11 +299,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: "Profile saved successfully! (Dev Mode)",
-        data: profileData,
-      };
+      throw err;
     }
   },
 

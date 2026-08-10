@@ -7,7 +7,7 @@ import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 import { apiService } from '../services/api';
 
 export const AuthScreen: React.FC = () => {
-  const { setScreen, setAuthToken, setCurrentUser } = useAppStore();
+  const { setScreen, setAuthToken, setCurrentUser, updateCurrentUserProfile } = useAppStore();
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   
   // Form states
@@ -66,6 +66,17 @@ export const AuthScreen: React.FC = () => {
           const res = await apiService.verifyEmailOtp(email.trim(), emailOtp);
           if (res.token) setAuthToken(res.token);
           if (res.user) setCurrentUser(res.user);
+          if (res.profile) {
+            updateCurrentUserProfile({
+              name: `${res.profile.firstName || ''} ${res.profile.lastName || ''}`.trim(),
+              profession: res.profile.occupation || '',
+              company: res.profile.company || '',
+              height: res.profile.height || '',
+              photos: res.profile.photos ? [...res.profile.photos, ...Array(5 - res.profile.photos.length).fill('')].slice(0, 5) : Array(5).fill(''),
+            });
+          } else {
+            updateCurrentUserProfile({ name: '', profession: '', company: '', height: '', photos: Array(5).fill('') });
+          }
           setIsEmailVerified(true);
           setInfoMsg('Email verified successfully! Entering Private Lounge...');
           setTimeout(() => {
@@ -77,6 +88,17 @@ export const AuthScreen: React.FC = () => {
         const res = await apiService.login(email.trim(), password);
         if (res.token) setAuthToken(res.token);
         if (res.user) setCurrentUser(res.user);
+        if (res.profile) {
+          updateCurrentUserProfile({
+            name: `${res.profile.firstName || ''} ${res.profile.lastName || ''}`.trim(),
+            profession: res.profile.occupation || '',
+            company: res.profile.company || '',
+            height: res.profile.height || '',
+            photos: res.profile.photos ? [...res.profile.photos, ...Array(5 - res.profile.photos.length).fill('')].slice(0, 5) : Array(5).fill(''),
+          });
+        } else {
+          updateCurrentUserProfile({ name: '', profession: '', company: '', height: '', photos: Array(5).fill('') });
+        }
         setInfoMsg('Login successful! Redirecting...');
         setTimeout(() => {
           setScreen('home');

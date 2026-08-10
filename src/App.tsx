@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import React from 'react';
 import { View, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import { useAppStore } from './store/useAppStore';
