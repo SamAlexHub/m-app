@@ -17,9 +17,7 @@ export const CompleteProfileScreen: React.FC = () => {
   const [lastName, setLastName] = useState(currentUserProfile.name ? currentUserProfile.name.split(' ').slice(1).join(' ') : "");
   const [height, setHeight] = useState(currentUserProfile.height || "6'1\"");
   const [religion, setReligion] = useState(
-    typeof currentUserProfile.religion === 'object' && currentUserProfile.religion?._id
-      ? currentUserProfile.religion._id
-      : (currentUserProfile.religion || "")
+    currentUserProfile.religion || ""
   );
   const [community, setCommunity] = useState(currentUserProfile.community || "Punjabi Khatri");
   const [motherTongue, setMotherTongue] = useState(currentUserProfile.motherTongue || "English / Hindi");
@@ -82,7 +80,7 @@ export const CompleteProfileScreen: React.FC = () => {
       Alert.alert(
         "Session Expired",
         "You are currently logged out. Please sign in to save your profile.",
-        [{ text: "Go to Login", onPress: () => setScreen('auth') }]
+        [{ text: "Go to Login", onPress: () => setScreen('login') }]
       );
       return;
     }
@@ -188,7 +186,7 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>First Name</Text>
               <TextInput
-                style={[styles.input, errors.firstName && styles.inputError]}
+                style={[styles.input, errors.firstName ? styles.inputError : null]}
                 value={firstName}
                 onChangeText={setFirstName}
                 placeholder="e.g. Devan"
@@ -199,7 +197,7 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Last Name</Text>
               <TextInput
-                style={[styles.input, errors.lastName && styles.inputError]}
+                style={[styles.input, errors.lastName ? styles.inputError : null]}
                 value={lastName}
                 onChangeText={setLastName}
                 placeholder="e.g. Kapoor"
@@ -245,7 +243,7 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Height</Text>
               <TextInput
-                style={[styles.input, errors.height && styles.inputError]}
+                style={[styles.input, errors.height ? styles.inputError : null]}
                 value={height}
                 onChangeText={setHeight}
                 placeholder="e.g. 6ft 1in"
@@ -297,7 +295,7 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Your Current Job / Profession</Text>
               <TextInput
-                style={[styles.input, errors.profession && styles.inputError]}
+                style={[styles.input, errors.profession ? styles.inputError : null]}
                 value={profession}
                 onChangeText={setProfession}
                 placeholder="e.g. Venture Capitalist"
@@ -309,7 +307,7 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Company / Organisation</Text>
               <TextInput
-                style={[styles.input, errors.company && styles.inputError]}
+                style={[styles.input, errors.company ? styles.inputError : null]}
                 value={company}
                 onChangeText={setCompany}
                 placeholder="e.g. Apex Horizon Capital"
@@ -500,7 +498,7 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>{docType.toUpperCase()} NUMBER</Text>
               <TextInput
-                style={[styles.input, errors.docNumber && styles.inputError]}
+                style={[styles.input, errors.docNumber ? styles.inputError : null]}
                 value={docNumber}
                 onChangeText={setDocNumber}
                 placeholder={`Enter your ${docType} number`}

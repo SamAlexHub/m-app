@@ -181,9 +181,9 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
               {Platform.OS === 'web' ? (
                 <label style={webInputStyle}>
                   <Upload size={22} color={COLORS.accentGold} />
-                  <span style={{ color: COLORS.white, marginTop: 8, fontSize: 13, fontWeight: '600' }}>
-                    Click to Browse & Upload Photo
-                  </span>
+                  <Text style={{ color: COLORS.white, marginTop: 8, fontSize: 13, fontWeight: '600' }}>
+                    Select Image
+                  </Text>
                   <input
                     type="file"
                     accept="image/*"
