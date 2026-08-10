@@ -179,18 +179,15 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
               </Text>
 
               {Platform.OS === 'web' ? (
-                <label style={webInputStyle}>
+                <TouchableOpacity
+                  style={styles.mobileBrowseBtn}
+                  onPress={handleFileSelect}
+                >
                   <Upload size={22} color={COLORS.accentGold} />
                   <Text style={{ color: COLORS.white, marginTop: 8, fontSize: 13, fontWeight: '600' }}>
-                    Select Image
+                    Select Image (Web)
                   </Text>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    style={{ display: 'none' }}
-                  />
-                </label>
+                </TouchableOpacity>
               ) : (
                 <TouchableOpacity
                   style={styles.mobileBrowseBtn}
