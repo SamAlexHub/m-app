@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TextInput } from 'react-native';
-import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power, ArrowRight, User, Image as ImageIcon } from 'lucide-react-native';
+import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power, ArrowRight, User, ImageOff } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
@@ -33,7 +33,9 @@ export const ProfileScreen: React.FC = () => {
   
   // Find appropriate profile: p2 represents the current user (Devan)
   const profile = isOwnProfile ? currentUserProfile : (fetchedProfile || profiles.find((p: any) => p._id === selectedProfileId || p.id === selectedProfileId) || MOCK_PROFILES[0]);
-  
+  // Guard: if profile is null/undefined, don't crash
+  if (!profile) return null;
+
   // Construct clean username handle matching screenshot format
   const username = `@${(profile.firstName || profile.name || 'user').toLowerCase().replace(/ /g, '_')}`;
 
@@ -238,7 +240,7 @@ export const ProfileScreen: React.FC = () => {
                 </View>
               ) : (
                 <View style={styles.photoPlaceholder}>
-                  <ImageIcon size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && profile.photos?.[1] ? (
@@ -263,7 +265,7 @@ export const ProfileScreen: React.FC = () => {
                 </View>
               ) : (
                 <View style={styles.photoPlaceholder}>
-                  <ImageIcon size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && profile.photos?.[3] ? (
@@ -291,7 +293,7 @@ export const ProfileScreen: React.FC = () => {
                 </View>
               ) : (
                 <View style={styles.photoPlaceholder}>
-                  <ImageIcon size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && profile.photos?.[2] ? (
@@ -316,7 +318,7 @@ export const ProfileScreen: React.FC = () => {
                 </View>
               ) : (
                 <View style={styles.photoPlaceholder}>
-                  <ImageIcon size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && profile.photos?.[4] ? (
