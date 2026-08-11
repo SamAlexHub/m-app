@@ -109,6 +109,28 @@ interface AppState {
   // Profiles from API
   profiles: any[];
   setProfiles: (profiles: any[]) => void;
+
+  // Custom Alert State
+  customAlert: {
+    visible: boolean;
+    title: string;
+    message: string;
+    type: 'success' | 'error' | 'info';
+    onConfirm?: () => void;
+    onCancel?: () => void;
+    confirmText?: string;
+    cancelText?: string;
+  };
+  showCustomAlert: (options: {
+    title: string;
+    message: string;
+    type?: 'success' | 'error' | 'info';
+    onConfirm?: () => void;
+    onCancel?: () => void;
+    confirmText?: string;
+    cancelText?: string;
+  }) => void;
+  hideCustomAlert: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -131,6 +153,12 @@ export const useAppStore = create<AppState>()(
   isEmailVerified: false,
   currentUserProfile: MOCK_PROFILES[1],
   profiles: [],
+  customAlert: {
+    visible: false,
+    title: '',
+    message: '',
+    type: 'info',
+  },
 
   ageRange: [24, 35],
   selectedReligion: 'All Religions',
@@ -247,6 +275,21 @@ export const useAppStore = create<AppState>()(
     isEmailVerified: user?.isEmailVerified ?? state.isEmailVerified,
   })),
   setProfiles: (profiles) => set({ profiles }),
+  showCustomAlert: (options) => set({
+    customAlert: {
+      visible: true,
+      title: options.title,
+      message: options.message,
+      type: options.type || 'info',
+      onConfirm: options.onConfirm,
+      onCancel: options.onCancel,
+      confirmText: options.confirmText,
+      cancelText: options.cancelText,
+    }
+  }),
+  hideCustomAlert: () => set((state) => ({
+    customAlert: { ...state.customAlert, visible: false }
+  })),
   }),
   {
     name: 'app-storage',

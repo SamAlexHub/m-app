@@ -7,7 +7,7 @@ import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 import { apiService } from '../services/api';
 
 export const AuthScreen: React.FC = () => {
-  const { setScreen, setAuthToken, setCurrentUser, updateCurrentUserProfile } = useAppStore();
+  const { setScreen, setAuthToken, setCurrentUser, updateCurrentUserProfile, showCustomAlert } = useAppStore();
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   
   // Form states
@@ -55,11 +55,13 @@ export const AuthScreen: React.FC = () => {
         if (res.token) setAuthToken(res.token);
         if (res.user) setCurrentUser(res.user);
         updateCurrentUserProfile({ name: '', profession: '', company: '', height: '', photos: Array(5).fill('') });
-        Alert.alert(
-          '🎉 Welcome to EverVow!',
-          'Your account has been created successfully.\n\nPlease verify your email address from the Home screen to unlock all VIP features.',
-          [{ text: 'Go to Home', onPress: () => setScreen('home') }]
-        );
+        showCustomAlert({
+          title: 'Welcome to EverVow!',
+          message: 'Your account has been created successfully.\n\nPlease verify your email address from the Home screen to unlock all VIP features.',
+          type: 'success',
+          confirmText: 'Go to Home',
+          onConfirm: () => setScreen('home'),
+        });
       } else {
         // Step 3: Login User (POST /api/v1/auth/login)
         const res = await apiService.login(email.trim(), password);

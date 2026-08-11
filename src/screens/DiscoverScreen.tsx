@@ -18,7 +18,6 @@ export const DiscoverScreen: React.FC = () => {
     setFilterModalOpen,
     likeProfile,
     passProfile,
-    passProfile,
     currentUserProfile,
     profiles,
   } = useAppStore();

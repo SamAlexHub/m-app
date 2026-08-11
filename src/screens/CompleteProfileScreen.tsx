@@ -7,7 +7,7 @@ import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const CompleteProfileScreen: React.FC = () => {
-  const { currentUserProfile, updateCurrentUserProfile, setScreen, setProfileVerified, authToken } = useAppStore();
+  const { setScreen, currentUserProfile, updateCurrentUserProfile, setProfileVerified, authToken, showCustomAlert } = useAppStore();
 
   // Gender State (male / female - Required Feature)
   const [gender, setGender] = useState<'male' | 'female'>('male');
@@ -77,11 +77,13 @@ export const CompleteProfileScreen: React.FC = () => {
 
   const handleSave = async () => {
     if (!authToken) {
-      Alert.alert(
-        "Session Expired",
-        "You are currently logged out. Please sign in to save your profile.",
-        [{ text: "Go to Login", onPress: () => setScreen('login') }]
-      );
+      showCustomAlert({
+        title: "Session Expired",
+        message: "You are currently logged out. Please sign in to save your profile.",
+        type: "error",
+        confirmText: "Go to Login",
+        onConfirm: () => setScreen('login')
+      });
       return;
     }
 
@@ -154,13 +156,19 @@ export const CompleteProfileScreen: React.FC = () => {
         setProfileVerified(true);
       }
 
-      Alert.alert(
-        "Profile Completed",
-        "Your luxury matrimony profile credentials have been saved to your MongoDB database and local app.",
-        [{ text: "Great", onPress: () => setScreen('profile') }]
-      );
+      showCustomAlert({
+        title: "Profile Completed",
+        message: "Your luxury matrimony profile credentials have been saved to your MongoDB database and local app.",
+        type: "success",
+        confirmText: "Great",
+        onConfirm: () => setScreen('profile')
+      });
     } catch (err: any) {
-      Alert.alert("Error Saving Profile", err.message || "Something went wrong while saving profile to server");
+      showCustomAlert({
+        title: "Error Saving Profile",
+        message: err.message || "Something went wrong while saving profile to server",
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }

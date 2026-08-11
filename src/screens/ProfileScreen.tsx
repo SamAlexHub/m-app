@@ -18,7 +18,7 @@ const MOCK_EDIT_POOL = [
 ];
 
 export const ProfileScreen: React.FC = () => {
-  const { selectedProfileId, setScreen, isProfileVerified, isEmailVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto, authToken, profiles } = useAppStore();
+  const { selectedProfileId, setScreen, isProfileVerified, isEmailVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto, authToken, profiles, showCustomAlert } = useAppStore();
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -84,22 +84,25 @@ export const ProfileScreen: React.FC = () => {
 
   const handleSendInvitation = () => {
     updateCurrentUserProfile({ connectIntro: introText });
-    Alert.alert(
-      "Invitation Sent",
-      `Your matchmaking interest with your personalized introduction has been sent to ${profile.name} via Evervow Concierge!`,
-      [{ text: "OK", onPress: () => setConnectModalOpen(false) }]
-    );
+    showCustomAlert({
+      title: "Invitation Sent",
+      message: `Your matchmaking interest with your personalized introduction has been sent to ${profile.firstName || profile.name} via Evervow Concierge!`,
+      type: "success",
+      confirmText: "OK",
+      onConfirm: () => setConnectModalOpen(false)
+    });
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      "Sign Out",
-      "Are you sure you want to sign out of your Evervow luxury account?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Sign Out", onPress: () => setScreen('login') }
-      ]
-    );
+    showCustomAlert({
+      title: "Sign Out",
+      message: "Are you sure you want to sign out of your Evervow luxury account?",
+      type: "info",
+      cancelText: "Cancel",
+      onCancel: () => {},
+      confirmText: "Sign Out",
+      onConfirm: () => setScreen('login')
+    });
   };
 
   const handleEditPhoto = (index: number) => {

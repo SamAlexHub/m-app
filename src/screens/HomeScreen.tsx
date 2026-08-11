@@ -11,7 +11,7 @@ import { EmailOtpModal } from '../components/EmailOtpModal';
 import { apiService } from '../services/api';
 
 export const HomeScreen: React.FC = () => {
-  const { setScreen, setSelectedProfileId, notifications, isProfileVerified, setProfileVerified, isEmailVerified, currentUserProfile, currentUser, authToken, profiles, setProfiles } = useAppStore();
+  const { setScreen, setSelectedProfileId, notifications, isProfileVerified, setProfileVerified, isEmailVerified, currentUserProfile, currentUser, authToken, profiles, setProfiles, showCustomAlert } = useAppStore();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [verificationExpanded, setVerificationExpanded] = useState(false);
 
@@ -42,20 +42,22 @@ export const HomeScreen: React.FC = () => {
   const completedCount = (actualEmailVerified ? 1 : 0) + 1 + (actualProfileVerified ? 1 : 0);
 
   const handleVerifyProfile = () => {
-    Alert.alert(
-      "Profile Verification",
-      "Upload your passport or ID to get the gold verification shield. Would you like to verify now?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Verify Now", 
-          onPress: () => {
-            setProfileVerified(true);
-            Alert.alert("Success", "Your profile has been verified by our European Concierge! The verification badge is now active.");
-          } 
-        }
-      ]
-    );
+    showCustomAlert({
+      title: "Profile Verification",
+      message: "Upload your passport or ID to get the gold verification shield. Would you like to verify now?",
+      type: "info",
+      cancelText: "Cancel",
+      onCancel: () => {},
+      confirmText: "Verify Now",
+      onConfirm: () => {
+        setProfileVerified(true);
+        showCustomAlert({
+          title: "Success",
+          message: "Your profile has been verified by our European Concierge! The verification badge is now active.",
+          type: "success"
+        });
+      }
+    });
   };
 
   return (

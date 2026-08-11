@@ -326,7 +326,22 @@ export const apiService = {
     return this.upsertProfile(profileData, token);
   },
 
-  // 2.3 Get Profile by ID (GET /api/v1/profiles/:id)
+  // 2.3 Get All Profiles (GET /api/v1/profiles)
+  async getAllProfiles(token: string, queryString: string = ""): Promise<{ success: boolean; data: any[] }> {
+    const response = await fetch(`${API_BASE_URL}/profiles?${queryString}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Failed to fetch profiles");
+    }
+    return data;
+  },
+
+  // 2.4 Get Profile by ID (GET /api/v1/profiles/:id)
   async getProfileById(id: string, token: string): Promise<{ success: boolean; data: ProfileData }> {
     const response = await fetch(`${API_BASE_URL}/profiles/${id}`, {
       method: "GET",
