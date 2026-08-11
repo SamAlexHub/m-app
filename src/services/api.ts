@@ -1,5 +1,9 @@
 import { Platform } from 'react-native';
 
+// __DEV__ is a React Native/Expo global (true in dev, false in prod builds).
+// For web/Vite builds it is injected via vite.config.ts define block.
+declare const __DEV__: boolean;
+
 const API_BASE_URL = __DEV__
   ? (Platform.OS === 'android' ? 'http://10.10.13.42:5000/api/v1' : 'http://localhost:5000/api/v1')
   : 'https://ever-vow-api.onrender.com/api/v1';
