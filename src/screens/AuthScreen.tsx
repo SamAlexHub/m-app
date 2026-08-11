@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, CheckSquare, Square, Fingerprint, CheckCircle2 } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { GlassCard } from '../components/GlassCard';
@@ -18,7 +18,7 @@ export const AuthScreen: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
-  // 6-Digit Email OTP Verification State
+  // 6-Digit Email OTP Verification State (kept for reference, no longer used at signup)
   const [emailOtpSent, setEmailOtpSent] = useState(false);
   const [emailOtp, setEmailOtp] = useState('');
   const [isEmailVerified, setIsEmailVerified] = useState(false);
@@ -50,61 +50,16 @@ export const AuthScreen: React.FC = () => {
     try {
       setLoading(true);
       if (authMode === 'signup') {
-        if (!emailOtpSent) {
-          // Step 1: Initial Registration (POST /api/v1/auth/register)
-          const res = await apiService.register({ email: email.trim(), password });
-          if (res.data?.token) setAuthToken(res.data.token);
-          if (res.data?.user) setCurrentUser(res.data.user);
-          setEmailOtpSent(true);
-          setInfoMsg(`Registration successful! OTP verification code sent to ${email}.`);
-        } else {
-          // Step 2: Verify Email OTP (POST /api/v1/auth/verify-email-otp)
-          if (!emailOtp || emailOtp.length < 6) {
-            setErrorMsg('Please enter the 6-digit OTP code sent to your email');
-            return;
-          }
-          const res = await apiService.verifyEmailOtp(email.trim(), emailOtp);
-          if (res.token) setAuthToken(res.token);
-          if (res.user) setCurrentUser(res.user);
-          if (res.profile) {
-            updateCurrentUserProfile({
-              name: `${res.profile.firstName || ''} ${res.profile.lastName || ''}`.trim(),
-              height: res.profile.height || '',
-              religion: res.profile.religion?._id || res.profile.religion || '',
-              community: res.profile.caste || '',
-              motherTongue: res.profile.motherTongue || '',
-              profession: res.profile.occupation || '',
-              company: res.profile.company || '',
-              education: res.profile.education || '',
-              connectIntro: res.profile.personalizedIntro || '',
-              familyDetails: {
-                father: res.profile.fatherProfession || '',
-                mother: res.profile.motherProfession || '',
-                background: res.profile.familyBackground || '',
-                familyValues: res.profile.familyValues || '',
-                location: res.profile.ancestralOrigin || ''
-              },
-              horoscope: {
-                zodiac: res.profile.zodiacSign || '',
-                rashi: res.profile.moonSign || '',
-                nakshatra: res.profile.nakshatra || '',
-                manglik: res.profile.isManglik || false,
-                gunaScore: "33 / 36"
-              },
-              vipVerificationDoc: res.profile.vipVerificationDoc || { documentType: 'Aadhar', documentNumber: '', status: 'pending' },
-              photos: res.profile.photos && res.profile.photos.length > 0 
-                ? [...res.profile.photos, ...Array(5 - res.profile.photos.length).fill('')].slice(0, 5) 
-                : Array(5).fill(''),
-            });
-          } else {
-            updateCurrentUserProfile({ name: '', profession: '', company: '', height: '', photos: Array(5).fill('') });
-          }
-          setIsEmailVerified(true);
-          setInfoMsg('Email verified successfully! Entering Private Lounge...');
-          setTimeout(() => {
-            setScreen('home');
-          }, 600);
-        }
+        // Registration: directly create account and navigate to Home
+        const res = await apiService.register({ email: email.trim(), password });
+        if (res.token) setAuthToken(res.token);
+        if (res.user) setCurrentUser(res.user);
+        updateCurrentUserProfile({ name: '', profession: '', company: '', height: '', photos: Array(5).fill('') });
+        Alert.alert(
+          '🎉 Welcome to EverVow!',
+          'Your account has been created successfully.\n\nPlease verify your email address from the Home screen to unlock all VIP features.',
+          [{ text: 'Go to Home', onPress: () => setScreen('home') }]
+        );
       } else {
         // Step 3: Login User (POST /api/v1/auth/login)
         const res = await apiService.login(email.trim(), password);
@@ -217,57 +172,64 @@ export const AuthScreen: React.FC = () => {
           {errorMsg ? <Text style={styles.errorText}>⚠️ {errorMsg}</Text> : null}
           {infoMsg ? <Text style={styles.infoText}>ℹ️ {infoMsg}</Text> : null}
 
-          {/* Email Verification Step for Registration */}
-          {authMode === 'signup' && emailOtpSent ? (
+          {/* Email Verification Step for Registration - removed, verify later from home */}
+          <>
+            {/* Email Address Input */}
             <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>VERIFY EMAIL (6-DIGIT CODE SENT TO EMAIL)</Text>
+              <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
               <View style={styles.inputBox}>
-                <CheckCircle2 size={16} color={COLORS.accentGold} strokeWidth={1.8} />
+                <Mail size={16} color={COLORS.accentGold} strokeWidth={1.8} />
                 <TextInput
-                  value={emailOtp}
-                  onChangeText={setEmailOtp}
-                  keyboardType="number-pad"
-                  maxLength={6}
-                  placeholder="889900"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  placeholder="victoria@sterling.com"
                   placeholderTextColor={COLORS.mutedGray}
-                  style={[styles.inputText, { letterSpacing: 6, fontWeight: 'bold' }]}
+                  style={styles.inputText}
                 />
               </View>
             </View>
-          ) : (
-            <>
-              {/* Email Address Input */}
-              <View style={styles.inputWrapper}>
-                <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
-                <View style={styles.inputBox}>
-                  <Mail size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-                  <TextInput
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    placeholder="victoria@sterling.com"
-                    placeholderTextColor={COLORS.mutedGray}
-                    style={styles.inputText}
-                  />
-                </View>
-              </View>
 
-              {/* Password Input */}
+            {/* Password Input */}
+            <View style={styles.inputWrapper}>
+              <Text style={styles.inputLabel}>PASSWORD</Text>
+              <View style={styles.inputBox}>
+                <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
+                <TextInput
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  placeholder="••••••••"
+                  placeholderTextColor={COLORS.mutedGray}
+                  style={styles.inputText}
+                />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                  {showPassword ? (
+                    <EyeOff size={16} color={COLORS.mutedGray} />
+                  ) : (
+                    <Eye size={16} color={COLORS.mutedGray} />
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Confirm Password (Sign Up Mode) */}
+            {authMode === 'signup' && (
               <View style={styles.inputWrapper}>
-                <Text style={styles.inputLabel}>PASSWORD</Text>
+                <Text style={styles.inputLabel}>CONFIRM PASSWORD</Text>
                 <View style={styles.inputBox}>
                   <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
                   <TextInput
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry={!showConfirmPassword}
                     placeholder="••••••••"
                     placeholderTextColor={COLORS.mutedGray}
                     style={styles.inputText}
                   />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                    {showPassword ? (
+                  <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                    {showConfirmPassword ? (
                       <EyeOff size={16} color={COLORS.mutedGray} />
                     ) : (
                       <Eye size={16} color={COLORS.mutedGray} />
@@ -275,33 +237,9 @@ export const AuthScreen: React.FC = () => {
                   </TouchableOpacity>
                 </View>
               </View>
+            )}
+          </>
 
-              {/* Confirm Password (Sign Up Mode) */}
-              {authMode === 'signup' && (
-                <View style={styles.inputWrapper}>
-                  <Text style={styles.inputLabel}>CONFIRM PASSWORD</Text>
-                  <View style={styles.inputBox}>
-                    <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-                    <TextInput
-                      value={confirmPassword}
-                      onChangeText={setConfirmPassword}
-                      secureTextEntry={!showConfirmPassword}
-                      placeholder="••••••••"
-                      placeholderTextColor={COLORS.mutedGray}
-                      style={styles.inputText}
-                    />
-                    <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                      {showConfirmPassword ? (
-                        <EyeOff size={16} color={COLORS.mutedGray} />
-                      ) : (
-                        <Eye size={16} color={COLORS.mutedGray} />
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
-            </>
-          )}
 
           {/* Remember Me Toggle */}
           <View style={styles.optionsRow}>
@@ -334,9 +272,7 @@ export const AuthScreen: React.FC = () => {
           ) : (
             <>
               <Text style={styles.primaryButtonText}>
-                {authMode === 'signup'
-                  ? (!emailOtpSent ? 'Send Email 6-Digit Code' : 'Verify Email Code')
-                  : 'Enter Private Lounge'}
+                {authMode === 'signup' ? 'Create My Account' : 'Enter Private Lounge'}
               </Text>
               <ArrowRight size={18} color={COLORS.primary} strokeWidth={2.6} style={styles.buttonIcon} />
             </>
