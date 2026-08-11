@@ -498,4 +498,19 @@ export const apiService = {
     }
     return data;
   },
+
+  // 5. AI Compatibility Score (GET /api/v1/compatibility/:targetProfileId)
+  async getCompatibility(targetProfileId: string, token: string): Promise<{ success: boolean; data: any; cached?: boolean }> {
+    const response = await fetch(`${API_BASE_URL}/compatibility/${targetProfileId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Failed to calculate compatibility');
+    }
+    return data;
+  },
 };

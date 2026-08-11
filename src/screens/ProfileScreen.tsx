@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TextInput } from 'react-native';
-import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power, ArrowRight, User, ImageOff } from 'lucide-react-native';
+import { ArrowLeft, Ellipsis, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power, ArrowRight, User, ImageOff } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
@@ -142,7 +142,7 @@ export const ProfileScreen: React.FC = () => {
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={[styles.headerBtn, { marginLeft: 8 }]}>
-              <MoreHorizontal size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
+              <Ellipsis size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
             </TouchableOpacity>
           )}
         </View>
