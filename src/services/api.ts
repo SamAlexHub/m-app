@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 const API_BASE_URL = __DEV__
-  ? (Platform.OS === 'android' ? 'http://10.0.2.2:5000/api/v1' : 'http://localhost:5000/api/v1')
+  ? (Platform.OS === 'android' ? 'http://10.10.13.42:5000/api/v1' : 'http://localhost:5000/api/v1')
   : 'https://ever-vow-api.onrender.com/api/v1';
 
 
@@ -18,7 +18,6 @@ export const uploadPhoto = async (fileUri: string, fileName: string, token: stri
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data',
     },
     body: formData,
   });
@@ -137,10 +136,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: `OTP code sent to email ${email} successfully.`,
-      };
+      throw err; // DO NOT silently swallow network errors!
     }
   },
 
@@ -182,11 +178,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: `OTP code sent to mobile number ${phone} successfully.`,
-        phone,
-      };
+      throw err; // DO NOT silently swallow network errors!
     }
   },
 
