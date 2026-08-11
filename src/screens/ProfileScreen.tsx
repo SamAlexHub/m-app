@@ -35,7 +35,7 @@ export const ProfileScreen: React.FC = () => {
   const profile = isOwnProfile ? currentUserProfile : (fetchedProfile || profiles.find((p: any) => p._id === selectedProfileId || p.id === selectedProfileId) || MOCK_PROFILES[0]);
   
   // Construct clean username handle matching screenshot format
-  const username = `@${(profile.firstName || profile.name).toLowerCase().replace(/ /g, '_')}`;
+  const username = `@${(profile.firstName || profile.name || 'user').toLowerCase().replace(/ /g, '_')}`;
 
   useEffect(() => {
     const loadProfileDetails = async () => {
