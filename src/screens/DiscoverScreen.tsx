@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import { Compass, SlidersHorizontal, Settings, MessageCircle, Plus } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
-import { MOCK_PROFILES } from '../data/profiles';
+
 import { SwipeCard } from '../components/SwipeCard';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
@@ -18,7 +18,9 @@ export const DiscoverScreen: React.FC = () => {
     setFilterModalOpen,
     likeProfile,
     passProfile,
+    passProfile,
     currentUserProfile,
+    profiles,
   } = useAppStore();
 
   const [activeChip, setActiveChip] = useState('Highest AI Match');
@@ -30,8 +32,8 @@ export const DiscoverScreen: React.FC = () => {
     'London & Paris',
   ];
 
-  const filteredProfiles = MOCK_PROFILES.filter((p) => p.id !== currentUserProfile?.id);
-  const currentProfile = filteredProfiles.length > 0 ? filteredProfiles[swipeIndex % filteredProfiles.length] : MOCK_PROFILES[0];
+  const filteredProfiles = profiles.filter((p) => p._id !== currentUserProfile?.id && p.id !== currentUserProfile?.id);
+  const currentProfile = filteredProfiles.length > 0 ? filteredProfiles[swipeIndex % filteredProfiles.length] : null;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -65,29 +67,22 @@ export const DiscoverScreen: React.FC = () => {
       </ScrollView>
 
       {/* Discover Swipe Cards Feed */}
-      <SwipeCard
-        profile={currentProfile}
-        onLike={() => {
-          likeProfile(currentProfile.id);
-          nextSwipe();
-        }}
-        onPass={() => {
-          passProfile(currentProfile.id);
-          nextSwipe();
-        }}
-        onSuperLike={() => {
-          likeProfile(currentProfile.id);
-          nextSwipe();
-        }}
-        onOpenDetails={() => {
-          setSelectedProfileId(currentProfile.id);
-          setScreen('profile');
-        }}
-        onStartChat={() => {
-          setSelectedProfileId(currentProfile.id);
-          setScreen('chat');
-        }}
-      />
+      {discoverMode === 'swipe' && (
+        <View style={styles.swipeContainer}>
+          {currentProfile ? (
+            <SwipeCard
+              profile={currentProfile}
+              onLike={() => { likeProfile(currentProfile._id || currentProfile.id); nextSwipe(); }}
+              onPass={() => { passProfile(currentProfile._id || currentProfile.id); nextSwipe(); }}
+              onTap={() => { setSelectedProfileId(currentProfile._id || currentProfile.id); setScreen('profile'); }}
+            />
+          ) : (
+            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, height: 400 }}>
+              <Text style={{ color: COLORS.white }}>No profiles available</Text>
+            </View>
+          )}
+        </View>
+      )}
 
       {/* Stories Reel (Moved to the bottom for thumb-zone ergonomics) */}
       <View style={styles.storiesContainer}>
@@ -95,15 +90,15 @@ export const DiscoverScreen: React.FC = () => {
           {/* Other stories */}
           {filteredProfiles.map((p) => (
             <TouchableOpacity
-              key={`story-${p.id}`}
+              key={`story-${p._id || p.id}`}
               activeOpacity={0.82}
-              onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
+              onPress={() => { setSelectedProfileId(p._id || p.id); setScreen('profile'); }}
               style={styles.storyWrapper}
             >
               <View style={styles.storyCircleGold}>
-                <Image source={{ uri: p.photos[0] }} style={styles.storyAvatar} />
+                <Image source={{ uri: p.mainPhoto?.url || (p.photos && p.photos[0]) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80' }} style={styles.storyAvatar} />
               </View>
-              <Text style={styles.storyName} numberOfLines={1}>{p.name.split(' ')[0].toLowerCase()}</Text>
+              <Text style={styles.storyName} numberOfLines={1}>{(p.firstName || p.name).split(' ')[0].toLowerCase()}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>

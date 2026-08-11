@@ -18,22 +18,43 @@ const MOCK_EDIT_POOL = [
 ];
 
 export const ProfileScreen: React.FC = () => {
-  const { selectedProfileId, setScreen, isProfileVerified, isEmailVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto, authToken } = useAppStore();
+  const { selectedProfileId, setScreen, isProfileVerified, isEmailVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto, authToken, profiles } = useAppStore();
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [editingPhotoIndex, setEditingPhotoIndex] = useState(0);
   const [introText, setIntroText] = useState('');
+  const [fetchedProfile, setFetchedProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   // If selectedProfileId is empty or is the current user ('p2'), display Devan M. Kapoor's own profile.
-  const isOwnProfile = !selectedProfileId || selectedProfileId === 'p2';
+  const isOwnProfile = !selectedProfileId || selectedProfileId === currentUserProfile?._id || selectedProfileId === 'p2';
   
   // Find appropriate profile: p2 represents the current user (Devan)
-  const profile = isOwnProfile ? currentUserProfile : (MOCK_PROFILES.find((p) => p.id === selectedProfileId) || MOCK_PROFILES[0]);
+  const profile = isOwnProfile ? currentUserProfile : (fetchedProfile || profiles.find((p: any) => p._id === selectedProfileId || p.id === selectedProfileId) || MOCK_PROFILES[0]);
   
   // Construct clean username handle matching screenshot format
-  const username = `@${profile.name.toLowerCase().replace(/ /g, '_')}`;
+  const username = `@${(profile.firstName || profile.name).toLowerCase().replace(/ /g, '_')}`;
+
+  useEffect(() => {
+    const loadProfileDetails = async () => {
+      if (!isOwnProfile && authToken && selectedProfileId) {
+        setLoading(true);
+        try {
+          const res = await apiService.getProfileById(selectedProfileId, authToken);
+          if (res.data) {
+            setFetchedProfile(res.data);
+          }
+        } catch (error) {
+          console.error("Failed to load full profile details", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    loadProfileDetails();
+  }, [isOwnProfile, authToken, selectedProfileId]);
 
   // Fetch photos on mount
   useEffect(() => {
@@ -122,12 +143,18 @@ export const ProfileScreen: React.FC = () => {
       </View>
 
       <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {loading ? (
+          <View style={{ padding: 40, alignItems: 'center' }}>
+            <Text style={{ color: COLORS.white }}>Loading profile...</Text>
+          </View>
+        ) : (
+          <>
 
         {/* Large Centered Square Avatar with Rounded Corners & Edit Pencil */}
         <View style={styles.avatarWrapper}>
           <View style={styles.avatarContainer}>
-            {profile.photos && profile.photos[0] ? (
-              <Image source={{ uri: profile.photos[0] }} style={styles.avatarImg} />
+            {(profile.mainPhoto?.url || (profile.photos && profile.photos[0])) ? (
+              <Image source={{ uri: profile.mainPhoto?.url || profile.photos[0] }} style={styles.avatarImg} />
             ) : (
               <View style={[styles.avatarImg, { backgroundColor: 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center' }]}>
                 <Upload size={24} color="rgba(255, 255, 255, 0.2)" />
@@ -144,12 +171,12 @@ export const ProfileScreen: React.FC = () => {
         {/* Name and Job Subtitle */}
         <View style={styles.detailsBlock}>
           <View style={styles.nameRow}>
-            <Text style={styles.nameText}>{profile.name}</Text>
-            {((isOwnProfile && isProfileVerified) || (!isOwnProfile && profile.verified)) && (
+            <Text style={styles.nameText}>{profile.firstName || profile.name}</Text>
+            {((isOwnProfile && isProfileVerified) || (!isOwnProfile && (profile.userInfo?.isVerified || profile.verified || profile.isVerified))) && (
               <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2.5} style={{ marginLeft: 5 }} />
             )}
           </View>
-          <Text style={styles.subtitleText}>{profile.profession} at {profile.company}</Text>
+          <Text style={styles.subtitleText}>{profile.occupation || profile.profession} {profile.company ? `at ${profile.company}` : ''}</Text>
         </View>
 
         {/* Email Verification Action Banner if Not Verified */}
@@ -205,15 +232,15 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(1) : undefined}
               style={[styles.gridPhotoContainer, { height: 210 }]}
             >
-              {profile.photos[1] ? (
-                <Image source={{ uri: profile.photos[1] }} style={styles.gridPhoto} />
+              {profile.photos?.[1] ? (
+                <Image source={{ uri: profile.photos?.[1] }} style={styles.gridPhoto} />
               ) : (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               )}
-              {isOwnProfile && profile.photos[1] ? (
+              {isOwnProfile && profile.photos?.[1] ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
@@ -226,15 +253,15 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(3) : undefined}
               style={[styles.gridPhotoContainer, { height: 150 }]}
             >
-              {profile.photos[3] ? (
-                <Image source={{ uri: profile.photos[3] }} style={styles.gridPhoto} />
+              {profile.photos?.[3] ? (
+                <Image source={{ uri: profile.photos?.[3] }} style={styles.gridPhoto} />
               ) : (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               )}
-              {isOwnProfile && profile.photos[3] ? (
+              {isOwnProfile && profile.photos?.[3] ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
@@ -250,15 +277,15 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(2) : undefined}
               style={[styles.gridPhotoContainer, { height: 150 }]}
             >
-              {profile.photos[2] ? (
-                <Image source={{ uri: profile.photos[2] }} style={styles.gridPhoto} />
+              {profile.photos?.[2] ? (
+                <Image source={{ uri: profile.photos?.[2] }} style={styles.gridPhoto} />
               ) : (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               )}
-              {isOwnProfile && profile.photos[2] ? (
+              {isOwnProfile && profile.photos?.[2] ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
@@ -271,15 +298,15 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(4) : undefined}
               style={[styles.gridPhotoContainer, { height: 210 }]}
             >
-              {profile.photos[4] ? (
-                <Image source={{ uri: profile.photos[4] }} style={styles.gridPhoto} />
+              {profile.photos?.[4] ? (
+                <Image source={{ uri: profile.photos?.[4] }} style={styles.gridPhoto} />
               ) : (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               )}
-              {isOwnProfile && profile.photos[4] ? (
+              {isOwnProfile && profile.photos?.[4] ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
@@ -287,6 +314,8 @@ export const ProfileScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
         </View>
+        </>
+        )}
       </ScrollView>
 
       {/* Profile Details Modal Popup */}
@@ -378,7 +407,7 @@ export const ProfileScreen: React.FC = () => {
         visible={uploadModalOpen}
         onClose={() => setUploadModalOpen(false)}
         photoIndex={editingPhotoIndex}
-        currentPhotoUrl={profile.photos[editingPhotoIndex]}
+        currentPhotoUrl={profile.photos?.[editingPhotoIndex]}
         onSavePhoto={handleSavePhoto}
       />
     </View>

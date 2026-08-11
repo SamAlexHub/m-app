@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import { Bell, ShieldCheck, MapPin, Crown, Heart, ArrowRight, Settings } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
@@ -8,9 +8,10 @@ import { CircularScore } from '../components/CircularScore';
 import { SUCCESS_STORIES } from '../data/successStories';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 import { EmailOtpModal } from '../components/EmailOtpModal';
+import { apiService } from '../services/api';
 
 export const HomeScreen: React.FC = () => {
-  const { setScreen, setSelectedProfileId, notifications, isProfileVerified, setProfileVerified, isEmailVerified, currentUserProfile, currentUser } = useAppStore();
+  const { setScreen, setSelectedProfileId, notifications, isProfileVerified, setProfileVerified, isEmailVerified, currentUserProfile, currentUser, authToken, profiles, setProfiles } = useAppStore();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [verificationExpanded, setVerificationExpanded] = useState(false);
 
@@ -19,7 +20,24 @@ export const HomeScreen: React.FC = () => {
   const actualProfileVerified = currentUserProfile?.vipVerificationDoc?.status === 'verified';
 
   const unreadCount = notifications.filter((n) => !n.read).length;
-  const topMatch = MOCK_PROFILES[0];
+
+  useEffect(() => {
+    const loadProfiles = async () => {
+      if (authToken) {
+        try {
+          const res = await apiService.getAllProfiles(authToken);
+          if (res.data) {
+            setProfiles(res.data);
+          }
+        } catch (error) {
+          console.error("Failed to load profiles", error);
+        }
+      }
+    };
+    loadProfiles();
+  }, [authToken]);
+
+  const topMatch = profiles.length > 0 ? profiles[0] : null;
 
   const completedCount = (actualEmailVerified ? 1 : 0) + 1 + (actualProfileVerified ? 1 : 0);
 
@@ -182,43 +200,51 @@ export const HomeScreen: React.FC = () => {
         )}
 
         {/* Today's AI Match */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}>
-              <Heart size={18} color={COLORS.accentGold} strokeWidth={2} />
-              <Text style={styles.sectionTitle}>Today’s AI Soulmate</Text>
+        {topMatch && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <View style={styles.sectionTitleRow}>
+                <Heart size={18} color={COLORS.accentGold} strokeWidth={2} />
+                <Text style={styles.sectionTitle}>Today’s AI Soulmate</Text>
+              </View>
+              <Text style={styles.refreshText}>Refreshes at midnight</Text>
             </View>
-            <Text style={styles.refreshText}>Refreshes at midnight</Text>
-          </View>
 
-          <GlassCard glow onClick={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}>
-            <View style={styles.matchCardContent}>
-              <View style={styles.matchCardTopRow}>
-                <Image source={{ uri: topMatch.photos[0] }} style={styles.matchAvatar} />
-                <View style={styles.matchInfo}>
-                  <Text style={styles.matchName}>{topMatch.name}, {topMatch.age}</Text>
-                  <Text style={styles.matchSub} numberOfLines={1}>{topMatch.profession} • {topMatch.location}</Text>
-                  <View style={styles.sharedIntentBadge}>
-                    <Text style={styles.sharedIntentText}>AI MATCH PRINCIPLE</Text>
+            <GlassCard glow onClick={() => { setSelectedProfileId(topMatch._id || topMatch.id); setScreen('match-details'); }}>
+              <View style={styles.matchCardContent}>
+                <View style={styles.matchCardTopRow}>
+                  <Image source={{ uri: topMatch.mainPhoto?.url || (topMatch.photos && topMatch.photos[0]) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80' }} style={styles.matchAvatar} />
+                  <View style={styles.matchInfo}>
+                    <Text style={styles.matchName}>
+                      {topMatch.firstName || topMatch.name}
+                      {topMatch.userInfo?.isVerified && (
+                        <ShieldCheck size={14} color={COLORS.accentGold} style={{ marginLeft: 4, marginTop: 2 }} />
+                      )}
+                      , {topMatch.age}
+                    </Text>
+                    <Text style={styles.matchSub} numberOfLines={1}>{topMatch.occupation || topMatch.profession} • {topMatch.city || topMatch.location}</Text>
+                    <View style={styles.sharedIntentBadge}>
+                      <Text style={styles.sharedIntentText}>AI MATCH PRINCIPLE</Text>
+                    </View>
+                  </View>
+                  <View style={styles.scoreContainer}>
+                    <CircularScore score={topMatch.profileCompletion || topMatch.aiMatchScore || 90} size={64} label="" />
                   </View>
                 </View>
-                <View style={styles.scoreContainer}>
-                  <CircularScore score={topMatch.aiMatchScore} size={64} label="" />
-                </View>
-              </View>
-              
-              <Text style={styles.matchQuote} numberOfLines={2}>"{topMatch.matchReason}"</Text>
+                
+                <Text style={styles.matchQuote} numberOfLines={2}>"{topMatch.personalizedIntro || topMatch.matchReason || 'Looking for a meaningful connection.'}"</Text>
 
-              <TouchableOpacity
-                onPress={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}
-                style={styles.insightBtn}
-              >
-                <Text style={styles.insightBtnText}>View Compatibility Insights</Text>
-                <ArrowRight size={12} color={COLORS.primary} strokeWidth={2.5} style={{ marginLeft: 4 }} />
-              </TouchableOpacity>
-            </View>
-          </GlassCard>
-        </View>
+                <TouchableOpacity
+                  onPress={() => { setSelectedProfileId(topMatch._id || topMatch.id); setScreen('match-details'); }}
+                  style={styles.insightBtn}
+                >
+                  <Text style={styles.insightBtnText}>View Compatibility Insights</Text>
+                  <ArrowRight size={12} color={COLORS.primary} strokeWidth={2.5} style={{ marginLeft: 4 }} />
+                </TouchableOpacity>
+              </View>
+            </GlassCard>
+          </View>
+        )}
 
         {/* Verified Profiles Horizontal Reel */}
         <View style={styles.section}>
@@ -233,21 +259,21 @@ export const HomeScreen: React.FC = () => {
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.reelContent}>
-            {MOCK_PROFILES.map((p) => (
+            {profiles.filter(p => p.userInfo?.isVerified || p.isVerified).map((p) => (
               <TouchableOpacity
-                key={p.id}
+                key={p._id || p.id}
                 activeOpacity={0.85}
-                onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
+                onPress={() => { setSelectedProfileId(p._id || p.id); setScreen('profile'); }}
                 style={styles.reelCard}
               >
-                <Image source={{ uri: p.photos[0] }} style={styles.reelImage} />
+                <Image source={{ uri: p.mainPhoto?.url || (p.photos && p.photos[0]) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80' }} style={styles.reelImage} />
                 <View style={styles.reelOverlay} />
                 <View style={styles.reelBadge}>
-                  <Text style={styles.reelBadgeText}>{p.aiMatchScore}%</Text>
+                  <Text style={styles.reelBadgeText}>{p.profileCompletion || p.aiMatchScore || 95}%</Text>
                 </View>
                 <View style={styles.reelFooter}>
-                  <Text style={styles.reelName}>{p.name}</Text>
-                  <Text style={styles.reelSub} numberOfLines={1}>{p.profession}</Text>
+                  <Text style={styles.reelName}>{p.firstName || p.name}</Text>
+                  <Text style={styles.reelSub} numberOfLines={1}>{p.occupation || p.profession}</Text>
                 </View>
               </TouchableOpacity>
             ))}

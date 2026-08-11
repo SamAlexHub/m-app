@@ -105,6 +105,10 @@ interface AppState {
   currentUser: any | null;
   setAuthToken: (token: string | null) => void;
   setCurrentUser: (user: any | null) => void;
+
+  // Profiles from API
+  profiles: any[];
+  setProfiles: (profiles: any[]) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -126,6 +130,7 @@ export const useAppStore = create<AppState>()(
   isProfileVerified: false,
   isEmailVerified: false,
   currentUserProfile: MOCK_PROFILES[1],
+  profiles: [],
 
   ageRange: [24, 35],
   selectedReligion: 'All Religions',
@@ -240,7 +245,8 @@ export const useAppStore = create<AppState>()(
   setCurrentUser: (user) => set((state) => ({
     currentUser: user,
     isEmailVerified: user?.isEmailVerified ?? state.isEmailVerified,
-  }))
+  })),
+  setProfiles: (profiles) => set({ profiles }),
   }),
   {
     name: 'app-storage',

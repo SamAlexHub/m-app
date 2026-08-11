@@ -1,17 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { ArrowLeft, Sparkles, Calendar, Video } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
-import { MOCK_PROFILES } from '../data/profiles';
+import { apiService } from '../services/api';
 import { GlassCard } from '../components/GlassCard';
 import { CircularScore } from '../components/CircularScore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const MatchDetailsScreen: React.FC = () => {
-  const { selectedProfileId, setScreen, setDatePlannerOpen, setVideoCallActive } = useAppStore();
+  const { selectedProfileId, setScreen, setDatePlannerOpen, setVideoCallActive, authToken, profiles } = useAppStore();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const profile = MOCK_PROFILES.find((p) => p.id === selectedProfileId) || MOCK_PROFILES[0];
-  const radar = profile.compatibilityRadar;
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (authToken && selectedProfileId) {
+        try {
+          const res = await apiService.getProfileById(selectedProfileId, authToken);
+          if (res.data) {
+            setProfile(res.data);
+          }
+        } catch (error) {
+          console.error("Failed to load match details", error);
+          // Fallback to basic list profile if detailed fetch fails
+          const fallback = profiles.find(p => p._id === selectedProfileId || p.id === selectedProfileId);
+          if (fallback) setProfile(fallback);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    loadProfile();
+  }, [authToken, selectedProfileId, profiles]);
+
+  if (loading || !profile) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: COLORS.white }}>Loading compatibility insights...</Text>
+      </View>
+    );
+  }
+
+  const radar = profile.compatibilityRadar || {
+    values: 95,
+    lifestyle: 90,
+    communication: 88,
+    futureGoals: 92,
+    astroSync: 85,
+  };
 
   const radarItems = [
     { label: 'Core Life Values', score: radar.values },
@@ -38,8 +74,8 @@ export const MatchDetailsScreen: React.FC = () => {
 
         {/* Hero Score Box */}
         <GlassCard glow style={styles.heroBox}>
-          <CircularScore score={profile.aiMatchScore} size={100} />
-          <Text style={styles.namesText}>{profile.name} & Devan</Text>
+          <CircularScore score={profile.aiMatchScore || profile.profileCompletion || 98} size={100} />
+          <Text style={styles.namesText}>{profile.firstName || profile.name} & Devan</Text>
           <Text style={styles.resonanceText}>EXCEPTIONAL 98% SOULMATE RESONANCE</Text>
           <Text style={styles.descText}>
             Our AI engine evaluated over 140 parameters to compute this match score.
