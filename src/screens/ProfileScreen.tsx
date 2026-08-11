@@ -28,8 +28,9 @@ export const ProfileScreen: React.FC = () => {
   const [fetchedProfile, setFetchedProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  // If selectedProfileId is empty or is the current user ('p2'), display Devan M. Kapoor's own profile.
-  const isOwnProfile = !selectedProfileId || selectedProfileId === currentUserProfile?._id || selectedProfileId === 'p2';
+  // If selectedProfileId is empty or matches the current user's id, display own profile.
+  const currentUserId = currentUserProfile?._id || (currentUserProfile as any)?.id;
+  const isOwnProfile = !selectedProfileId || selectedProfileId === currentUserId || selectedProfileId === 'p2';
   
   // Find appropriate profile: p2 represents the current user (Devan)
   const profile = isOwnProfile ? currentUserProfile : (fetchedProfile || profiles.find((p: any) => p._id === selectedProfileId || p.id === selectedProfileId) || MOCK_PROFILES[0]);
