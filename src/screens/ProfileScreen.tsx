@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TextInput } from 'react-native';
-import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power, ArrowRight } from 'lucide-react-native';
+import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power, ArrowRight, User, Image as ImageIcon } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
@@ -160,7 +160,11 @@ export const ProfileScreen: React.FC = () => {
               <Image source={{ uri: profile.mainPhoto?.url || profile.photos[0] }} style={styles.avatarImg} />
             ) : (
               <View style={[styles.avatarImg, { backgroundColor: 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center' }]}>
-                <Upload size={24} color="rgba(255, 255, 255, 0.2)" />
+                {isOwnProfile ? (
+                  <Upload size={24} color="rgba(255, 255, 255, 0.2)" />
+                ) : (
+                  <User size={24} color="rgba(255, 255, 255, 0.2)" />
+                )}
               </View>
             )}
             {isOwnProfile && (
@@ -182,17 +186,7 @@ export const ProfileScreen: React.FC = () => {
           <Text style={styles.subtitleText}>{profile.occupation || profile.profession} {profile.company ? `at ${profile.company}` : ''}</Text>
         </View>
 
-        {/* Email Verification Action Banner if Not Verified */}
-        {isOwnProfile && !isEmailVerified && (
-          <TouchableOpacity onPress={() => setEmailModalOpen(true)} style={styles.emailVerifyBanner}>
-            <ShieldCheck size={16} color={COLORS.accentGold} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.emailVerifyTitle}>Email Verification Required</Text>
-              <Text style={styles.emailVerifySub}>Tap to enter 6-digit code sent to your email</Text>
-            </View>
-            <ArrowRight size={14} color={COLORS.accentGold} />
-          </TouchableOpacity>
-        )}
+
 
         {/* 3-Column Profile Stats: Age, Height, Zodiac */}
         <View style={styles.statsContainer}>
@@ -207,7 +201,7 @@ export const ProfileScreen: React.FC = () => {
           </View>
           <View style={styles.statsDivider} />
           <View style={styles.statsCol}>
-            <Text style={styles.statsValue}>{profile.horoscope.zodiac}</Text>
+            <Text style={styles.statsValue}>{profile.horoscope?.zodiac || profile.zodiacSign || 'N/A'}</Text>
             <Text style={styles.statsLabel}>Zodiac</Text>
           </View>
         </View>
@@ -237,10 +231,14 @@ export const ProfileScreen: React.FC = () => {
             >
               {profile.photos?.[1] ? (
                 <Image source={{ uri: profile.photos?.[1] }} style={styles.gridPhoto} />
-              ) : (
+              ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
+                </View>
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <ImageIcon size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && profile.photos?.[1] ? (
@@ -258,10 +256,14 @@ export const ProfileScreen: React.FC = () => {
             >
               {profile.photos?.[3] ? (
                 <Image source={{ uri: profile.photos?.[3] }} style={styles.gridPhoto} />
-              ) : (
+              ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
+                </View>
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <ImageIcon size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && profile.photos?.[3] ? (
@@ -282,10 +284,14 @@ export const ProfileScreen: React.FC = () => {
             >
               {profile.photos?.[2] ? (
                 <Image source={{ uri: profile.photos?.[2] }} style={styles.gridPhoto} />
-              ) : (
+              ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
+                </View>
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <ImageIcon size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && profile.photos?.[2] ? (
@@ -303,10 +309,14 @@ export const ProfileScreen: React.FC = () => {
             >
               {profile.photos?.[4] ? (
                 <Image source={{ uri: profile.photos?.[4] }} style={styles.gridPhoto} />
-              ) : (
+              ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
+                </View>
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <ImageIcon size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && profile.photos?.[4] ? (
@@ -336,11 +346,11 @@ export const ProfileScreen: React.FC = () => {
               {/* Category 1: Family Background */}
               <View style={styles.modalSection}>
                 <Text style={styles.modalSecTitle}>Family Background</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Heritage:</Text> {profile.familyDetails.background}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Father's Profession:</Text> {profile.familyDetails.father}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Mother's Profession:</Text> {profile.familyDetails.mother}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Family Values:</Text> {profile.familyDetails.familyValues}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Native Place:</Text> {profile.familyDetails.location}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Heritage:</Text> {profile.familyDetails?.background || profile.familyBackground || 'Not specified'}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Father's Profession:</Text> {profile.familyDetails?.father || profile.fatherProfession || 'Not specified'}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Mother's Profession:</Text> {profile.familyDetails?.mother || profile.motherProfession || 'Not specified'}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Family Values:</Text> {profile.familyDetails?.familyValues || profile.familyValues || 'Not specified'}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Native Place:</Text> {profile.familyDetails?.location || profile.ancestralOrigin || 'Not specified'}</Text>
               </View>
 
               {/* Category 2: Academic & Career */}
@@ -354,10 +364,13 @@ export const ProfileScreen: React.FC = () => {
               {/* Category 3: Vedic Astro details */}
               <View style={styles.modalSection}>
                 <Text style={styles.modalSecTitle}>Horoscope & Astro Kundali</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Zodiac Sign:</Text> {profile.horoscope.zodiac}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Rashi / Moon Sign:</Text> {profile.horoscope.rashi}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Nakshatra:</Text> {profile.horoscope.nakshatra}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Manglik Status:</Text> {profile.horoscope.manglik ? "Manglik" : "Non-Manglik"}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Zodiac Sign:</Text> {profile.horoscope?.zodiac || profile.zodiacSign || 'Not specified'}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Rashi / Moon Sign:</Text> {profile.horoscope?.rashi || profile.moonSign || 'Not specified'}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Nakshatra:</Text> {profile.horoscope?.nakshatra || profile.nakshatra || 'Not specified'}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Manglik Status:</Text> {
+                  profile.horoscope?.manglik !== undefined ? (profile.horoscope.manglik ? "Manglik" : "Non-Manglik") : 
+                  (profile.isManglik !== undefined ? (profile.isManglik ? "Manglik" : "Non-Manglik") : 'Not specified')
+                }</Text>
               </View>
             </ScrollView>
           </View>
