@@ -5,12 +5,15 @@ import { useAppStore, ChatMessage } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
+import { getPhotoUrl, renderText } from '../utils/profileHelpers';
+
 export const ChatScreen: React.FC = () => {
   const {
     activeChatProfileId,
     messagesMap,
     sendMessage,
     setScreen,
+    setSelectedProfileId,
     setVideoCallActive,
     setDatePlannerOpen
   } = useAppStore();
@@ -57,10 +60,10 @@ export const ChatScreen: React.FC = () => {
             <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setScreen('profile')} style={styles.profileRow}>
-            <Image source={{ uri: profile.photos[0] }} style={styles.avatar} />
+          <TouchableOpacity onPress={() => { setSelectedProfileId(profile.id); setScreen('profile'); }} style={styles.profileRow}>
+            <Image source={{ uri: getPhotoUrl(profile.photos?.[0] || profile.mainPhoto?.url) }} style={styles.avatar} />
             <View>
-              <Text style={styles.nameText}>{profile.name}</Text>
+              <Text style={styles.nameText}>{renderText(profile.name || profile.firstName, 'User')}</Text>
               <Text style={styles.statusText}>Online • Verified VIP</Text>
             </View>
           </TouchableOpacity>

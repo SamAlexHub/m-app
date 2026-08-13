@@ -8,6 +8,7 @@ import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 import { EmailOtpModal } from '../components/EmailOtpModal';
 import { UploadPhotoModal } from '../components/UploadPhotoModal';
 import { apiService } from '../services/api';
+import { getPhotoUrl, renderText } from '../utils/profileHelpers';
 
 const MOCK_EDIT_POOL = [
   'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80',
@@ -32,13 +33,25 @@ export const ProfileScreen: React.FC = () => {
   const currentUserId = currentUserProfile?._id || (currentUserProfile as any)?.id;
   const isOwnProfile = !selectedProfileId || selectedProfileId === currentUserId || selectedProfileId === 'p2';
   
-  // Find appropriate profile: p2 represents the current user (Devan)
-  const profile = isOwnProfile ? currentUserProfile : (fetchedProfile || profiles.find((p: any) => p._id === selectedProfileId || p.id === selectedProfileId) || MOCK_PROFILES[0]);
+  // Find appropriate profile safely: p2 represents the current user (Devan)
+  const profile = isOwnProfile
+    ? currentUserProfile
+    : (fetchedProfile ||
+       profiles.find((p: any) => p._id === selectedProfileId || p.id === selectedProfileId) ||
+       MOCK_PROFILES.find((p: any) => p._id === selectedProfileId || p.id === selectedProfileId) ||
+       MOCK_PROFILES[0]);
+
   // Guard: if profile is null/undefined, don't crash
   if (!profile) return null;
 
-  // Construct clean username handle matching screenshot format
-  const username = `@${(profile.firstName || profile.name || 'user').toLowerCase().replace(/ /g, '_')}`;
+  const displayName = renderText(profile.firstName || profile.name, 'User');
+  const username = `@${displayName.toLowerCase().replace(/ /g, '_')}`;
+  const mainPhotoUri = getPhotoUrl(profile.mainPhoto?.url || (profile.photos && profile.photos[0]), '');
+
+  const photo1Uri = getPhotoUrl(profile.photos?.[1], '');
+  const photo2Uri = getPhotoUrl(profile.photos?.[2], '');
+  const photo3Uri = getPhotoUrl(profile.photos?.[3], '');
+  const photo4Uri = getPhotoUrl(profile.photos?.[4], '');
 
   useEffect(() => {
     const loadProfileDetails = async () => {
@@ -67,7 +80,7 @@ export const ProfileScreen: React.FC = () => {
           const res = await apiService.getUserPhotos(authToken);
           if (res.success && res.data) {
             // Backend returns array of {url, isMain}. Map to string array.
-            const photoUrls = res.data.map((p: any) => p.url);
+            const photoUrls = res.data.map((p: any) => getPhotoUrl(p, ''));
             // Maintain array of 5 to match UI placeholders
             const formattedPhotos = [...photoUrls, ...Array(5 - photoUrls.length).fill('')];
             updateCurrentUserProfile({ photos: formattedPhotos.slice(0, 5) });
@@ -81,7 +94,7 @@ export const ProfileScreen: React.FC = () => {
   }, [isOwnProfile, authToken]);
 
   const handleConnect = () => {
-    setIntroText(currentUserProfile.connectIntro || '');
+    setIntroText(currentUserProfile?.connectIntro || '');
     setConnectModalOpen(true);
   };
 
@@ -89,7 +102,7 @@ export const ProfileScreen: React.FC = () => {
     updateCurrentUserProfile({ connectIntro: introText });
     showCustomAlert({
       title: "Invitation Sent",
-      message: `Your matchmaking interest with your personalized introduction has been sent to ${profile.firstName || profile.name} via Evervow Concierge!`,
+      message: `Your matchmaking interest with your personalized introduction has been sent to ${displayName} via Evervow Concierge!`,
       type: "success",
       confirmText: "OK",
       onConfirm: () => setConnectModalOpen(false)
@@ -159,8 +172,8 @@ export const ProfileScreen: React.FC = () => {
         {/* Large Centered Square Avatar with Rounded Corners & Edit Pencil */}
         <View style={styles.avatarWrapper}>
           <View style={styles.avatarContainer}>
-            {(profile.mainPhoto?.url || (profile.photos && profile.photos[0])) ? (
-              <Image source={{ uri: profile.mainPhoto?.url || profile.photos[0] }} style={styles.avatarImg} />
+            {mainPhotoUri ? (
+              <Image source={{ uri: mainPhotoUri }} style={styles.avatarImg} />
             ) : (
               <View style={[styles.avatarImg, { backgroundColor: 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center' }]}>
                 {isOwnProfile ? (
@@ -181,30 +194,28 @@ export const ProfileScreen: React.FC = () => {
         {/* Name and Job Subtitle */}
         <View style={styles.detailsBlock}>
           <View style={styles.nameRow}>
-            <Text style={styles.nameText}>{profile.firstName || profile.name}</Text>
+            <Text style={styles.nameText}>{displayName}</Text>
             {((isOwnProfile && isProfileVerified) || (!isOwnProfile && (profile.userInfo?.isVerified || profile.verified || profile.isVerified))) && (
               <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2.5} style={{ marginLeft: 5 }} />
             )}
           </View>
-          <Text style={styles.subtitleText}>{profile.occupation || profile.profession} {profile.company ? `at ${profile.company}` : ''}</Text>
+          <Text style={styles.subtitleText}>{renderText(profile.occupation || profile.profession, '')} {profile.company ? `at ${renderText(profile.company, '')}` : ''}</Text>
         </View>
-
-
 
         {/* 3-Column Profile Stats: Age, Height, Zodiac */}
         <View style={styles.statsContainer}>
           <View style={styles.statsCol}>
-            <Text style={styles.statsValue}>{profile.age}</Text>
+            <Text style={styles.statsValue}>{renderText(profile.age, 'N/A')}</Text>
             <Text style={styles.statsLabel}>Age</Text>
           </View>
           <View style={styles.statsDivider} />
           <View style={styles.statsCol}>
-            <Text style={styles.statsValue}>{profile.height || "5'6\""}</Text>
+            <Text style={styles.statsValue}>{renderText(profile.height, "5'6\"")}</Text>
             <Text style={styles.statsLabel}>Height</Text>
           </View>
           <View style={styles.statsDivider} />
           <View style={styles.statsCol}>
-            <Text style={styles.statsValue}>{profile.horoscope?.zodiac || profile.zodiacSign || 'N/A'}</Text>
+            <Text style={styles.statsValue}>{renderText(profile.horoscope?.zodiac || profile.zodiacSign, 'N/A')}</Text>
             <Text style={styles.statsLabel}>Zodiac</Text>
           </View>
         </View>
@@ -232,8 +243,8 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(1) : undefined}
               style={[styles.gridPhotoContainer, { height: 210 }]}
             >
-              {profile.photos?.[1] ? (
-                <Image source={{ uri: profile.photos?.[1] }} style={styles.gridPhoto} />
+              {photo1Uri ? (
+                <Image source={{ uri: photo1Uri }} style={styles.gridPhoto} />
               ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
@@ -244,7 +255,7 @@ export const ProfileScreen: React.FC = () => {
                   <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
-              {isOwnProfile && profile.photos?.[1] ? (
+              {isOwnProfile && photo1Uri ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
@@ -257,8 +268,8 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(3) : undefined}
               style={[styles.gridPhotoContainer, { height: 150 }]}
             >
-              {profile.photos?.[3] ? (
-                <Image source={{ uri: profile.photos?.[3] }} style={styles.gridPhoto} />
+              {photo3Uri ? (
+                <Image source={{ uri: photo3Uri }} style={styles.gridPhoto} />
               ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
@@ -269,7 +280,7 @@ export const ProfileScreen: React.FC = () => {
                   <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
-              {isOwnProfile && profile.photos?.[3] ? (
+              {isOwnProfile && photo3Uri ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
@@ -285,8 +296,8 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(2) : undefined}
               style={[styles.gridPhotoContainer, { height: 150 }]}
             >
-              {profile.photos?.[2] ? (
-                <Image source={{ uri: profile.photos?.[2] }} style={styles.gridPhoto} />
+              {photo2Uri ? (
+                <Image source={{ uri: photo2Uri }} style={styles.gridPhoto} />
               ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
@@ -297,7 +308,7 @@ export const ProfileScreen: React.FC = () => {
                   <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
-              {isOwnProfile && profile.photos?.[2] ? (
+              {isOwnProfile && photo2Uri ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
@@ -310,8 +321,8 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(4) : undefined}
               style={[styles.gridPhotoContainer, { height: 210 }]}
             >
-              {profile.photos?.[4] ? (
-                <Image source={{ uri: profile.photos?.[4] }} style={styles.gridPhoto} />
+              {photo4Uri ? (
+                <Image source={{ uri: photo4Uri }} style={styles.gridPhoto} />
               ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
@@ -322,7 +333,7 @@ export const ProfileScreen: React.FC = () => {
                   <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
-              {isOwnProfile && profile.photos?.[4] ? (
+              {isOwnProfile && photo4Uri ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
@@ -349,27 +360,27 @@ export const ProfileScreen: React.FC = () => {
               {/* Category 1: Family Background */}
               <View style={styles.modalSection}>
                 <Text style={styles.modalSecTitle}>Family Background</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Heritage:</Text> {profile.familyDetails?.background || profile.familyBackground || 'Not specified'}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Father's Profession:</Text> {profile.familyDetails?.father || profile.fatherProfession || 'Not specified'}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Mother's Profession:</Text> {profile.familyDetails?.mother || profile.motherProfession || 'Not specified'}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Family Values:</Text> {profile.familyDetails?.familyValues || profile.familyValues || 'Not specified'}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Native Place:</Text> {profile.familyDetails?.location || profile.ancestralOrigin || 'Not specified'}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Heritage:</Text> {renderText(profile.familyDetails?.background || profile.familyBackground)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Father's Profession:</Text> {renderText(profile.familyDetails?.father || profile.fatherProfession)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Mother's Profession:</Text> {renderText(profile.familyDetails?.mother || profile.motherProfession)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Family Values:</Text> {renderText(profile.familyDetails?.familyValues || profile.familyValues)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Native Place:</Text> {renderText(profile.familyDetails?.location || profile.ancestralOrigin)}</Text>
               </View>
 
               {/* Category 2: Academic & Career */}
               <View style={styles.modalSection}>
                 <Text style={styles.modalSecTitle}>Education & Profession</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Highest Education:</Text> {profile.education}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Occupation:</Text> {profile.profession}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Company:</Text> {profile.company}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Highest Education:</Text> {renderText(profile.education)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Occupation:</Text> {renderText(profile.profession || profile.occupation)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Company:</Text> {renderText(profile.company)}</Text>
               </View>
 
               {/* Category 3: Vedic Astro details */}
               <View style={styles.modalSection}>
                 <Text style={styles.modalSecTitle}>Horoscope & Astro Kundali</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Zodiac Sign:</Text> {profile.horoscope?.zodiac || profile.zodiacSign || 'Not specified'}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Rashi / Moon Sign:</Text> {profile.horoscope?.rashi || profile.moonSign || 'Not specified'}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Nakshatra:</Text> {profile.horoscope?.nakshatra || profile.nakshatra || 'Not specified'}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Zodiac Sign:</Text> {renderText(profile.horoscope?.zodiac || profile.zodiacSign)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Rashi / Moon Sign:</Text> {renderText(profile.horoscope?.rashi || profile.moonSign)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Nakshatra:</Text> {renderText(profile.horoscope?.nakshatra || profile.nakshatra)}</Text>
                 <Text style={styles.modalText}><Text style={styles.bold}>Manglik Status:</Text> {
                   profile.horoscope?.manglik !== undefined ? (profile.horoscope.manglik ? "Manglik" : "Non-Manglik") : 
                   (profile.isManglik !== undefined ? (profile.isManglik ? "Manglik" : "Non-Manglik") : 'Not specified')

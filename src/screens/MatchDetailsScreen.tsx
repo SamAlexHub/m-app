@@ -7,6 +7,9 @@ import { GlassCard } from '../components/GlassCard';
 import { CircularScore } from '../components/CircularScore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
+import { MOCK_PROFILES } from '../data/profiles';
+import { renderText } from '../utils/profileHelpers';
+
 export const MatchDetailsScreen: React.FC = () => {
   const { selectedProfileId, setScreen, authToken, profiles } = useAppStore();
   const [profile, setProfile] = useState<any>(null);
@@ -16,33 +19,45 @@ export const MatchDetailsScreen: React.FC = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      if (!authToken || !selectedProfileId) return;
+      if (!selectedProfileId) return;
       setLoading(true);
-      try {
-        // Load profile details
-        const res = await apiService.getProfileById(selectedProfileId, authToken);
-        if (res.data) {
-          setProfile(res.data);
-        } else {
-          const fallback = profiles.find(p => p._id === selectedProfileId || p.id === selectedProfileId);
-          if (fallback) setProfile(fallback);
-        }
-      } catch {
-        const fallback = profiles.find(p => (p as any)._id === selectedProfileId || p.id === selectedProfileId);
-        if (fallback) setProfile(fallback);
-      } finally {
-        setLoading(false);
-      }
+      
+      const getLocalFallback = () => {
+        return (
+          profiles.find(p => p._id === selectedProfileId || p.id === selectedProfileId) ||
+          MOCK_PROFILES.find(p => p.id === selectedProfileId || p._id === selectedProfileId) ||
+          MOCK_PROFILES[0]
+        );
+      };
 
-      // Load AI compatibility score separately (slower)
-      setAiLoading(true);
-      try {
-        const compatRes = await apiService.getCompatibility(selectedProfileId, authToken);
-        if (compatRes.data) setCompatibility(compatRes.data);
-      } catch (err) {
-        console.error('Compatibility fetch failed:', err);
-      } finally {
-        setAiLoading(false);
+      if (authToken) {
+        try {
+          // Load profile details
+          const res = await apiService.getProfileById(selectedProfileId, authToken);
+          if (res.data) {
+            setProfile(res.data);
+          } else {
+            setProfile(getLocalFallback());
+          }
+        } catch {
+          setProfile(getLocalFallback());
+        } finally {
+          setLoading(false);
+        }
+
+        // Load AI compatibility score separately (slower)
+        setAiLoading(true);
+        try {
+          const compatRes = await apiService.getCompatibility(selectedProfileId, authToken);
+          if (compatRes.data) setCompatibility(compatRes.data);
+        } catch (err) {
+          console.error('Compatibility fetch failed:', err);
+        } finally {
+          setAiLoading(false);
+        }
+      } else {
+        setProfile(getLocalFallback());
+        setLoading(false);
       }
     };
     loadData();
@@ -58,7 +73,7 @@ export const MatchDetailsScreen: React.FC = () => {
   }
 
   // Use AI data if available, else fallback to mock profile data
-  const overallScore = compatibility?.overallScore ?? (profile.aiMatchScore || profile.profileCompletion || 80);
+  const overallScore = Number(compatibility?.overallScore ?? (profile.aiMatchScore || profile.profileCompletion || 80)) || 80;
   const matchLabel = compatibility?.label ?? 'Compatibility Analysis';
   const summary = compatibility?.summary ?? 'Our AI engine evaluated over 140 parameters to compute this match score.';
   const aiInsight = compatibility?.aiInsight ?? null;
@@ -67,22 +82,22 @@ export const MatchDetailsScreen: React.FC = () => {
 
   const axes = compatibility?.axes
     ? [
-        { label: 'Core Life Values', score: compatibility.axes.coreValues },
-        { label: 'Lifestyle & Travel', score: compatibility.axes.lifestyle },
-        { label: 'Communication Style', score: compatibility.axes.communication },
-        { label: 'Future Aspirations', score: compatibility.axes.futureAspirations },
-        { label: 'Astro Kundali Sync', score: compatibility.axes.astroSync },
+        { label: 'Core Life Values', score: Number(compatibility.axes.coreValues) || 80 },
+        { label: 'Lifestyle & Travel', score: Number(compatibility.axes.lifestyle) || 78 },
+        { label: 'Communication Style', score: Number(compatibility.axes.communication) || 75 },
+        { label: 'Future Aspirations', score: Number(compatibility.axes.futureAspirations) || 82 },
+        { label: 'Astro Kundali Sync', score: Number(compatibility.axes.astroSync) || 70 },
       ]
     : [
-        { label: 'Core Life Values', score: profile.compatibilityRadar?.values ?? 80 },
-        { label: 'Lifestyle & Travel', score: profile.compatibilityRadar?.lifestyle ?? 78 },
-        { label: 'Communication Style', score: profile.compatibilityRadar?.communication ?? 75 },
-        { label: 'Future Aspirations', score: profile.compatibilityRadar?.futureGoals ?? 82 },
-        { label: 'Astro Kundali Sync', score: profile.compatibilityRadar?.astroSync ?? 70 },
+        { label: 'Core Life Values', score: Number(profile.compatibilityRadar?.values) || 80 },
+        { label: 'Lifestyle & Travel', score: Number(profile.compatibilityRadar?.lifestyle) || 78 },
+        { label: 'Communication Style', score: Number(profile.compatibilityRadar?.communication) || 75 },
+        { label: 'Future Aspirations', score: Number(profile.compatibilityRadar?.futureGoals) || 82 },
+        { label: 'Astro Kundali Sync', score: Number(profile.compatibilityRadar?.astroSync) || 70 },
       ];
 
-  const nameA = compatibility?.nameA ?? (profile.firstName || profile.name);
-  const nameB = compatibility?.nameB ?? 'You';
+  const nameA = renderText(compatibility?.nameA ?? (profile.firstName || profile.name), 'Partner');
+  const nameB = renderText(compatibility?.nameB, 'You');
 
   return (
     <View style={styles.container}>

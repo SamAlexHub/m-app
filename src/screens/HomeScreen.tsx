@@ -9,6 +9,7 @@ import { SUCCESS_STORIES } from '../data/successStories';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 import { EmailOtpModal } from '../components/EmailOtpModal';
 import { apiService } from '../services/api';
+import { getPhotoUrl, renderText } from '../utils/profileHelpers';
 
 export const HomeScreen: React.FC = () => {
   const { setScreen, setSelectedProfileId, notifications, isProfileVerified, setProfileVerified, isEmailVerified, currentUserProfile, currentUser, authToken, profiles, setProfiles, showCustomAlert } = useAppStore();
@@ -26,7 +27,7 @@ export const HomeScreen: React.FC = () => {
       if (authToken) {
         try {
           const res = await apiService.getAllProfiles(authToken);
-          if (res.data) {
+          if (res.data && res.data.length > 0) {
             setProfiles(res.data);
           }
         } catch (error) {
@@ -37,7 +38,10 @@ export const HomeScreen: React.FC = () => {
     loadProfiles();
   }, [authToken]);
 
-  const topMatch = profiles.length > 0 ? profiles[0] : null;
+  const profileList = profiles && profiles.length > 0 ? profiles : MOCK_PROFILES;
+  const currentUserId = currentUserProfile?._id || (currentUserProfile as any)?.id;
+  const filteredList = profileList.filter(p => (p._id || p.id) !== currentUserId);
+  const topMatch = filteredList.length > 0 ? filteredList[0] : MOCK_PROFILES[0];
 
   const completedCount = (actualEmailVerified ? 1 : 0) + 1 + (actualProfileVerified ? 1 : 0);
 
@@ -215,16 +219,16 @@ export const HomeScreen: React.FC = () => {
             <GlassCard glow onClick={() => { setSelectedProfileId(topMatch._id || topMatch.id); setScreen('match-details'); }}>
               <View style={styles.matchCardContent}>
                 <View style={styles.matchCardTopRow}>
-                  <Image source={{ uri: topMatch.mainPhoto?.url || (topMatch.photos && topMatch.photos[0]) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80' }} style={styles.matchAvatar} />
+                  <Image source={{ uri: getPhotoUrl(topMatch.mainPhoto?.url || (topMatch.photos && topMatch.photos[0])) }} style={styles.matchAvatar} />
                   <View style={styles.matchInfo}>
                     <Text style={styles.matchName}>
-                      {topMatch.firstName || topMatch.name}
-                      {topMatch.userInfo?.isVerified && (
+                      {renderText(topMatch.firstName || topMatch.name, 'User')}
+                      {(topMatch.userInfo?.isVerified || topMatch.isVerified || topMatch.verified) && (
                         <ShieldCheck size={14} color={COLORS.accentGold} style={{ marginLeft: 4, marginTop: 2 }} />
                       )}
-                      , {topMatch.age}
+                      {topMatch.age ? `, ${topMatch.age}` : ''}
                     </Text>
-                    <Text style={styles.matchSub} numberOfLines={1}>{topMatch.occupation || topMatch.profession} • {topMatch.city || topMatch.location}</Text>
+                    <Text style={styles.matchSub} numberOfLines={1}>{renderText(topMatch.occupation || topMatch.profession, '')} • {renderText(topMatch.city || topMatch.location, 'Global')}</Text>
                     <View style={styles.sharedIntentBadge}>
                       <Text style={styles.sharedIntentText}>AI MATCH PRINCIPLE</Text>
                     </View>
@@ -234,7 +238,7 @@ export const HomeScreen: React.FC = () => {
                   </View>
                 </View>
                 
-                <Text style={styles.matchQuote} numberOfLines={2}>"{topMatch.personalizedIntro || topMatch.matchReason || 'Looking for a meaningful connection.'}"</Text>
+                <Text style={styles.matchQuote} numberOfLines={2}>"{renderText(topMatch.personalizedIntro || topMatch.matchReason || topMatch.bio, 'Looking for a meaningful connection.')}"</Text>
 
                 <TouchableOpacity
                   onPress={() => { setSelectedProfileId(topMatch._id || topMatch.id); setScreen('match-details'); }}
@@ -261,21 +265,21 @@ export const HomeScreen: React.FC = () => {
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.reelContent}>
-            {profiles.filter(p => p.userInfo?.isVerified || p.isVerified).map((p) => (
+            {filteredList.filter(p => p.userInfo?.isVerified || p.isVerified || p.verified).map((p) => (
               <TouchableOpacity
                 key={p._id || p.id}
                 activeOpacity={0.85}
                 onPress={() => { setSelectedProfileId(p._id || p.id); setScreen('profile'); }}
                 style={styles.reelCard}
               >
-                <Image source={{ uri: p.mainPhoto?.url || (p.photos && p.photos[0]) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80' }} style={styles.reelImage} />
+                <Image source={{ uri: getPhotoUrl(p.mainPhoto?.url || (p.photos && p.photos[0])) }} style={styles.reelImage} />
                 <View style={styles.reelOverlay} />
                 <View style={styles.reelBadge}>
                   <Text style={styles.reelBadgeText}>{p.profileCompletion || p.aiMatchScore || 95}%</Text>
                 </View>
                 <View style={styles.reelFooter}>
-                  <Text style={styles.reelName}>{p.firstName || p.name}</Text>
-                  <Text style={styles.reelSub} numberOfLines={1}>{p.occupation || p.profession}</Text>
+                  <Text style={styles.reelName}>{renderText(p.firstName || p.name, 'User')}</Text>
+                  <Text style={styles.reelSub} numberOfLines={1}>{renderText(p.occupation || p.profession, '')}</Text>
                 </View>
               </TouchableOpacity>
             ))}

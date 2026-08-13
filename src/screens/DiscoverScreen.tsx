@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import { Compass, SlidersHorizontal, Settings, MessageCircle, Plus } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
+import { MOCK_PROFILES } from '../data/profiles';
+import { getPhotoUrl, renderText } from '../utils/profileHelpers';
 
 import { SwipeCard } from '../components/SwipeCard';
 import { GlassCard } from '../components/GlassCard';
@@ -31,8 +33,18 @@ export const DiscoverScreen: React.FC = () => {
     'London & Paris',
   ];
 
-  const filteredProfiles = profiles.filter((p) => p._id !== currentUserProfile?.id && p.id !== currentUserProfile?.id);
+  const profileSource = profiles && profiles.length > 0 ? profiles : MOCK_PROFILES;
+  const currentUserId = currentUserProfile?._id || (currentUserProfile as any)?.id;
+  const filteredProfiles = profileSource.filter((p) => (p._id || p.id) !== currentUserId);
   const currentProfile = filteredProfiles.length > 0 ? filteredProfiles[swipeIndex % filteredProfiles.length] : null;
+
+  const handleOpenProfile = (p: any) => {
+    const targetId = p?._id || p?.id;
+    if (targetId) {
+      setSelectedProfileId(targetId);
+      setScreen('profile');
+    }
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -73,7 +85,10 @@ export const DiscoverScreen: React.FC = () => {
               profile={currentProfile}
               onLike={() => { likeProfile(currentProfile._id || currentProfile.id); nextSwipe(); }}
               onPass={() => { passProfile(currentProfile._id || currentProfile.id); nextSwipe(); }}
-              onTap={() => { setSelectedProfileId(currentProfile._id || currentProfile.id); setScreen('profile'); }}
+              onSuperLike={() => { likeProfile(currentProfile._id || currentProfile.id); nextSwipe(); }}
+              onStartChat={() => setScreen('chat')}
+              onOpenDetails={() => handleOpenProfile(currentProfile)}
+              onTap={() => handleOpenProfile(currentProfile)}
             />
           ) : (
             <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, height: 400 }}>
@@ -91,13 +106,13 @@ export const DiscoverScreen: React.FC = () => {
             <TouchableOpacity
               key={`story-${p._id || p.id}`}
               activeOpacity={0.82}
-              onPress={() => { setSelectedProfileId(p._id || p.id); setScreen('profile'); }}
+              onPress={() => handleOpenProfile(p)}
               style={styles.storyWrapper}
             >
               <View style={styles.storyCircleGold}>
-                <Image source={{ uri: p.mainPhoto?.url || (p.photos && p.photos[0]) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80' }} style={styles.storyAvatar} />
+                <Image source={{ uri: getPhotoUrl(p.mainPhoto?.url || (p.photos && p.photos[0])) }} style={styles.storyAvatar} />
               </View>
-              <Text style={styles.storyName} numberOfLines={1}>{(p.firstName || p.name).split(' ')[0].toLowerCase()}</Text>
+              <Text style={styles.storyName} numberOfLines={1}>{renderText(p.firstName || p.name, 'user').split(' ')[0].toLowerCase()}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
