@@ -1,18 +1,23 @@
 import { TextStyle, ViewStyle } from 'react-native';
 
 export const COLORS = {
-  primary: '#072F2B',        // Primary Deep Emerald
-  secondary: '#0E453F',      // Secondary Emerald Container
-  accentGold: '#D8A84B',     // Royal Gold Accent
-  accentGoldDark: '#B88432', // Darker Gold for Gradients
-  accentGoldLight: '#F8E8CD',// Light Gold Champagne
+  primary: '#FFFFFF',        // Pure White Primary Background
+  secondary: '#F9FAFB',      // Light Slate Container / Surface
+  accentGold: '#C57D3E',     // Warm Copper Gold Accent
+  accentGoldDark: '#B87333', // Darker Copper Gold
+  accentGoldLight: '#FAF5EF',// Soft Off-white / Cream
+  bgLinen: '#FFFFFF',        // Pure White Background
+  emeraldDark: '#1F2937',    // Dark Gray Text / Element replacing dark emerald
+  copperGold: '#C57D3E',     // Copper Gold Accent
+  textDark: '#111827',       // Dark High-Contrast Text
+  textMuted: '#6B7280',      // Soft Muted Text
   white: '#FFFFFF',          // Pure White
-  lightGray: '#E5E7EB',      // Soft Light Gray
+  lightGray: '#F3F4F6',      // Light Border/Card Fill
   mutedGray: '#9CA3AF',      // Muted Secondary Text
-  darkGlass: 'rgba(14, 69, 63, 0.75)',
-  darkGlassBorder: 'rgba(216, 168, 75, 0.35)',
-  goldGlow: 'rgba(216, 168, 75, 0.35)',
-  cardBg: '#0E453F',
+  darkGlass: 'rgba(255, 255, 255, 0.95)',
+  darkGlassBorder: 'rgba(229, 231, 235, 0.8)',
+  goldGlow: 'rgba(197, 125, 62, 0.25)',
+  cardBg: '#FFFFFF',
   redAccent: '#EF4444',
   greenSuccess: '#10B981',
 };
@@ -58,7 +63,7 @@ export const TYPOGRAPHY = {
     fontSize: 32,
     lineHeight: 40,
     fontWeight: 'bold',
-    color: COLORS.white,
+    color: COLORS.textDark,
     letterSpacing: -0.5,
   } as TextStyle,
   titleL: {
@@ -66,7 +71,7 @@ export const TYPOGRAPHY = {
     fontSize: 24,
     lineHeight: 32,
     fontWeight: 'bold',
-    color: COLORS.white,
+    color: COLORS.textDark,
     letterSpacing: -0.3,
   } as TextStyle,
   titleM: {
@@ -74,7 +79,7 @@ export const TYPOGRAPHY = {
     fontSize: 20,
     lineHeight: 28,
     fontWeight: '600',
-    color: COLORS.white,
+    color: COLORS.textDark,
   } as TextStyle,
   subtitle: {
     fontSize: 12,
@@ -87,7 +92,7 @@ export const TYPOGRAPHY = {
     fontSize: 14,
     lineHeight: 22,
     fontWeight: '400',
-    color: COLORS.lightGray,
+    color: COLORS.textMuted,
   } as TextStyle,
   caption: {
     fontSize: 12,
