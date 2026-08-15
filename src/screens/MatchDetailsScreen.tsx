@@ -1,25 +1,103 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { ArrowLeft, Sparkles, Calendar, Video } from 'lucide-react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { ArrowLeft, Sparkles, CircleCheck, CircleAlert, Brain } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
-import { MOCK_PROFILES } from '../data/profiles';
+import { apiService } from '../services/api';
 import { GlassCard } from '../components/GlassCard';
 import { CircularScore } from '../components/CircularScore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
+import { MOCK_PROFILES } from '../data/profiles';
+import { renderText } from '../utils/profileHelpers';
+
 export const MatchDetailsScreen: React.FC = () => {
-  const { selectedProfileId, setScreen, setDatePlannerOpen, setVideoCallActive } = useAppStore();
+  const { selectedProfileId, setScreen, authToken, profiles } = useAppStore();
+  const [profile, setProfile] = useState<any>(null);
+  const [compatibility, setCompatibility] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [aiLoading, setAiLoading] = useState(false);
 
-  const profile = MOCK_PROFILES.find((p) => p.id === selectedProfileId) || MOCK_PROFILES[0];
-  const radar = profile.compatibilityRadar;
+  useEffect(() => {
+    const loadData = async () => {
+      if (!selectedProfileId) return;
+      setLoading(true);
+      
+      const getLocalFallback = () => {
+        return (
+          profiles.find(p => p._id === selectedProfileId || p.id === selectedProfileId) ||
+          MOCK_PROFILES.find(p => p.id === selectedProfileId || p._id === selectedProfileId) ||
+          MOCK_PROFILES[0]
+        );
+      };
 
-  const radarItems = [
-    { label: 'Core Life Values', score: radar.values },
-    { label: 'Lifestyle & Travel', score: radar.lifestyle },
-    { label: 'Communication Style', score: radar.communication },
-    { label: 'Future Aspirations', score: radar.futureGoals },
-    { label: 'Astro Kundali Sync', score: radar.astroSync },
-  ];
+      if (authToken) {
+        try {
+          // Load profile details
+          const res = await apiService.getProfileById(selectedProfileId, authToken);
+          if (res.data) {
+            setProfile(res.data);
+          } else {
+            setProfile(getLocalFallback());
+          }
+        } catch {
+          setProfile(getLocalFallback());
+        } finally {
+          setLoading(false);
+        }
+
+        // Load AI compatibility score separately (slower)
+        setAiLoading(true);
+        try {
+          const compatRes = await apiService.getCompatibility(selectedProfileId, authToken);
+          if (compatRes.data) setCompatibility(compatRes.data);
+        } catch (err) {
+          console.error('Compatibility fetch failed:', err);
+        } finally {
+          setAiLoading(false);
+        }
+      } else {
+        setProfile(getLocalFallback());
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, [authToken, selectedProfileId]);
+
+  if (loading || !profile) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator color={COLORS.accentGold} size="large" />
+        <Text style={{ color: COLORS.white, marginTop: 12, fontSize: 13 }}>Loading compatibility insights...</Text>
+      </View>
+    );
+  }
+
+  // Use AI data if available, else fallback to mock profile data
+  const overallScore = Number(compatibility?.overallScore ?? (profile.aiMatchScore || profile.profileCompletion || 80)) || 80;
+  const matchLabel = compatibility?.label ?? 'Compatibility Analysis';
+  const summary = compatibility?.summary ?? 'Our AI engine evaluated over 140 parameters to compute this match score.';
+  const aiInsight = compatibility?.aiInsight ?? null;
+  const strengths: string[] = compatibility?.strengths ?? [];
+  const considerations: string[] = compatibility?.considerations ?? [];
+
+  const axes = compatibility?.axes
+    ? [
+        { label: 'Core Life Values', score: Number(compatibility.axes.coreValues) || 80 },
+        { label: 'Lifestyle & Travel', score: Number(compatibility.axes.lifestyle) || 78 },
+        { label: 'Communication Style', score: Number(compatibility.axes.communication) || 75 },
+        { label: 'Future Aspirations', score: Number(compatibility.axes.futureAspirations) || 82 },
+        { label: 'Astro Kundali Sync', score: Number(compatibility.axes.astroSync) || 70 },
+      ]
+    : [
+        { label: 'Core Life Values', score: Number(profile.compatibilityRadar?.values) || 80 },
+        { label: 'Lifestyle & Travel', score: Number(profile.compatibilityRadar?.lifestyle) || 78 },
+        { label: 'Communication Style', score: Number(profile.compatibilityRadar?.communication) || 75 },
+        { label: 'Future Aspirations', score: Number(profile.compatibilityRadar?.futureGoals) || 82 },
+        { label: 'Astro Kundali Sync', score: Number(profile.compatibilityRadar?.astroSync) || 70 },
+      ];
+
+  const nameA = renderText(compatibility?.nameA ?? (profile.firstName || profile.name), 'Partner');
+  const nameB = renderText(compatibility?.nameB, 'You');
 
   return (
     <View style={styles.container}>
@@ -38,45 +116,77 @@ export const MatchDetailsScreen: React.FC = () => {
 
         {/* Hero Score Box */}
         <GlassCard glow style={styles.heroBox}>
-          <CircularScore score={profile.aiMatchScore} size={100} />
-          <Text style={styles.namesText}>{profile.name} & Devan</Text>
-          <Text style={styles.resonanceText}>EXCEPTIONAL 98% SOULMATE RESONANCE</Text>
-          <Text style={styles.descText}>
-            Our AI engine evaluated over 140 parameters to compute this match score.
-          </Text>
+          {aiLoading ? (
+            <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+              <ActivityIndicator color={COLORS.accentGold} size="large" />
+              <Text style={styles.aiLoadingText}>Gemini AI is analysing...</Text>
+            </View>
+          ) : (
+            <>
+              <CircularScore score={overallScore} size={100} />
+              <Text style={styles.namesText}>{nameA} & {nameB}</Text>
+              <Text style={styles.resonanceText}>{matchLabel.toUpperCase()}</Text>
+              <Text style={styles.descText}>{summary}</Text>
+            </>
+          )}
         </GlassCard>
+
+        {/* AI Insight Banner */}
+        {aiInsight && !aiLoading && (
+          <GlassCard style={styles.insightBanner}>
+            <Brain size={16} color={COLORS.accentGold} strokeWidth={2} />
+            <Text style={styles.insightText}>"{aiInsight}"</Text>
+          </GlassCard>
+        )}
 
         {/* 5-Axis Matrix */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>5-Axis Compatibility Matrix</Text>
           <GlassCard style={styles.matrixCard}>
-            {radarItems.map((item, idx) => (
+            {axes.map((item, idx) => (
               <View key={idx} style={styles.matrixRow}>
                 <View style={styles.matrixLabelRow}>
                   <Text style={styles.matrixLabel}>{item.label}</Text>
                   <Text style={styles.matrixScore}>{item.score}%</Text>
                 </View>
                 <View style={styles.track}>
-                  <View style={[styles.bar, { width: `${item.score}%` }]} />
+                  <View style={[styles.bar, { width: `${item.score}%` as any }]} />
                 </View>
               </View>
             ))}
           </GlassCard>
         </View>
+
+        {/* Strengths */}
+        {strengths.length > 0 && !aiLoading && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>✨ What Works Great</Text>
+            <GlassCard style={styles.listCard}>
+              {strengths.map((s, i) => (
+                <View key={i} style={styles.listRow}>
+                  <CircleCheck size={14} color={COLORS.greenSuccess} strokeWidth={2} />
+                  <Text style={styles.listText}>{s}</Text>
+                </View>
+              ))}
+            </GlassCard>
+          </View>
+        )}
+
+        {/* Considerations */}
+        {considerations.length > 0 && !aiLoading && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>💬 Things to Explore</Text>
+            <GlassCard style={styles.listCard}>
+              {considerations.map((c, i) => (
+                <View key={i} style={styles.listRow}>
+                  <CircleAlert size={14} color={COLORS.accentGold} strokeWidth={2} />
+                  <Text style={styles.listText}>{c}</Text>
+                </View>
+              ))}
+            </GlassCard>
+          </View>
+        )}
       </ScrollView>
-
-      {/* Action Footer */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity activeOpacity={0.88} onPress={() => setDatePlannerOpen(true)} style={styles.inviteBtn}>
-          <Calendar size={16} color={COLORS.primary} strokeWidth={2} />
-          <Text style={styles.inviteBtnText}>Invite to Date</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity activeOpacity={0.8} onPress={() => setVideoCallActive(true)} style={styles.videoBtn}>
-          <Video size={16} color={COLORS.accentGold} strokeWidth={2} />
-          <Text style={styles.videoBtnText}>HD Video Call</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -88,7 +198,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: SPACING.md,
-    paddingBottom: 110,
+    paddingBottom: 40,
   },
   header: {
     flexDirection: 'row',
@@ -116,7 +226,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: COLORS.darkGlassBorder,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   reportBadgeText: {
     ...TYPOGRAPHY.subtitle,
@@ -125,6 +235,12 @@ const styles = StyleSheet.create({
   heroBox: {
     alignItems: 'center',
     paddingVertical: SPACING.lg,
+  },
+  aiLoadingText: {
+    color: COLORS.accentGold,
+    fontSize: 12,
+    marginTop: 12,
+    fontStyle: 'italic',
   },
   namesText: {
     ...TYPOGRAPHY.titleL,
@@ -141,14 +257,29 @@ const styles = StyleSheet.create({
     fontSize: 11,
     textAlign: 'center',
     marginTop: SPACING.sm,
-    maxWidth: 260,
+    maxWidth: 280,
+    lineHeight: 17,
+  },
+  insightBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: SPACING.sm,
+    marginTop: SPACING.md,
+    padding: SPACING.sm,
+  },
+  insightText: {
+    flex: 1,
+    fontSize: 11,
+    color: COLORS.lightGray,
+    fontStyle: 'italic',
+    lineHeight: 17,
   },
   section: {
     marginTop: SPACING.md,
   },
   sectionTitle: {
     ...TYPOGRAPHY.titleM,
-    fontSize: 16,
+    fontSize: 15,
     marginBottom: SPACING.sm,
   },
   matrixCard: {
@@ -181,45 +312,18 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: COLORS.accentGold,
   },
-  bottomBar: {
-    position: 'absolute',
-    bottom: SPACING.md,
-    left: SPACING.md,
-    right: SPACING.md,
-    flexDirection: 'row',
-    gap: SPACING.md,
+  listCard: {
+    gap: SPACING.sm,
   },
-  inviteBtn: {
+  listRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  listText: {
     flex: 1,
-    height: 52,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.accentGold,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    ...SHADOWS.goldGlow,
-  },
-  inviteBtnText: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: COLORS.primary,
-  },
-  videoBtn: {
-    height: 52,
-    paddingHorizontal: SPACING.md,
-    borderRadius: RADIUS.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-  },
-  videoBtnText: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: COLORS.white,
+    fontSize: 12,
+    color: COLORS.lightGray,
+    lineHeight: 18,
   },
 });

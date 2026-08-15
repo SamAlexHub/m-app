@@ -22,6 +22,7 @@ import { FloatingBottomBar } from './components/FloatingBottomBar';
 import { DatePlannerModal } from './components/DatePlannerModal';
 import { VideoCallModal } from './components/VideoCallModal';
 import { FilterSheetModal } from './components/FilterSheetModal';
+import { CustomAlert } from './components/CustomAlert';
 import { COLORS } from './theme/tokens';
 
 export const App: React.FC = () => {
@@ -79,6 +80,7 @@ export const App: React.FC = () => {
         <DatePlannerModal />
         <VideoCallModal />
         <FilterSheetModal />
+        <CustomAlert />
       </View>
     </SafeAreaView>
   );

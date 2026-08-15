@@ -3,14 +3,16 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Heart, ShieldCheck, MessageCircle, Send, Bookmark } from 'lucide-react-native';
 import { Profile } from '../data/profiles';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
+import { getPhotoUrl, renderText } from '../utils/profileHelpers';
 
 interface SwipeCardProps {
   profile: Profile;
-  onLike: () => void;
-  onPass: () => void;
-  onSuperLike: () => void;
-  onOpenDetails: () => void;
-  onStartChat: () => void;
+  onLike?: () => void;
+  onPass?: () => void;
+  onSuperLike?: () => void;
+  onOpenDetails?: () => void;
+  onStartChat?: () => void;
+  onTap?: () => void;
 }
 
 export const SwipeCard: React.FC<SwipeCardProps> = ({
@@ -20,65 +22,65 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   onSuperLike,
   onOpenDetails,
   onStartChat,
+  onTap,
 }) => {
+  const handleOpenDetails = onOpenDetails || onTap || (() => {});
+  const handleLike = onLike || (() => {});
+  const handleSuperLike = onSuperLike || (() => {});
+  const handleStartChat = onStartChat || (() => {});
+
+  const photoUri = getPhotoUrl(profile?.mainPhoto?.url || profile?.photos?.[0]);
+  const displayName = renderText(profile?.firstName || profile?.name, 'User');
+  const displayProfession = renderText(profile?.profession || profile?.occupation, '');
+  const displayBio = renderText(profile?.bio || profile?.personalizedIntro, 'Looking for a meaningful connection.');
+  const displayLocation = renderText(profile?.location || profile?.city, 'Global Elite');
+
   return (
     <View style={styles.cardContainer}>
       {/* Photo Image Card */}
-      <View style={styles.imageCard}>
-        <Image source={{ uri: profile.photos[0] }} style={styles.image} resizeMode="cover" />
+      <TouchableOpacity activeOpacity={0.92} onPress={handleOpenDetails} style={styles.imageCard}>
+        <Image source={{ uri: photoUri }} style={styles.image} resizeMode="cover" />
         <View style={styles.imageOverlay} />
         
         {/* Glassmorphic Overlay pill bottom-left */}
         <View style={styles.imageOverlayPill}>
-          <Text style={styles.imageOverlayText}>{profile.aiMatchScore}% Match</Text>
+          <Text style={styles.imageOverlayText}>{profile?.aiMatchScore || profile?.profileCompletion || 90}% Match</Text>
         </View>
-
-        {/* Top Badges */}
-        <View style={styles.topRow}>
-          {profile.verified && (
-            <View style={styles.verifiedBadge}>
-              <ShieldCheck size={10} color={COLORS.accentGold} strokeWidth={2.5} />
-              <Text style={styles.verifiedText}>ROYAL</Text>
-            </View>
-          )}
-          <View style={styles.tierBadge}>
-            <Text style={styles.tierText}>{profile.vipTier} VIP</Text>
-          </View>
-        </View>
-      </View>
+      </TouchableOpacity>
 
       {/* Action Row below the Photo (Heart, MessageCircle, Send, Bookmark) */}
       <View style={styles.feedActionRow}>
         <View style={styles.feedActionLeft}>
-          <TouchableOpacity activeOpacity={0.7} onPress={onLike} style={styles.feedActionBtn}>
+          <TouchableOpacity activeOpacity={0.7} onPress={handleLike} style={styles.feedActionBtn}>
             <Heart size={22} color={COLORS.redAccent} fill={COLORS.redAccent} strokeWidth={1.8} />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.7} onPress={onStartChat} style={styles.feedActionBtn}>
+          <TouchableOpacity activeOpacity={0.7} onPress={handleStartChat} style={styles.feedActionBtn}>
             <MessageCircle size={22} color={COLORS.white} strokeWidth={1.8} />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.7} onPress={onSuperLike} style={styles.feedActionBtn}>
+          <TouchableOpacity activeOpacity={0.7} onPress={handleSuperLike} style={styles.feedActionBtn}>
             <Send size={20} color={COLORS.white} strokeWidth={1.8} style={styles.sendIconRotated} />
           </TouchableOpacity>
         </View>
         
-        <TouchableOpacity activeOpacity={0.7} onPress={onOpenDetails} style={styles.feedActionBtn}>
+        <TouchableOpacity activeOpacity={0.7} onPress={handleOpenDetails} style={styles.feedActionBtn}>
           <Bookmark size={22} color={COLORS.accentGold} strokeWidth={1.8} />
         </TouchableOpacity>
       </View>
 
       {/* Description Section */}
-      <TouchableOpacity activeOpacity={0.9} onPress={onOpenDetails} style={styles.feedDescContainer}>
+      <TouchableOpacity activeOpacity={0.9} onPress={handleOpenDetails} style={styles.feedDescContainer}>
         <View style={styles.feedNameRow}>
-          <Text style={styles.feedNameText}>{profile.name}, {profile.age}</Text>
-          {profile.verified && <ShieldCheck size={14} color={COLORS.accentGold} strokeWidth={2.5} style={{ marginLeft: 5 }} />}
+          <Text style={styles.feedNameText}>{displayName}{profile?.age ? `, ${profile.age}` : ''}</Text>
+          {(profile?.verified || profile?.isVerified) && <ShieldCheck size={14} color={COLORS.accentGold} strokeWidth={2.5} style={{ marginLeft: 5 }} />}
         </View>
         
         <Text style={styles.feedStatusText} numberOfLines={2}>
-          <Text style={styles.boldText}>{profile.profession}</Text> • {profile.bio}
+          {displayProfession ? <Text style={styles.boldText}>{displayProfession}</Text> : null}
+          {displayProfession ? ' • ' : ''}{displayBio}
         </Text>
         
         <View style={styles.feedMetaRow}>
-          <Text style={styles.feedMetaText}>{profile.location} • Active Now • </Text>
+          <Text style={styles.feedMetaText}>{displayLocation} • Active Now • </Text>
           <Text style={styles.moreText}>more</Text>
         </View>
       </TouchableOpacity>

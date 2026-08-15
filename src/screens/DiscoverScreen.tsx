@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'rea
 import { Compass, SlidersHorizontal, Settings, MessageCircle, Plus } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
+import { getPhotoUrl, renderText } from '../utils/profileHelpers';
+
 import { SwipeCard } from '../components/SwipeCard';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
@@ -18,6 +20,8 @@ export const DiscoverScreen: React.FC = () => {
     setFilterModalOpen,
     likeProfile,
     passProfile,
+    currentUserProfile,
+    profiles,
   } = useAppStore();
 
   const [activeChip, setActiveChip] = useState('Highest AI Match');
@@ -29,13 +33,24 @@ export const DiscoverScreen: React.FC = () => {
     'London & Paris',
   ];
 
-  const currentProfile = MOCK_PROFILES[swipeIndex % MOCK_PROFILES.length];
+  const profileSource = profiles && profiles.length > 0 ? profiles : MOCK_PROFILES;
+  const currentUserId = currentUserProfile?._id || (currentUserProfile as any)?.id;
+  const filteredProfiles = profileSource.filter((p) => (p._id || p.id) !== currentUserId);
+  const currentProfile = filteredProfiles.length > 0 ? filteredProfiles[swipeIndex % filteredProfiles.length] : null;
+
+  const handleOpenProfile = (p: any) => {
+    const targetId = p?._id || p?.id;
+    if (targetId) {
+      setSelectedProfileId(targetId);
+      setScreen('profile');
+    }
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Header (Screenshot-aligned: Title + Actions) */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Éternité</Text>
+        <Text style={styles.headerTitle}>Evervow</Text>
 
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={() => setScreen('chat')} style={styles.actionIconBtn}>
@@ -63,45 +78,41 @@ export const DiscoverScreen: React.FC = () => {
       </ScrollView>
 
       {/* Discover Swipe Cards Feed */}
-      <SwipeCard
-        profile={currentProfile}
-        onLike={() => {
-          likeProfile(currentProfile.id);
-          nextSwipe();
-        }}
-        onPass={() => {
-          passProfile(currentProfile.id);
-          nextSwipe();
-        }}
-        onSuperLike={() => {
-          likeProfile(currentProfile.id);
-          nextSwipe();
-        }}
-        onOpenDetails={() => {
-          setSelectedProfileId(currentProfile.id);
-          setScreen('profile');
-        }}
-        onStartChat={() => {
-          setSelectedProfileId(currentProfile.id);
-          setScreen('chat');
-        }}
-      />
+      {discoverMode === 'swipe' && (
+        <View style={styles.swipeContainer}>
+          {currentProfile ? (
+            <SwipeCard
+              profile={currentProfile}
+              onLike={() => { likeProfile(currentProfile._id || currentProfile.id); nextSwipe(); }}
+              onPass={() => { passProfile(currentProfile._id || currentProfile.id); nextSwipe(); }}
+              onSuperLike={() => { likeProfile(currentProfile._id || currentProfile.id); nextSwipe(); }}
+              onStartChat={() => setScreen('chat')}
+              onOpenDetails={() => handleOpenProfile(currentProfile)}
+              onTap={() => handleOpenProfile(currentProfile)}
+            />
+          ) : (
+            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, height: 400 }}>
+              <Text style={{ color: COLORS.white }}>No profiles available</Text>
+            </View>
+          )}
+        </View>
+      )}
 
       {/* Stories Reel (Moved to the bottom for thumb-zone ergonomics) */}
       <View style={styles.storiesContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.storiesContent}>
           {/* Other stories */}
-          {MOCK_PROFILES.map((p) => (
+          {filteredProfiles.map((p) => (
             <TouchableOpacity
-              key={`story-${p.id}`}
+              key={`story-${p._id || p.id}`}
               activeOpacity={0.82}
-              onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
+              onPress={() => handleOpenProfile(p)}
               style={styles.storyWrapper}
             >
               <View style={styles.storyCircleGold}>
-                <Image source={{ uri: p.photos[0] }} style={styles.storyAvatar} />
+                <Image source={{ uri: getPhotoUrl(p.mainPhoto?.url || (p.photos && p.photos[0])) }} style={styles.storyAvatar} />
               </View>
-              <Text style={styles.storyName} numberOfLines={1}>{p.name.split(' ')[0].toLowerCase()}</Text>
+              <Text style={styles.storyName} numberOfLines={1}>{renderText(p.firstName || p.name, 'user').split(' ')[0].toLowerCase()}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>

@@ -86,7 +86,7 @@ export const SystemGuaranteesScreen: React.FC = () => {
 
         {/* Footer info */}
         <Text style={styles.footerNote}>
-          © 2026 Éternité Matrimonial Concierge Inc. All rights reserved.
+          © 2026 Evervow Matrimonial Concierge Inc. All rights reserved.
         </Text>
       </ScrollView>
     </View>

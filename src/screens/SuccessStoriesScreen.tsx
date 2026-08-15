@@ -24,7 +24,7 @@ export const SuccessStoriesScreen: React.FC = () => {
       </View>
 
       <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Couples United by Éternité</Text>
+        <Text style={styles.title}>Couples United by Evervow</Text>
       <Text style={styles.sub}>Real Love Stories • Real European Weddings</Text>
 
       <View style={styles.list}>

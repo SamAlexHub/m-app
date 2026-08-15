@@ -11,7 +11,7 @@ export const TermsConditionsScreen: React.FC = () => {
   const sections = [
     {
       title: '1. Admission & Eligibility Criteria',
-      text: 'Éternité is a private matrimonial service reserved strictly for high-net-worth families, royalty, and accomplished professionals. Membership is conditional upon completing ID verification audits. We reserve the right to decline applications without prior notice.',
+      text: 'Evervow is a private matrimonial service reserved strictly for high-net-worth families, royalty, and accomplished professionals. Membership is conditional upon completing ID verification audits. We reserve the right to decline applications without prior notice.',
     },
     {
       title: '2. Member Code of Conduct',
@@ -19,7 +19,7 @@ export const TermsConditionsScreen: React.FC = () => {
     },
     {
       title: '3. Photo Copyright & Snapshot Protections',
-      text: 'All candidate photo materials are protected by Éternité biometric shields. Attempting to copy, screenshot, download, or screen-record profile cards violates user agreements. Breach of this clause is subject to immediate account termination and permanent bans.',
+      text: 'All candidate photo materials are protected by Evervow biometric shields. Attempting to copy, screenshot, download, or screen-record profile cards violates user agreements. Breach of this clause is subject to immediate account termination and permanent bans.',
     },
     {
       title: '4. Government ID Auditing & Encryption',
@@ -27,7 +27,7 @@ export const TermsConditionsScreen: React.FC = () => {
     },
     {
       title: '5. Matrimonial Disclaimer',
-      text: 'While Éternité implements rigorous values, zodiac, and background audits to compute AI Soulmate scores, we do not guarantee marriage success. Our service provides premium facilitation; the final assessment remains with the members.',
+      text: 'While Evervow implements rigorous values, zodiac, and background audits to compute AI Soulmate scores, we do not guarantee marriage success. Our service provides premium facilitation; the final assessment remains with the members.',
     },
   ];
 
@@ -47,7 +47,7 @@ export const TermsConditionsScreen: React.FC = () => {
         <GlassCard style={styles.warningCard}>
           <ShieldAlert size={20} color={COLORS.accentGold} strokeWidth={1.8} />
           <Text style={styles.warningText}>
-            Please review the legal and safety bylaws of Éternité luxury matrimonial community.
+            Please review the legal and safety bylaws of Evervow luxury matrimonial community.
           </Text>
         </GlassCard>
 
@@ -63,7 +63,7 @@ export const TermsConditionsScreen: React.FC = () => {
 
         {/* Footer info */}
         <Text style={styles.footerNote}>
-          Last Updated: August 2026. © Éternité Matrimonial Concierge Inc. All rights reserved.
+          Last Updated: August 2026. © Evervow Matrimonial Concierge Inc. All rights reserved.
         </Text>
       </ScrollView>
     </View>

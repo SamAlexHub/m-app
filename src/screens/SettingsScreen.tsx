@@ -47,7 +47,7 @@ export const SettingsScreen: React.FC = () => {
             <Crown size={18} color={COLORS.accentGold} strokeWidth={1.8} />
             <View style={styles.textCol}>
               <Text style={styles.rowTitle}>Our Speciality</Text>
-              <Text style={styles.rowSub}>The 4 pillars of Éternité matchmaking</Text>
+              <Text style={styles.rowSub}>The 4 pillars of Evervow matchmaking</Text>
             </View>
             <ChevronRight size={16} color={COLORS.mutedGray} strokeWidth={1.8} />
           </TouchableOpacity>
@@ -78,7 +78,7 @@ export const SettingsScreen: React.FC = () => {
 
       <TouchableOpacity onPress={() => setScreen('login')} style={styles.signOutBtn}>
         <LogOut size={16} color={COLORS.redAccent} strokeWidth={1.8} />
-        <Text style={styles.signOutText}>Sign Out of Éternité</Text>
+        <Text style={styles.signOutText}>Sign Out of Evervow</Text>
       </TouchableOpacity>
     </ScrollView>
   </View>

@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MOCK_PROFILES, Profile } from '../data/profiles';
 
 export type ScreenType =
@@ -103,10 +105,38 @@ interface AppState {
   currentUser: any | null;
   setAuthToken: (token: string | null) => void;
   setCurrentUser: (user: any | null) => void;
+
+  // Profiles from API
+  profiles: any[];
+  setProfiles: (profiles: any[]) => void;
+
+  // Custom Alert State
+  customAlert: {
+    visible: boolean;
+    title: string;
+    message: string;
+    type: 'success' | 'error' | 'info';
+    onConfirm?: () => void;
+    onCancel?: () => void;
+    confirmText?: string;
+    cancelText?: string;
+  };
+  showCustomAlert: (options: {
+    title: string;
+    message: string;
+    type?: 'success' | 'error' | 'info';
+    onConfirm?: () => void;
+    onCancel?: () => void;
+    confirmText?: string;
+    cancelText?: string;
+  }) => void;
+  hideCustomAlert: () => void;
 }
 
-export const useAppStore = create<AppState>((set, get) => ({
-  currentScreen: 'splash', // Start at Splash screen -> Onboarding -> Login -> Home
+export const useAppStore = create<AppState>()(
+  persist(
+    (set, get) => ({
+      currentScreen: 'splash', // Start at Splash screen -> Login -> Home
   selectedProfileId: 'p1',
   discoverMode: 'swipe',
   swipeIndex: 0,
@@ -122,6 +152,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   isProfileVerified: false,
   isEmailVerified: false,
   currentUserProfile: MOCK_PROFILES[1],
+  profiles: [],
+  customAlert: {
+    visible: false,
+    title: '',
+    message: '',
+    type: 'info',
+  },
 
   ageRange: [24, 35],
   selectedReligion: 'All Religions',
@@ -237,4 +274,32 @@ export const useAppStore = create<AppState>((set, get) => ({
     currentUser: user,
     isEmailVerified: user?.isEmailVerified ?? state.isEmailVerified,
   })),
-}));
+  setProfiles: (profiles) => set({ profiles }),
+  showCustomAlert: (options) => set({
+    customAlert: {
+      visible: true,
+      title: options.title,
+      message: options.message,
+      type: options.type || 'info',
+      onConfirm: options.onConfirm,
+      onCancel: options.onCancel,
+      confirmText: options.confirmText,
+      cancelText: options.cancelText,
+    }
+  }),
+  hideCustomAlert: () => set((state) => ({
+    customAlert: { ...state.customAlert, visible: false }
+  })),
+  }),
+  {
+    name: 'app-storage',
+    storage: createJSONStorage(() => AsyncStorage),
+    partialize: (state) => ({
+      authToken: state.authToken,
+      currentUser: state.currentUser,
+      currentUserProfile: state.currentUserProfile,
+      isEmailVerified: state.isEmailVerified,
+      isProfileVerified: state.isProfileVerified
+    }),
+  }
+));

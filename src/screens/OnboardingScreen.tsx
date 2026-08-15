@@ -91,10 +91,10 @@ export const OnboardingScreen: React.FC = () => {
           >
             <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
-        </View>
+        </View >
 
         {/* Bottom Floating Glass Card with Onboarding Information */}
-        <View style={styles.bottomCardContainer}>
+        < View style={styles.bottomCardContainer} >
           <View style={styles.glassCard}>
             {/* Eyebrow Category Tag */}
             <View style={styles.eyebrowBadge}>
@@ -134,9 +134,9 @@ export const OnboardingScreen: React.FC = () => {
               <ChevronRight size={18} color={slide.btnText} strokeWidth={2.4} />
             </TouchableOpacity>
           </View>
-        </View>
-      </SafeAreaView>
-    </View>
+        </View >
+      </SafeAreaView >
+    </View >
   );
 };
 

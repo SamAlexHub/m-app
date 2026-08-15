@@ -15,7 +15,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Upload, X, Check, Image as ImageIcon, Link as LinkIcon, Sparkles } from 'lucide-react-native';
 import { COLORS, RADIUS, SPACING } from '../theme/tokens';
 import { GlassCard } from './GlassCard';
-import { uploadFiles } from '../services/api';
+import { uploadPhoto } from '../services/api';
+import { useAppStore } from '../store/useAppStore';
 
 const PRESET_PHOTOS = [
   'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80',
@@ -43,12 +44,12 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
   currentPhotoUrl,
   onSavePhoto,
 }) => {
-  const [activeTab, setActiveTab] = useState<'upload' | 'url' | 'presets'>('upload');
   const [selectedUrl, setSelectedUrl] = useState<string>(currentPhotoUrl || '');
-  const [customUrlInput, setCustomUrlInput] = useState<string>('');
+  const [selectedUri, setSelectedUri] = useState<string>('');
+  const [selectedFileName, setSelectedFileName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const [actualFile, setActualFile] = useState<File | null>(null);
+  const { authToken } = useAppStore();
 
   useEffect(() => {
     setSelectedUrl(currentPhotoUrl || PRESET_PHOTOS[0]);
@@ -82,36 +83,16 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const asset = result.assets[0];
         setSelectedUrl(asset.uri);
+        setSelectedUri(asset.uri);
+        setSelectedFileName(asset.fileName || asset.uri.split('/').pop() || 'photo.jpg');
         setFeedback({ type: 'success', message: 'Photo selected from gallery!' });
-        
-        // Convert URI to Blob to mock File for UploadThing in React Native
-        const response = await fetch(asset.uri);
-        const blob = await response.blob();
-        
-        // Assign name and type to the blob so it works like a File
-        const fileName = asset.fileName || asset.uri.split('/').pop() || 'upload.jpg';
-        const fileType = asset.mimeType || 'image/jpeg';
-        
-        const nativeFile = Object.assign(blob, {
-          name: fileName,
-          type: fileType,
-        }) as unknown as File;
-        
-        setActualFile(nativeFile);
       }
     } catch (err: any) {
       setFeedback({ type: 'error', message: 'Failed to pick image: ' + err.message });
     }
   };
 
-  const handleApplyUrl = () => {
-    if (!customUrlInput.trim()) {
-      setFeedback({ type: 'error', message: 'Please enter a valid image URL' });
-      return;
-    }
-    setSelectedUrl(customUrlInput.trim());
-    setFeedback({ type: 'success', message: 'Image URL applied!' });
-  };
+
 
   const handleSave = async () => {
     if (!selectedUrl) {
@@ -120,27 +101,23 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
     }
     try {
       setLoading(true);
-      
       let finalUrl = selectedUrl;
-      
-      if (activeTab === 'upload' && actualFile) {
-        setFeedback({ type: 'success', message: 'Uploading securely...' });
-        const res = await uploadFiles("profilePhoto", {
-          files: [actualFile],
-        });
-        
-        if (res && res.length > 0 && res[0].url) {
-          finalUrl = res[0].url;
-        } else {
-          throw new Error('Upload failed to return URL');
+
+      // If a native file was selected (uri is a local device path), upload it
+      if (selectedUri && !selectedUri.startsWith('http')) {
+        if (!authToken) {
+          throw new Error('You must be logged in to upload photos');
         }
+        setFeedback({ type: 'success', message: 'Uploading securely...' });
+        finalUrl = await uploadPhoto(selectedUri, selectedFileName, authToken);
       }
 
       await onSavePhoto(finalUrl);
-      setFeedback({ type: 'success', message: 'Photo saved and synced successfully!' });
+      setFeedback({ type: 'success', message: 'Photo saved successfully!' });
       setTimeout(() => {
         onClose();
-        setActualFile(null);
+        setSelectedUri('');
+        setSelectedFileName('');
       }, 500);
     } catch (err: any) {
       setFeedback({ type: 'error', message: err.message || 'Failed to save photo' });
@@ -180,109 +157,33 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
             </Text>
           ) : null}
 
-          {/* Tabs Navigation */}
-          <View style={styles.tabContainer}>
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'upload' && styles.activeTab]}
-              onPress={() => setActiveTab('upload')}
-            >
-              <Upload size={14} color={activeTab === 'upload' ? COLORS.primary : COLORS.mutedGray} />
-              <Text style={[styles.tabText, activeTab === 'upload' && styles.activeTabText]}>Upload File</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'url' && styles.activeTab]}
-              onPress={() => setActiveTab('url')}
-            >
-              <LinkIcon size={14} color={activeTab === 'url' ? COLORS.primary : COLORS.mutedGray} />
-              <Text style={[styles.tabText, activeTab === 'url' && styles.activeTabText]}>Image URL</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'presets' && styles.activeTab]}
-              onPress={() => setActiveTab('presets')}
-            >
-              <Sparkles size={14} color={activeTab === 'presets' ? COLORS.primary : COLORS.mutedGray} />
-              <Text style={[styles.tabText, activeTab === 'presets' && styles.activeTabText]}>Presets</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Tab Content */}
+          {/* Upload Area */}
           <View style={styles.tabContent}>
-            {activeTab === 'upload' && (
-              <View style={styles.uploadTabContent}>
-                <Text style={styles.tabDescription}>
-                  Select any photo from your device gallery or computer files.
-                </Text>
+            <View style={styles.uploadTabContent}>
+              <Text style={styles.tabDescription}>
+                Select any photo from your device gallery or computer files.
+              </Text>
 
-                {Platform.OS === 'web' ? (
-                  <label style={webInputStyle}>
-                    <Upload size={22} color={COLORS.accentGold} />
-                    <span style={{ color: COLORS.white, marginTop: 8, fontSize: 13, fontWeight: '600' }}>
-                      Click to Browse & Upload Photo
-                    </span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.mobileBrowseBtn}
-                    onPress={handleNativeImagePick}
-                  >
-                    <Upload size={20} color={COLORS.primary} />
-                    <Text style={styles.mobileBrowseBtnText}>Browse Device Gallery</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
-
-            {activeTab === 'url' && (
-              <View style={styles.urlTabContent}>
-                <Text style={styles.tabDescription}>Paste an external HTTP/HTTPS image URL.</Text>
-                <View style={styles.inputBox}>
-                  <LinkIcon size={16} color={COLORS.accentGold} />
-                  <TextInput
-                    value={customUrlInput}
-                    onChangeText={setCustomUrlInput}
-                    placeholder="https://example.com/photo.jpg"
-                    placeholderTextColor={COLORS.mutedGray}
-                    style={styles.urlInput}
-                    autoCapitalize="none"
-                  />
-                </View>
-                <TouchableOpacity style={styles.applyBtn} onPress={handleApplyUrl}>
-                  <Text style={styles.applyBtnText}>Apply Image URL</Text>
+              {Platform.OS === 'web' ? (
+                <TouchableOpacity
+                  style={styles.mobileBrowseBtn}
+                  onPress={handleFileSelect}
+                >
+                  <Upload size={22} color={COLORS.accentGold} />
+                  <Text style={{ color: COLORS.white, marginTop: 8, fontSize: 13, fontWeight: '600' }}>
+                    Select Image (Web)
+                  </Text>
                 </TouchableOpacity>
-              </View>
-            )}
-
-            {activeTab === 'presets' && (
-              <ScrollView style={{ maxHeight: 150 }} showsVerticalScrollIndicator={false}>
-                <View style={styles.presetsGrid}>
-                  {PRESET_PHOTOS.map((url, idx) => (
-                    <TouchableOpacity
-                      key={idx}
-                      onPress={() => setSelectedUrl(url)}
-                      style={[
-                        styles.presetThumbContainer,
-                        selectedUrl === url && styles.presetThumbSelected,
-                      ]}
-                    >
-                      <Image source={{ uri: url }} style={styles.presetThumb} />
-                      {selectedUrl === url && (
-                        <View style={styles.checkBadge}>
-                          <Check size={10} color={COLORS.primary} strokeWidth={3} />
-                        </View>
-                      )}
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </ScrollView>
-            )}
+              ) : (
+                <TouchableOpacity
+                  style={styles.mobileBrowseBtn}
+                  onPress={handleNativeImagePick}
+                >
+                  <Upload size={20} color={COLORS.primary} />
+                  <Text style={styles.mobileBrowseBtnText}>Browse Device Gallery</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
 
           {/* Action Buttons */}

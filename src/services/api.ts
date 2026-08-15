@@ -1,14 +1,38 @@
 import { Platform } from 'react-native';
 
-const API_BASE_URL = Platform.OS === 'android'
-  ? 'http://10.0.2.2:5000/api/v1'
-  : 'http://localhost:5000/api/v1';
+// __DEV__ is a React Native/Expo global (true in dev, false in prod builds).
+// For web/Vite builds it is injected via vite.config.ts define block.
+declare const __DEV__: boolean;
 
-import { generateReactHelpers } from "@uploadthing/react";
+const API_BASE_URL = __DEV__
+  ? (Platform.OS === 'android' ? 'http://10.10.13.42:5000/api/v1' : 'http://localhost:5000/api/v1')
+  : 'https://ever-vow-api.onrender.com/api/v1';
 
-export const { uploadFiles } = generateReactHelpers({
-  url: `${API_BASE_URL}/upload`,
-});
+
+// Custom photo upload using FormData (no third-party SDK needed)
+export const uploadPhoto = async (fileUri: string, fileName: string, token: string): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', {
+    uri: fileUri,
+    name: fileName || 'photo.jpg',
+    type: 'image/jpeg',
+  } as any);
+
+  const response = await fetch(`${API_BASE_URL}/upload/photo`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.url) {
+    throw new Error(data.message || 'Photo upload failed');
+  }
+  return data.url;
+};
+
 
 export interface User {
   id?: string;
@@ -33,7 +57,8 @@ export interface ProfileData {
   maritalStatus?: string;
   personalizedIntro?: string;
   vipVerificationDoc?: {
-    url?: string;
+    documentType?: string;
+    documentNumber?: string;
     status?: string;
   };
   height?: string;
@@ -94,20 +119,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      // Dev fallback
-      return {
-        success: true,
-        message: "Registration successful! An OTP code has been sent to your email for verification.",
-        data: {
-          userId: "usr_" + Date.now(),
-          email: payload.email,
-          phone: payload.phone || null,
-          role: "user",
-          isEmailVerified: false,
-          isMobileVerified: false,
-          isVerified: false,
-        },
-      };
+      throw err;
     }
   },
 
@@ -128,10 +140,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: `OTP code sent to email ${email} successfully.`,
-      };
+      throw err; // DO NOT silently swallow network errors!
     }
   },
 
@@ -152,25 +161,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: "Email address verified successfully!",
-        token: "mock_jwt_token_" + Date.now(),
-        user: {
-          id: "usr_verified_" + Date.now(),
-          email,
-          role: "user",
-          isEmailVerified: true,
-          isMobileVerified: false,
-          isVerified: true,
-          status: "active",
-        },
-        profile: {
-          firstName: "Devan",
-          lastName: "Kapoor",
-          gender: "male",
-        },
-      };
+      throw err;
     }
   },
 
@@ -191,11 +182,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: `OTP code sent to mobile number ${phone} successfully.`,
-        phone,
-      };
+      throw err; // DO NOT silently swallow network errors!
     }
   },
 
@@ -216,21 +203,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: "Mobile number verified successfully!",
-        token: "mock_jwt_token_mobile_" + Date.now(),
-        user: {
-          id: "usr_" + Date.now(),
-          email: email || "user@example.com",
-          phone: phone || "+15550192834",
-          role: "user",
-          isEmailVerified: true,
-          isMobileVerified: true,
-          isVerified: true,
-          status: "active",
-        },
-      };
+      throw err;
     }
   },
 
@@ -251,26 +224,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: "Login successful!",
-        token: "mock_jwt_token_login_" + Date.now(),
-        user: {
-          id: "usr_" + Date.now(),
-          email,
-          phone: "+15550192834",
-          role: "user",
-          isEmailVerified: true,
-          isMobileVerified: true,
-          isVerified: true,
-          status: "active",
-        },
-        profile: {
-          firstName: "Devan",
-          lastName: "M. Kapoor",
-          profileCompletion: 95,
-        },
-      };
+      throw err;
     }
   },
 
@@ -300,20 +254,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        data: {
-          firstName: "Devan",
-          lastName: "Kapoor",
-          gender: "male",
-          occupation: "Tech Entrepreneur & Investor",
-          company: "Sterling Holdings",
-          education: "MBA, Stanford University",
-          city: "Mumbai",
-          country: "India",
-          profileCompletion: 95,
-        },
-      };
+      throw err;
     }
   },
 
@@ -353,6 +294,9 @@ export const apiService = {
       }
       if (profileData.bioIntro) payload.personalizedIntro = profileData.bioIntro;
 
+      console.log("Preparing to fetch:", `${API_BASE_URL}/profiles`);
+      console.log("Payload:", payload);
+
       const response = await fetch(`${API_BASE_URL}/profiles`, {
         method: "POST",
         headers: {
@@ -361,7 +305,10 @@ export const apiService = {
         },
         body: JSON.stringify(payload),
       });
+
+      console.log("Fetch response status:", response.status);
       const data = await response.json();
+      console.log("Fetch response data:", data);
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Failed to save profile");
       }
@@ -370,11 +317,7 @@ export const apiService = {
       if (err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
         throw err;
       }
-      return {
-        success: true,
-        message: "Profile saved successfully! (Dev Mode)",
-        data: profileData,
-      };
+      throw err;
     }
   },
 
@@ -383,7 +326,22 @@ export const apiService = {
     return this.upsertProfile(profileData, token);
   },
 
-  // 2.3 Get Profile by ID (GET /api/v1/profiles/:id)
+  // 2.3 Get All Profiles (GET /api/v1/profiles)
+  async getAllProfiles(token: string, queryString: string = ""): Promise<{ success: boolean; data: any[] }> {
+    const response = await fetch(`${API_BASE_URL}/profiles?${queryString}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Failed to fetch profiles");
+    }
+    return data;
+  },
+
+  // 2.4 Get Profile by ID (GET /api/v1/profiles/:id)
   async getProfileById(id: string, token: string): Promise<{ success: boolean; data: ProfileData }> {
     const response = await fetch(`${API_BASE_URL}/profiles/${id}`, {
       method: "GET",
@@ -522,6 +480,36 @@ export const apiService = {
     const data = await response.json();
     if (!response.ok || !data.success) {
       throw new Error(data.message || "Failed to delete user");
+    }
+    return data;
+  },
+
+  // 4.1 Get Master Options (GET /api/v1/master/options/:category)
+  async getMasterOptions(category: string, token: string): Promise<{ success: boolean; data: any[] }> {
+    const response = await fetch(`${API_BASE_URL}/master/options/${category}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Failed to fetch master options");
+    }
+    return data;
+  },
+
+  // 5. AI Compatibility Score (GET /api/v1/compatibility/:targetProfileId)
+  async getCompatibility(targetProfileId: string, token: string): Promise<{ success: boolean; data: any; cached?: boolean }> {
+    const response = await fetch(`${API_BASE_URL}/compatibility/${targetProfileId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Failed to calculate compatibility');
     }
     return data;
   },

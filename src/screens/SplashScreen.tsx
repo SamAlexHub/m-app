@@ -1,11 +1,75 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Heart, ChevronRight } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
+import { apiService } from '../services/api';
+
 export const SplashScreen: React.FC = () => {
-  const { setScreen } = useAppStore();
+  const { setScreen, authToken, updateCurrentUserProfile } = useAppStore();
+
+  useEffect(() => {
+    // Check if user is logged in and sync profile
+    const initApp = async () => {
+      if (authToken) {
+        try {
+          const res = await apiService.getMyProfile(authToken);
+          if (res.data) {
+            updateCurrentUserProfile({
+              name: `${res.data.firstName || ''} ${res.data.lastName || ''}`.trim(),
+              height: res.data.height || '',
+              religion: res.data.religion?._id || res.data.religion || '',
+              community: res.data.caste || '',
+              motherTongue: res.data.motherTongue || '',
+              profession: res.data.occupation || '',
+              company: res.data.company || '',
+              education: res.data.education || '',
+              connectIntro: res.data.personalizedIntro || '',
+              familyDetails: {
+                father: res.data.fatherProfession || '',
+                mother: res.data.motherProfession || '',
+                background: res.data.familyBackground || '',
+                familyValues: res.data.familyValues || '',
+                location: res.data.ancestralOrigin || ''
+              },
+              horoscope: {
+                zodiac: res.data.zodiacSign || '',
+                rashi: res.data.moonSign || '',
+                nakshatra: res.data.nakshatra || '',
+                manglik: res.data.isManglik || false,
+                gunaScore: "33 / 36"
+              },
+              vipVerificationDoc: res.data.vipVerificationDoc || { documentType: 'Aadhar', documentNumber: '', status: 'pending' },
+              photos: res.data.photos && res.data.photos.length > 0 
+                ? [...res.data.photos, ...Array(5 - res.data.photos.length).fill('')].slice(0, 5) 
+                : Array(5).fill(''),
+            });
+          }
+        } catch (error) {
+          console.error("Failed to sync profile on startup:", error);
+        }
+        
+        setTimeout(() => {
+          setScreen('home');
+        }, 800);
+      } else {
+        setTimeout(() => {
+          // Stay on splash or user clicks continue
+        }, 1500);
+      }
+    };
+    
+    initApp();
+  }, [authToken, setScreen, updateCurrentUserProfile]);
+
+  const handleContinue = () => {
+    if (authToken) {
+      setScreen('home');
+    } else {
+      setScreen('login');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -23,13 +87,13 @@ export const SplashScreen: React.FC = () => {
 
         <TouchableOpacity
           activeOpacity={0.85}
-          onPress={() => setScreen('onboarding')}
+          onPress={handleContinue}
           style={styles.logoCircle}
         >
           <Heart size={44} color={COLORS.accentGold} fill="rgba(216, 168, 75, 0.2)" strokeWidth={1.8} />
         </TouchableOpacity>
 
-        <Text style={styles.titleText}>ÉTERNITÉ</Text>
+        <Text style={styles.titleText}>EVERVOW</Text>
         <Text style={styles.subtitleText}>HAUTE MATRIMONIE • INTERNATIONAL</Text>
 
         <Text style={styles.descText}>
@@ -40,7 +104,7 @@ export const SplashScreen: React.FC = () => {
       <View style={styles.bottomActions}>
         <TouchableOpacity
           activeOpacity={0.85}
-          onPress={() => setScreen('onboarding')}
+          onPress={handleContinue}
           style={styles.ctaButton}
         >
           <Text style={styles.ctaText}>Begin Your Love Story</Text>

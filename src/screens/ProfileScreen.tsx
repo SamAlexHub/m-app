@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TextInput } from 'react-native';
-import { ArrowLeft, MoreHorizontal, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power, ArrowRight } from 'lucide-react-native';
+import { ArrowLeft, Ellipsis, ShieldCheck, Eye, X, LogOut, Pencil, Upload, Power, ArrowRight, User, ImageOff } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
 import { MOCK_PROFILES } from '../data/profiles';
 import { GlassCard } from '../components/GlassCard';
@@ -8,6 +8,7 @@ import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 import { EmailOtpModal } from '../components/EmailOtpModal';
 import { UploadPhotoModal } from '../components/UploadPhotoModal';
 import { apiService } from '../services/api';
+import { getPhotoUrl, renderText } from '../utils/profileHelpers';
 
 const MOCK_EDIT_POOL = [
   'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80',
@@ -18,46 +19,106 @@ const MOCK_EDIT_POOL = [
 ];
 
 export const ProfileScreen: React.FC = () => {
-  const { selectedProfileId, setScreen, isProfileVerified, isEmailVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto, authToken } = useAppStore();
+  const { selectedProfileId, setScreen, isProfileVerified, isEmailVerified, currentUserProfile, updateCurrentUserProfile, updateUserPhoto, authToken, profiles, showCustomAlert } = useAppStore();
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [editingPhotoIndex, setEditingPhotoIndex] = useState(0);
   const [introText, setIntroText] = useState('');
+  const [fetchedProfile, setFetchedProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-  // If selectedProfileId is empty or is the current user ('p2'), display Devan M. Kapoor's own profile.
-  const isOwnProfile = !selectedProfileId || selectedProfileId === 'p2';
+  // If selectedProfileId is empty or matches the current user's id, display own profile.
+  const currentUserId = currentUserProfile?._id || (currentUserProfile as any)?.id;
+  const isOwnProfile = !selectedProfileId || selectedProfileId === currentUserId || selectedProfileId === 'p2';
   
-  // Find appropriate profile: p2 represents the current user (Devan)
-  const profile = isOwnProfile ? currentUserProfile : (MOCK_PROFILES.find((p) => p.id === selectedProfileId) || MOCK_PROFILES[0]);
-  
-  // Construct clean username handle matching screenshot format
-  const username = `@${profile.name.toLowerCase().replace(/ /g, '_')}`;
+  // Find appropriate profile safely: p2 represents the current user (Devan)
+  const profile = isOwnProfile
+    ? currentUserProfile
+    : (fetchedProfile ||
+       profiles.find((p: any) => p._id === selectedProfileId || p.id === selectedProfileId) ||
+       MOCK_PROFILES.find((p: any) => p._id === selectedProfileId || p.id === selectedProfileId) ||
+       MOCK_PROFILES[0]);
+
+  // Guard: if profile is null/undefined, don't crash
+  if (!profile) return null;
+
+  const displayName = renderText(profile.firstName || profile.name, 'User');
+  const username = `@${displayName.toLowerCase().replace(/ /g, '_')}`;
+  const mainPhotoUri = getPhotoUrl(profile.mainPhoto?.url || (profile.photos && profile.photos[0]), '');
+
+  const photo1Uri = getPhotoUrl(profile.photos?.[1], '');
+  const photo2Uri = getPhotoUrl(profile.photos?.[2], '');
+  const photo3Uri = getPhotoUrl(profile.photos?.[3], '');
+  const photo4Uri = getPhotoUrl(profile.photos?.[4], '');
+
+  useEffect(() => {
+    const loadProfileDetails = async () => {
+      if (!isOwnProfile && authToken && selectedProfileId) {
+        setLoading(true);
+        try {
+          const res = await apiService.getProfileById(selectedProfileId, authToken);
+          if (res.data) {
+            setFetchedProfile(res.data);
+          }
+        } catch (error) {
+          console.error("Failed to load full profile details", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    loadProfileDetails();
+  }, [isOwnProfile, authToken, selectedProfileId]);
+
+  // Fetch photos on mount
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      if (isOwnProfile && authToken) {
+        try {
+          const res = await apiService.getUserPhotos(authToken);
+          if (res.success && res.data) {
+            // Backend returns array of {url, isMain}. Map to string array.
+            const photoUrls = res.data.map((p: any) => getPhotoUrl(p, ''));
+            // Maintain array of 5 to match UI placeholders
+            const formattedPhotos = [...photoUrls, ...Array(5 - photoUrls.length).fill('')];
+            updateCurrentUserProfile({ photos: formattedPhotos.slice(0, 5) });
+          }
+        } catch (e) {
+          console.error("Failed to fetch user photos", e);
+        }
+      }
+    };
+    fetchPhotos();
+  }, [isOwnProfile, authToken]);
 
   const handleConnect = () => {
-    setIntroText(currentUserProfile.connectIntro || '');
+    setIntroText(currentUserProfile?.connectIntro || '');
     setConnectModalOpen(true);
   };
 
   const handleSendInvitation = () => {
     updateCurrentUserProfile({ connectIntro: introText });
-    Alert.alert(
-      "Invitation Sent",
-      `Your matchmaking interest with your personalized introduction has been sent to ${profile.name} via Éternité Concierge!`,
-      [{ text: "OK", onPress: () => setConnectModalOpen(false) }]
-    );
+    showCustomAlert({
+      title: "Invitation Sent",
+      message: `Your matchmaking interest with your personalized introduction has been sent to ${displayName} via Evervow Concierge!`,
+      type: "success",
+      confirmText: "OK",
+      onConfirm: () => setConnectModalOpen(false)
+    });
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      "Sign Out",
-      "Are you sure you want to sign out of your Éternité luxury account?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Sign Out", onPress: () => setScreen('login') }
-      ]
-    );
+    showCustomAlert({
+      title: "Sign Out",
+      message: "Are you sure you want to sign out of your Evervow luxury account?",
+      type: "info",
+      cancelText: "Cancel",
+      onCancel: () => {},
+      confirmText: "Sign Out",
+      onConfirm: () => setScreen('login')
+    });
   };
 
   const handleEditPhoto = (index: number) => {
@@ -94,18 +155,34 @@ export const ProfileScreen: React.FC = () => {
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={[styles.headerBtn, { marginLeft: 8 }]}>
-              <MoreHorizontal size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
+              <Ellipsis size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
             </TouchableOpacity>
           )}
         </View>
       </View>
 
       <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {loading ? (
+          <View style={{ padding: 40, alignItems: 'center' }}>
+            <Text style={{ color: COLORS.white }}>Loading profile...</Text>
+          </View>
+        ) : (
+          <>
 
         {/* Large Centered Square Avatar with Rounded Corners & Edit Pencil */}
         <View style={styles.avatarWrapper}>
           <View style={styles.avatarContainer}>
-            <Image source={{ uri: profile.photos[0] }} style={styles.avatarImg} />
+            {mainPhotoUri ? (
+              <Image source={{ uri: mainPhotoUri }} style={styles.avatarImg} />
+            ) : (
+              <View style={[styles.avatarImg, { backgroundColor: 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center' }]}>
+                {isOwnProfile ? (
+                  <Upload size={24} color="rgba(255, 255, 255, 0.2)" />
+                ) : (
+                  <User size={24} color="rgba(255, 255, 255, 0.2)" />
+                )}
+              </View>
+            )}
             {isOwnProfile && (
               <TouchableOpacity onPress={() => handleEditPhoto(0)} style={styles.pencilOverlayAvatar}>
                 <Pencil size={11} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
@@ -117,40 +194,28 @@ export const ProfileScreen: React.FC = () => {
         {/* Name and Job Subtitle */}
         <View style={styles.detailsBlock}>
           <View style={styles.nameRow}>
-            <Text style={styles.nameText}>{profile.name}</Text>
-            {((isOwnProfile && isProfileVerified) || (!isOwnProfile && profile.verified)) && (
+            <Text style={styles.nameText}>{displayName}</Text>
+            {((isOwnProfile && isProfileVerified) || (!isOwnProfile && (profile.userInfo?.isVerified || profile.verified || profile.isVerified))) && (
               <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2.5} style={{ marginLeft: 5 }} />
             )}
           </View>
-          <Text style={styles.subtitleText}>{profile.profession} at {profile.company}</Text>
+          <Text style={styles.subtitleText}>{renderText(profile.occupation || profile.profession, '')} {profile.company ? `at ${renderText(profile.company, '')}` : ''}</Text>
         </View>
-
-        {/* Email Verification Action Banner if Not Verified */}
-        {isOwnProfile && !isEmailVerified && (
-          <TouchableOpacity onPress={() => setEmailModalOpen(true)} style={styles.emailVerifyBanner}>
-            <ShieldCheck size={16} color={COLORS.accentGold} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.emailVerifyTitle}>Email Verification Required</Text>
-              <Text style={styles.emailVerifySub}>Tap to enter 6-digit code sent to your email</Text>
-            </View>
-            <ArrowRight size={14} color={COLORS.accentGold} />
-          </TouchableOpacity>
-        )}
 
         {/* 3-Column Profile Stats: Age, Height, Zodiac */}
         <View style={styles.statsContainer}>
           <View style={styles.statsCol}>
-            <Text style={styles.statsValue}>{profile.age}</Text>
+            <Text style={styles.statsValue}>{renderText(profile.age, 'N/A')}</Text>
             <Text style={styles.statsLabel}>Age</Text>
           </View>
           <View style={styles.statsDivider} />
           <View style={styles.statsCol}>
-            <Text style={styles.statsValue}>{profile.height || "5'6\""}</Text>
+            <Text style={styles.statsValue}>{renderText(profile.height, "5'6\"")}</Text>
             <Text style={styles.statsLabel}>Height</Text>
           </View>
           <View style={styles.statsDivider} />
           <View style={styles.statsCol}>
-            <Text style={styles.statsValue}>{profile.horoscope.zodiac}</Text>
+            <Text style={styles.statsValue}>{renderText(profile.horoscope?.zodiac || profile.zodiacSign, 'N/A')}</Text>
             <Text style={styles.statsLabel}>Zodiac</Text>
           </View>
         </View>
@@ -178,19 +243,23 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(1) : undefined}
               style={[styles.gridPhotoContainer, { height: 210 }]}
             >
-              {profile.photos[1] ? (
-                <Image source={{ uri: profile.photos[1] }} style={styles.gridPhoto} />
-              ) : (
+              {photo1Uri ? (
+                <Image source={{ uri: photo1Uri }} style={styles.gridPhoto} />
+              ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                </View>
               )}
-              {isOwnProfile && profile.photos[1] && (
+              {isOwnProfile && photo1Uri ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
-              )}
+              ) : null}
             </TouchableOpacity>
 
             {/* Slot 3 (Index 3) */}
@@ -199,19 +268,23 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(3) : undefined}
               style={[styles.gridPhotoContainer, { height: 150 }]}
             >
-              {profile.photos[3] ? (
-                <Image source={{ uri: profile.photos[3] }} style={styles.gridPhoto} />
-              ) : (
+              {photo3Uri ? (
+                <Image source={{ uri: photo3Uri }} style={styles.gridPhoto} />
+              ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                </View>
               )}
-              {isOwnProfile && profile.photos[3] && (
+              {isOwnProfile && photo3Uri ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
-              )}
+              ) : null}
             </TouchableOpacity>
           </View>
 
@@ -223,19 +296,23 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(2) : undefined}
               style={[styles.gridPhotoContainer, { height: 150 }]}
             >
-              {profile.photos[2] ? (
-                <Image source={{ uri: profile.photos[2] }} style={styles.gridPhoto} />
-              ) : (
+              {photo2Uri ? (
+                <Image source={{ uri: photo2Uri }} style={styles.gridPhoto} />
+              ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                </View>
               )}
-              {isOwnProfile && profile.photos[2] && (
+              {isOwnProfile && photo2Uri ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
-              )}
+              ) : null}
             </TouchableOpacity>
 
             {/* Slot 4 (Index 4) */}
@@ -244,22 +321,28 @@ export const ProfileScreen: React.FC = () => {
               onPress={isOwnProfile ? () => handleEditPhoto(4) : undefined}
               style={[styles.gridPhotoContainer, { height: 210 }]}
             >
-              {profile.photos[4] ? (
-                <Image source={{ uri: profile.photos[4] }} style={styles.gridPhoto} />
-              ) : (
+              {photo4Uri ? (
+                <Image source={{ uri: photo4Uri }} style={styles.gridPhoto} />
+              ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
                   <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                </View>
               )}
-              {isOwnProfile && profile.photos[4] && (
+              {isOwnProfile && photo4Uri ? (
                 <View style={styles.pencilOverlayGrid}>
                   <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
-              )}
+              ) : null}
             </TouchableOpacity>
           </View>
         </View>
+        </>
+        )}
       </ScrollView>
 
       {/* Profile Details Modal Popup */}
@@ -277,28 +360,31 @@ export const ProfileScreen: React.FC = () => {
               {/* Category 1: Family Background */}
               <View style={styles.modalSection}>
                 <Text style={styles.modalSecTitle}>Family Background</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Heritage:</Text> {profile.familyDetails.background}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Father's Profession:</Text> {profile.familyDetails.father}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Mother's Profession:</Text> {profile.familyDetails.mother}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Family Values:</Text> {profile.familyDetails.familyValues}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Native Place:</Text> {profile.familyDetails.location}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Heritage:</Text> {renderText(profile.familyDetails?.background || profile.familyBackground)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Father's Profession:</Text> {renderText(profile.familyDetails?.father || profile.fatherProfession)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Mother's Profession:</Text> {renderText(profile.familyDetails?.mother || profile.motherProfession)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Family Values:</Text> {renderText(profile.familyDetails?.familyValues || profile.familyValues)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Native Place:</Text> {renderText(profile.familyDetails?.location || profile.ancestralOrigin)}</Text>
               </View>
 
               {/* Category 2: Academic & Career */}
               <View style={styles.modalSection}>
                 <Text style={styles.modalSecTitle}>Education & Profession</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Highest Education:</Text> {profile.education}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Occupation:</Text> {profile.profession}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Company:</Text> {profile.company}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Highest Education:</Text> {renderText(profile.education)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Occupation:</Text> {renderText(profile.profession || profile.occupation)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Company:</Text> {renderText(profile.company)}</Text>
               </View>
 
               {/* Category 3: Vedic Astro details */}
               <View style={styles.modalSection}>
                 <Text style={styles.modalSecTitle}>Horoscope & Astro Kundali</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Zodiac Sign:</Text> {profile.horoscope.zodiac}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Rashi / Moon Sign:</Text> {profile.horoscope.rashi}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Nakshatra:</Text> {profile.horoscope.nakshatra}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Manglik Status:</Text> {profile.horoscope.manglik ? "Manglik" : "Non-Manglik"}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Zodiac Sign:</Text> {renderText(profile.horoscope?.zodiac || profile.zodiacSign)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Rashi / Moon Sign:</Text> {renderText(profile.horoscope?.rashi || profile.moonSign)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Nakshatra:</Text> {renderText(profile.horoscope?.nakshatra || profile.nakshatra)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Manglik Status:</Text> {
+                  profile.horoscope?.manglik !== undefined ? (profile.horoscope.manglik ? "Manglik" : "Non-Manglik") : 
+                  (profile.isManglik !== undefined ? (profile.isManglik ? "Manglik" : "Non-Manglik") : 'Not specified')
+                }</Text>
               </View>
             </ScrollView>
           </View>
@@ -351,7 +437,7 @@ export const ProfileScreen: React.FC = () => {
         visible={uploadModalOpen}
         onClose={() => setUploadModalOpen(false)}
         photoIndex={editingPhotoIndex}
-        currentPhotoUrl={profile.photos[editingPhotoIndex]}
+        currentPhotoUrl={profile.photos?.[editingPhotoIndex]}
         onSavePhoto={handleSavePhoto}
       />
     </View>

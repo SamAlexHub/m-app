@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import { Bell, ShieldCheck, MapPin, Crown, Heart, ArrowRight, Settings } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
@@ -8,31 +8,60 @@ import { CircularScore } from '../components/CircularScore';
 import { SUCCESS_STORIES } from '../data/successStories';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 import { EmailOtpModal } from '../components/EmailOtpModal';
+import { apiService } from '../services/api';
+import { getPhotoUrl, renderText } from '../utils/profileHelpers';
 
 export const HomeScreen: React.FC = () => {
-  const { setScreen, setSelectedProfileId, notifications, isProfileVerified, setProfileVerified, isEmailVerified } = useAppStore();
+  const { setScreen, setSelectedProfileId, notifications, isProfileVerified, setProfileVerified, isEmailVerified, currentUserProfile, currentUser, authToken, profiles, setProfiles, showCustomAlert } = useAppStore();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [verificationExpanded, setVerificationExpanded] = useState(false);
+
+  // Sync API status strictly: must be 'verified' and true
+  const actualEmailVerified = currentUser?.isVerified === true || currentUser?.isEmailVerified === true || isEmailVerified;
+  const actualProfileVerified = currentUserProfile?.vipVerificationDoc?.status === 'verified';
 
   const unreadCount = notifications.filter((n) => !n.read).length;
-  const topMatch = MOCK_PROFILES[0];
 
-  const completedCount = (isEmailVerified ? 1 : 0) + 1 + (isProfileVerified ? 1 : 0);
+  useEffect(() => {
+    const loadProfiles = async () => {
+      if (authToken) {
+        try {
+          const res = await apiService.getAllProfiles(authToken);
+          if (res.data && res.data.length > 0) {
+            setProfiles(res.data);
+          }
+        } catch (error) {
+          console.error("Failed to load profiles", error);
+        }
+      }
+    };
+    loadProfiles();
+  }, [authToken]);
+
+  const profileList = profiles && profiles.length > 0 ? profiles : MOCK_PROFILES;
+  const currentUserId = currentUserProfile?._id || (currentUserProfile as any)?.id;
+  const filteredList = profileList.filter(p => (p._id || p.id) !== currentUserId);
+  const topMatch = filteredList.length > 0 ? filteredList[0] : MOCK_PROFILES[0];
+
+  const completedCount = (actualEmailVerified ? 1 : 0) + 1 + (actualProfileVerified ? 1 : 0);
 
   const handleVerifyProfile = () => {
-    Alert.alert(
-      "Profile Verification",
-      "Upload your passport or ID to get the gold verification shield. Would you like to verify now?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Verify Now", 
-          onPress: () => {
-            setProfileVerified(true);
-            Alert.alert("Success", "Your profile has been verified by our European Concierge! The verification badge is now active.");
-          } 
-        }
-      ]
-    );
+    showCustomAlert({
+      title: "Profile Verification",
+      message: "Upload your passport or ID to get the gold verification shield. Would you like to verify now?",
+      type: "info",
+      cancelText: "Cancel",
+      onCancel: () => {},
+      confirmText: "Verify Now",
+      onConfirm: () => {
+        setProfileVerified(true);
+        showCustomAlert({
+          title: "Success",
+          message: "Your profile has been verified by our European Concierge! The verification badge is now active.",
+          type: "success"
+        });
+      }
+    });
   };
 
   return (
@@ -40,26 +69,26 @@ export const HomeScreen: React.FC = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.greetingText}>Bonjour, Devan</Text>
+          <Text style={styles.greetingText} numberOfLines={1}>{currentUserProfile?.name || 'User'}</Text>
           <TouchableOpacity
-            onPress={isProfileVerified ? undefined : handleVerifyProfile}
+            onPress={actualProfileVerified ? undefined : handleVerifyProfile}
             style={[
               styles.verifyPillHeader,
-              isProfileVerified ? styles.verifyPillHeaderVerified : styles.verifyPillHeaderPending
+              actualProfileVerified ? styles.verifyPillHeaderVerified : styles.verifyPillHeaderPending
             ]}
           >
             <ShieldCheck
               size={10}
-              color={isProfileVerified ? COLORS.accentGold : COLORS.redAccent}
+              color={actualProfileVerified ? COLORS.accentGold : COLORS.redAccent}
               strokeWidth={2.5}
             />
             <Text
               style={[
                 styles.verifyPillTextHeader,
-                isProfileVerified ? styles.verifyPillTextHeaderVerified : styles.verifyPillTextHeaderPending
+                actualProfileVerified ? styles.verifyPillTextHeaderVerified : styles.verifyPillTextHeaderPending
               ]}
             >
-              {isProfileVerified ? 'Verified' : 'Pending'}
+              {actualProfileVerified ? 'Verified' : 'Pending'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -72,13 +101,6 @@ export const HomeScreen: React.FC = () => {
                 <Text style={styles.unreadText}>{unreadCount}</Text>
               </View>
             )}
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => { setSelectedProfileId('p2'); setScreen('profile'); }} style={[styles.avatarBtn, { marginLeft: 8 }]}>
-            <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' }}
-              style={styles.avatarImg}
-            />
           </TouchableOpacity>
         </View>
       </View>
@@ -101,106 +123,134 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         {/* Verification Checklist */}
-        {(!isProfileVerified || !isEmailVerified) && (
+        {(!actualProfileVerified || !actualEmailVerified) && (
           <View style={styles.section}>
-            <View style={styles.sectionHeader}>
+            <TouchableOpacity 
+              onPress={() => setVerificationExpanded(!verificationExpanded)}
+              style={[styles.sectionHeader, { paddingVertical: SPACING.xs }]}
+              activeOpacity={0.7}
+            >
               <View style={styles.sectionTitleRow}>
                 <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2} />
-                <Text style={styles.sectionTitle}>Verification Checklist</Text>
+                <Text style={styles.sectionTitle}>Verification Pending</Text>
               </View>
-              <Text style={styles.checklistProgress}>{completedCount} of 3 Completed</Text>
-            </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Text style={styles.checklistProgress}>{completedCount} of 3</Text>
+                <ArrowRight 
+                  size={16} 
+                  color={COLORS.accentGold} 
+                  style={{ transform: [{ rotate: verificationExpanded ? '90deg' : '0deg' }] }}
+                />
+              </View>
+            </TouchableOpacity>
 
-            <GlassCard glow>
-              <View style={styles.checklistCard}>
-                <Text style={styles.checklistCardTitle}>Complete your verification tasks to unlock VIP royal profiles and match safely.</Text>
-                
-                {/* Email Verification Item */}
-                {isEmailVerified ? (
+            {verificationExpanded && (
+              <GlassCard glow>
+                <View style={styles.checklistCard}>
+                  <Text style={styles.checklistCardTitle}>Complete your verification tasks to unlock VIP royal profiles and match safely.</Text>
+                  
+                  {/* Email Verification Item */}
+                  {actualEmailVerified ? (
+                    <View style={styles.checkItemRow}>
+                      <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
+                        <Text style={styles.checkIndicatorText}>✓</Text>
+                      </View>
+                      <Text style={styles.checkItemTextDone}>Email Verification Completed</Text>
+                    </View>
+                  ) : (
+                    <TouchableOpacity onPress={() => setEmailModalOpen(true)} style={styles.checkItemRow}>
+                      <View style={styles.checkIndicator}>
+                        <Text style={styles.checkIndicatorText}>•</Text>
+                      </View>
+                      <Text style={styles.checkItemText}>Email Verification (Action Required)</Text>
+                      <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
+                    </TouchableOpacity>
+                  )}
+                  
+                  {/* Mobile Phone Verification Item */}
                   <View style={styles.checkItemRow}>
                     <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
                       <Text style={styles.checkIndicatorText}>✓</Text>
                     </View>
-                    <Text style={styles.checkItemTextDone}>Email Verification Completed</Text>
+                    <Text style={styles.checkItemTextDone}>Mobile Phone Verification Completed</Text>
                   </View>
-                ) : (
-                  <TouchableOpacity onPress={() => setEmailModalOpen(true)} style={styles.checkItemRow}>
-                    <View style={styles.checkIndicator}>
-                      <Text style={styles.checkIndicatorText}>•</Text>
+                  
+                  {/* Profile Verification Item */}
+                  {actualProfileVerified ? (
+                    <View style={styles.checkItemRow}>
+                      <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
+                        <Text style={styles.checkIndicatorText}>✓</Text>
+                      </View>
+                      <Text style={styles.checkItemTextDone}>Government ID Verification Completed</Text>
                     </View>
-                    <Text style={styles.checkItemText}>Email Verification (Action Required)</Text>
-                    <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
-                  </TouchableOpacity>
-                )}
-                
-                {/* Mobile Phone Verification Item */}
-                <View style={styles.checkItemRow}>
-                  <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
-                    <Text style={styles.checkIndicatorText}>✓</Text>
-                  </View>
-                  <Text style={styles.checkItemTextDone}>Mobile Phone Verification Completed</Text>
+                  ) : currentUserProfile?.vipVerificationDoc?.status === 'pending' ? (
+                    <View style={styles.checkItemRow}>
+                      <View style={[styles.checkIndicator, { borderColor: COLORS.accentGold }]}>
+                        <Text style={[styles.checkIndicatorText, { color: COLORS.accentGold }]}>⏳</Text>
+                      </View>
+                      <Text style={[styles.checkItemText, { color: COLORS.accentGold }]}>Government ID Verification (Pending Review)</Text>
+                    </View>
+                  ) : (
+                    <TouchableOpacity onPress={handleVerifyProfile} style={styles.checkItemRow}>
+                      <View style={styles.checkIndicator}>
+                        <Text style={styles.checkIndicatorText}>•</Text>
+                      </View>
+                      <Text style={styles.checkItemText}>Government ID Verification (Action Required)</Text>
+                      <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
+                    </TouchableOpacity>
+                  )}
                 </View>
-                
-                {/* Government ID Verification Item */}
-                {isProfileVerified ? (
-                  <View style={styles.checkItemRow}>
-                    <View style={[styles.checkIndicator, styles.checkIndicatorDone]}>
-                      <Text style={styles.checkIndicatorText}>✓</Text>
-                    </View>
-                    <Text style={styles.checkItemTextDone}>Government ID Verification Completed</Text>
-                  </View>
-                ) : (
-                  <TouchableOpacity onPress={handleVerifyProfile} style={styles.checkItemRow}>
-                    <View style={styles.checkIndicator}>
-                      <Text style={styles.checkIndicatorText}>•</Text>
-                    </View>
-                    <Text style={styles.checkItemText}>Government ID Verification (Action Required)</Text>
-                    <ArrowRight size={12} color={COLORS.accentGold} style={{ marginLeft: 'auto' }} />
-                  </TouchableOpacity>
-                )}
-              </View>
-            </GlassCard>
+              </GlassCard>
+            )}
           </View>
         )}
 
         {/* Today's AI Match */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}>
-              <Heart size={18} color={COLORS.accentGold} strokeWidth={2} />
-              <Text style={styles.sectionTitle}>Today’s AI Soulmate</Text>
+        {topMatch && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <View style={styles.sectionTitleRow}>
+                <Heart size={18} color={COLORS.accentGold} strokeWidth={2} />
+                <Text style={styles.sectionTitle}>Today’s AI Soulmate</Text>
+              </View>
+              <Text style={styles.refreshText}>Refreshes at midnight</Text>
             </View>
-            <Text style={styles.refreshText}>Refreshes at midnight</Text>
-          </View>
 
-          <GlassCard glow onClick={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}>
-            <View style={styles.matchCardContent}>
-              <View style={styles.matchCardTopRow}>
-                <Image source={{ uri: topMatch.photos[0] }} style={styles.matchAvatar} />
-                <View style={styles.matchInfo}>
-                  <Text style={styles.matchName}>{topMatch.name}, {topMatch.age}</Text>
-                  <Text style={styles.matchSub} numberOfLines={1}>{topMatch.profession} • {topMatch.location}</Text>
-                  <View style={styles.sharedIntentBadge}>
-                    <Text style={styles.sharedIntentText}>AI MATCH PRINCIPLE</Text>
+            <GlassCard glow onClick={() => { setSelectedProfileId(topMatch._id || topMatch.id); setScreen('match-details'); }}>
+              <View style={styles.matchCardContent}>
+                <View style={styles.matchCardTopRow}>
+                  <Image source={{ uri: getPhotoUrl(topMatch.mainPhoto?.url || (topMatch.photos && topMatch.photos[0])) }} style={styles.matchAvatar} />
+                  <View style={styles.matchInfo}>
+                    <Text style={styles.matchName}>
+                      {renderText(topMatch.firstName || topMatch.name, 'User')}
+                      {(topMatch.userInfo?.isVerified || topMatch.isVerified || topMatch.verified) && (
+                        <ShieldCheck size={14} color={COLORS.accentGold} style={{ marginLeft: 4, marginTop: 2 }} />
+                      )}
+                      {topMatch.age ? `, ${topMatch.age}` : ''}
+                    </Text>
+                    <Text style={styles.matchSub} numberOfLines={1}>{renderText(topMatch.occupation || topMatch.profession, '')} • {renderText(topMatch.city || topMatch.location, 'Global')}</Text>
+                    <View style={styles.sharedIntentBadge}>
+                      <Text style={styles.sharedIntentText}>AI MATCH PRINCIPLE</Text>
+                    </View>
+                  </View>
+                  <View style={styles.scoreContainer}>
+                    <CircularScore score={topMatch.profileCompletion || topMatch.aiMatchScore || 90} size={64} label="" />
                   </View>
                 </View>
-                <View style={styles.scoreContainer}>
-                  <CircularScore score={topMatch.aiMatchScore} size={64} label="" />
-                </View>
-              </View>
-              
-              <Text style={styles.matchQuote} numberOfLines={2}>"{topMatch.matchReason}"</Text>
+                
+                <Text style={styles.matchQuote} numberOfLines={2}>"{renderText(topMatch.personalizedIntro || topMatch.matchReason || topMatch.bio, 'Looking for a meaningful connection.')}"</Text>
 
-              <TouchableOpacity
-                onPress={() => { setSelectedProfileId(topMatch.id); setScreen('match-details'); }}
-                style={styles.insightBtn}
-              >
-                <Text style={styles.insightBtnText}>View Compatibility Insights</Text>
-                <ArrowRight size={12} color={COLORS.primary} strokeWidth={2.5} style={{ marginLeft: 4 }} />
-              </TouchableOpacity>
-            </View>
-          </GlassCard>
-        </View>
+                <TouchableOpacity
+                  onPress={() => { setSelectedProfileId(topMatch._id || topMatch.id); setScreen('match-details'); }}
+                  style={styles.insightBtn}
+                >
+                  <Text style={styles.insightBtnText}>View Compatibility Insights</Text>
+                  <ArrowRight size={12} color={COLORS.primary} strokeWidth={2.5} style={{ marginLeft: 4 }} />
+                </TouchableOpacity>
+              </View>
+            </GlassCard>
+          </View>
+        )}
 
         {/* Verified Profiles Horizontal Reel */}
         <View style={styles.section}>
@@ -215,21 +265,21 @@ export const HomeScreen: React.FC = () => {
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.reelContent}>
-            {MOCK_PROFILES.map((p) => (
+            {filteredList.filter(p => p.userInfo?.isVerified || p.isVerified || p.verified).map((p) => (
               <TouchableOpacity
-                key={p.id}
+                key={p._id || p.id}
                 activeOpacity={0.85}
-                onPress={() => { setSelectedProfileId(p.id); setScreen('profile'); }}
+                onPress={() => { setSelectedProfileId(p._id || p.id); setScreen('profile'); }}
                 style={styles.reelCard}
               >
-                <Image source={{ uri: p.photos[0] }} style={styles.reelImage} />
+                <Image source={{ uri: getPhotoUrl(p.mainPhoto?.url || (p.photos && p.photos[0])) }} style={styles.reelImage} />
                 <View style={styles.reelOverlay} />
                 <View style={styles.reelBadge}>
-                  <Text style={styles.reelBadgeText}>{p.aiMatchScore}%</Text>
+                  <Text style={styles.reelBadgeText}>{p.profileCompletion || p.aiMatchScore || 95}%</Text>
                 </View>
                 <View style={styles.reelFooter}>
-                  <Text style={styles.reelName}>{p.name}</Text>
-                  <Text style={styles.reelSub} numberOfLines={1}>{p.profession}</Text>
+                  <Text style={styles.reelName}>{renderText(p.firstName || p.name, 'User')}</Text>
+                  <Text style={styles.reelSub} numberOfLines={1}>{renderText(p.occupation || p.profession, '')}</Text>
                 </View>
               </TouchableOpacity>
             ))}

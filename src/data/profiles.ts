@@ -1,59 +1,88 @@
 export interface Profile {
   id: string;
-  name: string;
-  age: number;
-  location: string;
-  country: string;
-  profession: string;
-  company: string;
-  education: string;
-  height: string;
-  religion: string;
-  community: string;
-  motherTongue: string;
-  verified: boolean;
-  vipTier: 'Gold' | 'Platinum' | 'Diamond';
-  aiMatchScore: number; // e.g. 98
-  matchReason: string;
-  bio: string;
+  _id?: string;           // backend MongoDB ID
+  name?: string;          // display name (fallback)
+  firstName?: string;     // from backend
+  lastName?: string;      // from backend
+  age?: number;
+  location?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  profession?: string;
+  occupation?: string;    // backend field name
+  company?: string;
+  education?: string;
+  height?: string;
+  religion?: string | { value: string; label: string };
+  community?: string;
+  caste?: string;
+  motherTongue?: string;
+  verified?: boolean;
+  isVerified?: boolean;   // backend field name
+  vipTier?: 'Gold' | 'Platinum' | 'Diamond';
+  aiMatchScore?: number;
+  profileCompletion?: number;
+  matchReason?: string;
+  bio?: string;
+  personalizedIntro?: string;
   connectIntro?: string;
-  photos: string[];
-  coverPhoto: string;
-  compatibilityRadar: {
-    values: number;
-    lifestyle: number;
-    communication: number;
-    futureGoals: number;
-    astroSync: number;
+  zodiacSign?: string;
+  nakshatra?: string;
+  moonSign?: string;
+  isManglik?: boolean;
+  familyBackground?: string;
+  fatherProfession?: string;
+  motherProfession?: string;
+  familyValues?: string;
+  ancestralOrigin?: string;
+  mainPhoto?: { url: string; isMain?: boolean };
+  vipVerificationDoc?: {
+    documentType: string;
+    documentNumber: string;
+    status: 'pending' | 'verified' | 'rejected';
   };
-  horoscope: {
-    zodiac: string;
-    gunaScore: string; // e.g. "34/36"
-    nakshatra: string;
-    rashi: string;
-    manglik: boolean;
+  userInfo?: {
+    isVerified?: boolean;
+    email?: string;
   };
-  familyDetails: {
-    background: string;
-    father: string;
-    mother: string;
-    familyValues: string;
-    location: string;
+  photos?: string[];
+  coverPhoto?: string;
+  compatibilityRadar?: {
+    values?: number;
+    lifestyle?: number;
+    communication?: number;
+    futureGoals?: number;
+    astroSync?: number;
   };
-  lifestyle: {
-    diet: string;
-    fitness: string;
-    travel: string;
-    drinking: string;
-    smoking: string;
-    hobbies: string[];
+  horoscope?: {
+    zodiac?: string;
+    gunaScore?: string;
+    nakshatra?: string;
+    rashi?: string;
+    manglik?: boolean;
   };
-  timeline: {
+  familyDetails?: {
+    background?: string;
+    father?: string;
+    mother?: string;
+    familyValues?: string;
+    location?: string;
+  };
+  lifestyle?: {
+    diet?: string;
+    fitness?: string;
+    travel?: string;
+    drinking?: string;
+    smoking?: string;
+    hobbies?: string[];
+  };
+  timeline?: {
     year: string;
     title: string;
     description: string;
   }[];
-  relationshipGoals: string[];
+  relationshipGoals?: string[];
 }
 
 export const MOCK_PROFILES: Profile[] = [

@@ -1,19 +1,24 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Switch } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Switch, ActivityIndicator } from 'react-native';
 import { ArrowLeft, Shield, Upload, CheckCircle2 } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
+import { apiService } from '../services/api';
 import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 
 export const CompleteProfileScreen: React.FC = () => {
-  const { currentUserProfile, updateCurrentUserProfile, setScreen, setProfileVerified, authToken } = useAppStore();
+  const { setScreen, currentUserProfile, updateCurrentUserProfile, setProfileVerified, authToken, showCustomAlert } = useAppStore();
 
   // Gender State (male / female - Required Feature)
   const [gender, setGender] = useState<'male' | 'female'>('male');
 
   // Personal / Physical State
+  const [firstName, setFirstName] = useState(currentUserProfile.name ? currentUserProfile.name.split(' ')[0] : "");
+  const [lastName, setLastName] = useState(currentUserProfile.name ? currentUserProfile.name.split(' ').slice(1).join(' ') : "");
   const [height, setHeight] = useState(currentUserProfile.height || "6'1\"");
-  const [religion, setReligion] = useState(currentUserProfile.religion || "Hindu");
+  const [religion, setReligion] = useState(
+    currentUserProfile.religion || ""
+  );
   const [community, setCommunity] = useState(currentUserProfile.community || "Punjabi Khatri");
   const [motherTongue, setMotherTongue] = useState(currentUserProfile.motherTongue || "English / Hindi");
 
@@ -35,31 +40,93 @@ export const CompleteProfileScreen: React.FC = () => {
   const [nakshatra, setNakshatra] = useState(currentUserProfile.horoscope?.nakshatra || "");
   const [manglik, setManglik] = useState(currentUserProfile.horoscope?.manglik || false);
   const [connectIntro, setConnectIntro] = useState(currentUserProfile.connectIntro || "");
-
-  const [isDocUploaded, setIsDocUploaded] = useState(false);
+  const [docType, setDocType] = useState(currentUserProfile.vipVerificationDoc?.documentType || "Aadhar");
+  const [docNumber, setDocNumber] = useState(currentUserProfile.vipVerificationDoc?.documentNumber || "");
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [docOptions, setDocOptions] = useState<any[]>([]);
+  const [religionOptions, setReligionOptions] = useState<any[]>([]);
+  const [religionSearch, setReligionSearch] = useState("");
+  const [religionDropdownOpen, setReligionDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (authToken) {
+      apiService.getMasterOptions('documentType', authToken)
+        .then(res => {
+          if (res.data && res.data.length > 0) {
+            setDocOptions(res.data);
+            if (!currentUserProfile.vipVerificationDoc?.documentType) {
+              setDocType(res.data[0].value);
+            }
+          }
+        })
+        .catch(err => console.error("Failed to load document options:", err));
+        
+      apiService.getMasterOptions('religion', authToken)
+        .then(res => {
+          if (res.data && res.data.length > 0) {
+            setReligionOptions(res.data);
+            if (!religion && res.data.length > 0) {
+              setReligion(res.data[0]._id);
+            }
+          }
+        })
+        .catch(err => console.error("Failed to load religion options:", err));
+    }
+  }, [authToken, currentUserProfile.vipVerificationDoc?.documentType]);
 
   const handleSave = async () => {
+    if (!authToken) {
+      showCustomAlert({
+        title: "Session Expired",
+        message: "You are currently logged out. Please sign in to save your profile.",
+        type: "error",
+        confirmText: "Go to Login",
+        onConfirm: () => setScreen('login')
+      });
+      return;
+    }
+
+    console.log("handleSave triggered");
+    console.log("Current authToken:", authToken);
+
+    // Validation
+    const newErrors: Record<string, string> = {};
+    if (!firstName.trim()) newErrors.firstName = "First name is required";
+    if (!lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!height.trim()) newErrors.height = "Height is required";
+    if (!profession.trim()) newErrors.profession = "Profession is required";
+    if (!company.trim()) newErrors.company = "Company is required";
+    if (!docNumber.trim()) newErrors.docNumber = `Please enter your ${docType} number`;
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
+
     setSaving(true);
     try {
       // 1. Sync to backend API if token is present
-      if (authToken) {
-        await apiService.completeProfile(
-          {
-            fullName: currentUserProfile.name || "Devan M. Kapoor",
-            gender,
-            personalDetails: { height, religion, communityCaste: community, motherTongue },
-            professionalDetails: { currentJob: profession, company, education },
-            familyDetails: { fatherOccupation: fatherOcc, motherOccupation: motherOcc, familyBackground: background, familyEthos: familyValues, ancestralOrigins },
-            horoscopeDetails: { zodiacSign: zodiac, moonSignRashi: rashi, nakshatra, isManglik: manglik },
-            bioIntro: connectIntro,
-          },
-          authToken
-        );
-      }
+      console.log("Auth token present, making API call to completeProfile...");
+      await apiService.completeProfile(
+        {
+          fullName: `${firstName} ${lastName}`.trim(),
+          gender,
+          personalDetails: { height, religion, communityCaste: community, motherTongue },
+          professionalDetails: { currentJob: profession, company, education },
+          familyDetails: { fatherOccupation: fatherOcc, motherOccupation: motherOcc, familyBackground: background, familyEthos: familyValues, ancestralOrigins },
+          horoscopeDetails: { zodiacSign: zodiac, moonSignRashi: rashi, nakshatra, isManglik: manglik },
+          bioIntro: connectIntro,
+          vipVerificationDoc: { documentType: docType, documentNumber: docNumber, status: 'pending' },
+        },
+        authToken
+      );
+      console.log("API call completeProfile successful");
 
       // 2. Update local state
       updateCurrentUserProfile({
+        name: `${firstName} ${lastName}`.trim(),
         height,
         connectIntro,
         religion,
@@ -81,20 +148,27 @@ export const CompleteProfileScreen: React.FC = () => {
           nakshatra,
           manglik,
           gunaScore: currentUserProfile.horoscope?.gunaScore || "33 / 36"
-        }
+        },
+        vipVerificationDoc: { documentType: docType, documentNumber: docNumber, status: 'pending' }
       });
 
-      if (isDocUploaded) {
+      if (docNumber) {
         setProfileVerified(true);
       }
 
-      Alert.alert(
-        "Profile Completed",
-        "Your luxury matrimony profile credentials have been saved to your MongoDB database and local app.",
-        [{ text: "Great", onPress: () => setScreen('profile') }]
-      );
+      showCustomAlert({
+        title: "Profile Completed",
+        message: "Your luxury matrimony profile credentials have been saved to your MongoDB database and local app.",
+        type: "success",
+        confirmText: "Great",
+        onConfirm: () => setScreen('profile')
+      });
     } catch (err: any) {
-      Alert.alert("Error Saving Profile", err.message || "Something went wrong while saving profile to server");
+      showCustomAlert({
+        title: "Error Saving Profile",
+        message: err.message || "Something went wrong while saving profile to server",
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }
@@ -112,18 +186,33 @@ export const CompleteProfileScreen: React.FC = () => {
         </View>
 
         <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          {/* Security Alert info card */}
-        <GlassCard style={styles.infoCard}>
-          <Shield size={20} color={COLORS.accentGold} strokeWidth={1.8} />
-          <Text style={styles.infoText}>
-            Éternité guarantees 100% verified profiles. Complete your ancestral background and secure verification to unlock premium matches.
-          </Text>
-        </GlassCard>
 
         {/* Section 1: Personal & Physical Details */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Personal & Physical Details</Text>
           <GlassCard style={styles.formCard}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>First Name</Text>
+              <TextInput
+                style={[styles.input, errors.firstName ? styles.inputError : null]}
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="e.g. Devan"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+              {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Last Name</Text>
+              <TextInput
+                style={[styles.input, errors.lastName ? styles.inputError : null]}
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="e.g. Kapoor"
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+              {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
+            </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>GENDER (REQUIRED)</Text>
               <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
@@ -162,23 +251,25 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Height</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.height ? styles.inputError : null]}
                 value={height}
                 onChangeText={setHeight}
                 placeholder="e.g. 6ft 1in"
                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
               />
+              {errors.height && <Text style={styles.errorText}>{errors.height}</Text>}
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Religion</Text>
-              <TextInput
-                style={styles.input}
-                value={religion}
-                onChangeText={setReligion}
-                placeholder="e.g. Hindu"
-                placeholderTextColor="rgba(255, 255, 255, 0.3)"
-              />
+              <TouchableOpacity
+                style={[styles.input, { justifyContent: 'center' }]}
+                onPress={() => setReligionDropdownOpen(true)}
+              >
+                <Text style={{ color: religion ? COLORS.white : 'rgba(255, 255, 255, 0.3)' }}>
+                  {religion ? religionOptions.find(opt => opt._id === religion)?.label : "Select Religion"}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.inputGroup}>
@@ -212,23 +303,25 @@ export const CompleteProfileScreen: React.FC = () => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Your Current Job / Profession</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.profession ? styles.inputError : null]}
                 value={profession}
                 onChangeText={setProfession}
                 placeholder="e.g. Venture Capitalist"
                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
               />
+              {errors.profession && <Text style={styles.errorText}>{errors.profession}</Text>}
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Company / Organisation</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.company ? styles.inputError : null]}
                 value={company}
                 onChangeText={setCompany}
                 placeholder="e.g. Apex Horizon Capital"
                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
               />
+              {errors.company && <Text style={styles.errorText}>{errors.company}</Text>}
             </View>
 
             <View style={styles.inputGroup}>
@@ -376,38 +469,112 @@ export const CompleteProfileScreen: React.FC = () => {
           </GlassCard>
         </View>
 
-        {/* Section 5: Security Upload */}
+        {/* Section 5: Security Verification */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Concierge VIP Security Verification</Text>
           <GlassCard style={styles.formCard}>
             <Text style={styles.uploadInfo}>
-              Upload a copy of your Government Issued ID (Passport, National ID) to activate your gold checkmark badge immediately.
+              Please select your document type and enter its number to activate your gold checkmark badge.
             </Text>
             
-            <TouchableOpacity
-              onPress={() => setIsDocUploaded(true)}
-              style={[styles.uploadBox, isDocUploaded && styles.uploadBoxDone]}
-            >
-              {isDocUploaded ? (
-                <>
-                  <CheckCircle2 size={24} color={COLORS.accentGold} strokeWidth={2} />
-                  <Text style={styles.uploadTextDone}>passport_devan_kapoor.pdf uploaded</Text>
-                </>
-              ) : (
-                <>
-                  <Upload size={24} color={COLORS.mutedGray} strokeWidth={1.8} />
-                  <Text style={styles.uploadText}>Select Passport / National ID Document</Text>
-                </>
-              )}
-            </TouchableOpacity>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>DOCUMENT TYPE</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 4 }}>
+                {docOptions.length > 0 ? docOptions.map((opt) => (
+                  <TouchableOpacity
+                    key={opt.value}
+                    onPress={() => setDocType(opt.value)}
+                    style={{
+                      flex: 1,
+                      minWidth: '45%',
+                      paddingVertical: 10,
+                      borderRadius: RADIUS.md,
+                      backgroundColor: docType === opt.value ? COLORS.accentGold : 'rgba(255, 255, 255, 0.05)',
+                      alignItems: 'center',
+                      borderWidth: 1,
+                      borderColor: docType === opt.value ? COLORS.accentGold : 'rgba(255, 255, 255, 0.15)'
+                    }}
+                  >
+                    <Text style={{ fontSize: 13, fontWeight: '700', color: docType === opt.value ? COLORS.primary : COLORS.white }}>{opt.label}</Text>
+                  </TouchableOpacity>
+                )) : (
+                  <ActivityIndicator color={COLORS.accentGold} />
+                )}
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>{docType.toUpperCase()} NUMBER</Text>
+              <TextInput
+                style={[styles.input, errors.docNumber ? styles.inputError : null]}
+                value={docNumber}
+                onChangeText={setDocNumber}
+                placeholder={`Enter your ${docType} number`}
+                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              />
+              {errors.docNumber && <Text style={styles.errorText}>{errors.docNumber}</Text>}
+            </View>
           </GlassCard>
         </View>
 
         {/* Save CTA */}
-        <TouchableOpacity activeOpacity={0.88} onPress={handleSave} style={styles.saveBtn}>
-          <Text style={styles.saveBtnText}>Save Profile Credentials</Text>
+        <TouchableOpacity 
+          activeOpacity={0.88} 
+          onPress={handleSave} 
+          style={[styles.saveBtn, saving && { opacity: 0.7 }]}
+          disabled={saving}
+        >
+          <Text style={styles.saveBtnText}>
+            {saving ? "Saving..." : "Save Profile Credentials"}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Religion Searchable Dropdown Modal */}
+      {religionDropdownOpen && (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 100, justifyContent: 'center', alignItems: 'center', padding: SPACING.lg }]}>
+          <GlassCard style={{ width: '100%', maxHeight: '80%', padding: SPACING.md }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.md }}>
+              <Text style={{ ...TYPOGRAPHY.titleM, color: COLORS.accentGold, fontSize: 16 }}>Select Religion</Text>
+              <TouchableOpacity onPress={() => setReligionDropdownOpen(false)}>
+                <Text style={{ color: COLORS.white, fontSize: 16, fontWeight: 'bold' }}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              style={[styles.input, { marginBottom: SPACING.md, backgroundColor: 'rgba(255,255,255,0.08)' }]}
+              placeholder="Search religion..."
+              placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              value={religionSearch}
+              onChangeText={setReligionSearch}
+              autoFocus
+            />
+            <ScrollView style={{ flexShrink: 1 }} showsVerticalScrollIndicator={false}>
+              {religionOptions.filter(opt => opt.label.toLowerCase().includes(religionSearch.toLowerCase())).map(opt => (
+                <TouchableOpacity
+                  key={opt._id}
+                  style={{
+                    paddingVertical: SPACING.md,
+                    borderBottomWidth: 1,
+                    borderBottomColor: 'rgba(255,255,255,0.1)'
+                  }}
+                  onPress={() => {
+                    setReligion(opt._id);
+                    setReligionDropdownOpen(false);
+                    setReligionSearch('');
+                  }}
+                >
+                  <Text style={{ color: religion === opt._id ? COLORS.accentGold : COLORS.white, fontSize: 14 }}>
+                    {opt.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+              {religionOptions.filter(opt => opt.label.toLowerCase().includes(religionSearch.toLowerCase())).length === 0 && (
+                <Text style={{ color: COLORS.mutedGray, textAlign: 'center', marginTop: SPACING.md }}>No religions found</Text>
+              )}
+            </ScrollView>
+          </GlassCard>
+        </View>
+      )}
     </View>
   );
 };
@@ -501,6 +668,17 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     paddingHorizontal: SPACING.sm,
     fontSize: 12,
+  },
+  inputError: {
+    borderColor: '#ef4444',
+    backgroundColor: 'rgba(239, 68, 68, 0.05)',
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 10,
+    marginTop: 4,
+    marginLeft: 2,
+    fontWeight: '600',
   },
   uploadInfo: {
     ...TYPOGRAPHY.body,

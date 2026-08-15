@@ -32,4 +32,9 @@ export default defineConfig({
     port: 3000,
     host: true,
   },
+  // Inject React Native's __DEV__ global for web builds.
+  // This does NOT affect Android/Expo — they have their own native __DEV__ value.
+  define: {
+    __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
+  },
 });
