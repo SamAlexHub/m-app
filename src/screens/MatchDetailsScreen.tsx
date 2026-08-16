@@ -105,10 +105,10 @@ export const MatchDetailsScreen: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
-            <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
+            <ArrowLeft size={18} color="#1E152A" strokeWidth={2.4} />
           </TouchableOpacity>
           <View style={styles.reportBadge}>
-            <Sparkles size={12} color={COLORS.accentGold} strokeWidth={2} />
+            <Sparkles size={12} color="#6D28D9" strokeWidth={2} />
             <Text style={styles.reportBadgeText}>AI COMPATIBILITY REPORT</Text>
           </View>
           <View style={{ width: 36 }} />
@@ -118,7 +118,7 @@ export const MatchDetailsScreen: React.FC = () => {
         <GlassCard glow style={styles.heroBox}>
           {aiLoading ? (
             <View style={{ alignItems: 'center', paddingVertical: 20 }}>
-              <ActivityIndicator color={COLORS.accentGold} size="large" />
+              <ActivityIndicator color="#6D28D9" size="large" />
               <Text style={styles.aiLoadingText}>Gemini AI is analysing...</Text>
             </View>
           ) : (
@@ -134,7 +134,7 @@ export const MatchDetailsScreen: React.FC = () => {
         {/* AI Insight Banner */}
         {aiInsight && !aiLoading && (
           <GlassCard style={styles.insightBanner}>
-            <Brain size={16} color={COLORS.accentGold} strokeWidth={2} />
+            <Brain size={16} color="#6D28D9" strokeWidth={2} />
             <Text style={styles.insightText}>"{aiInsight}"</Text>
           </GlassCard>
         )}
@@ -164,7 +164,7 @@ export const MatchDetailsScreen: React.FC = () => {
             <GlassCard style={styles.listCard}>
               {strengths.map((s, i) => (
                 <View key={i} style={styles.listRow}>
-                  <CircleCheck size={14} color={COLORS.greenSuccess} strokeWidth={2} />
+                  <CircleCheck size={14} color="#059669" strokeWidth={2} />
                   <Text style={styles.listText}>{s}</Text>
                 </View>
               ))}
@@ -179,7 +179,7 @@ export const MatchDetailsScreen: React.FC = () => {
             <GlassCard style={styles.listCard}>
               {considerations.map((c, i) => (
                 <View key={i} style={styles.listRow}>
-                  <CircleAlert size={14} color={COLORS.accentGold} strokeWidth={2} />
+                  <CircleAlert size={14} color="#6D28D9" strokeWidth={2} />
                   <Text style={styles.listText}>{c}</Text>
                 </View>
               ))}
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: SPACING.md,
-    paddingBottom: 40,
+    paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
@@ -211,11 +211,15 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(109, 40, 217, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
   },
   reportBadge: {
     flexDirection: 'row',
@@ -224,20 +228,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(109, 40, 217, 0.25)',
   },
   reportBadgeText: {
     ...TYPOGRAPHY.subtitle,
-    fontSize: 9,
+    fontSize: 9.5,
+    color: '#6D28D9',
+    fontWeight: '800',
   },
   heroBox: {
     alignItems: 'center',
     paddingVertical: SPACING.lg,
   },
   aiLoadingText: {
-    color: COLORS.accentGold,
+    color: '#6D28D9',
     fontSize: 12,
     marginTop: 12,
     fontStyle: 'italic',
@@ -245,34 +251,39 @@ const styles = StyleSheet.create({
   namesText: {
     ...TYPOGRAPHY.titleL,
     fontSize: 22,
+    fontWeight: 'bold',
+    color: '#1E152A',
     marginTop: SPACING.md,
   },
   resonanceText: {
     ...TYPOGRAPHY.subtitle,
-    fontSize: 9,
+    fontSize: 9.5,
+    color: '#6D28D9',
+    fontWeight: '800',
     marginTop: 2,
   },
   descText: {
     ...TYPOGRAPHY.body,
-    fontSize: 11,
+    fontSize: 12,
+    color: '#4C3D65',
     textAlign: 'center',
     marginTop: SPACING.sm,
     maxWidth: 280,
-    lineHeight: 17,
+    lineHeight: 18,
   },
   insightBanner: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: SPACING.sm,
     marginTop: SPACING.md,
-    padding: SPACING.sm,
+    padding: SPACING.md,
   },
   insightText: {
     flex: 1,
-    fontSize: 11,
-    color: COLORS.lightGray,
+    fontSize: 12,
+    color: '#4C3D65',
     fontStyle: 'italic',
-    lineHeight: 17,
+    lineHeight: 18,
   },
   section: {
     marginTop: SPACING.md,
@@ -280,6 +291,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     ...TYPOGRAPHY.titleM,
     fontSize: 15,
+    fontWeight: 'bold',
+    color: '#1E152A',
     marginBottom: SPACING.sm,
   },
   matrixCard: {
@@ -292,25 +305,25 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   matrixLabel: {
-    fontSize: 12,
-    color: COLORS.white,
+    fontSize: 12.5,
+    color: '#1E152A',
     fontWeight: '600',
   },
   matrixScore: {
-    fontSize: 12,
+    fontSize: 12.5,
     fontWeight: 'bold',
-    color: COLORS.accentGold,
+    color: '#6D28D9',
   },
   track: {
     height: 6,
     borderRadius: 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: '#F3E8FF',
     overflow: 'hidden',
   },
   bar: {
     height: '100%',
     borderRadius: 3,
-    backgroundColor: COLORS.accentGold,
+    backgroundColor: '#6D28D9',
   },
   listCard: {
     gap: SPACING.sm,
@@ -322,8 +335,8 @@ const styles = StyleSheet.create({
   },
   listText: {
     flex: 1,
-    fontSize: 12,
-    color: COLORS.lightGray,
-    lineHeight: 18,
+    fontSize: 12.5,
+    color: '#4C3D65',
+    lineHeight: 19,
   },
 });

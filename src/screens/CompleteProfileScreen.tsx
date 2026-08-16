@@ -198,7 +198,7 @@ export const CompleteProfileScreen: React.FC = () => {
                 value={firstName}
                 onChangeText={setFirstName}
                 placeholder="e.g. Devan"
-                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+                placeholderTextColor="#8B7F9E"
               />
               {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
             </View>
@@ -209,7 +209,7 @@ export const CompleteProfileScreen: React.FC = () => {
                 value={lastName}
                 onChangeText={setLastName}
                 placeholder="e.g. Kapoor"
-                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+                placeholderTextColor="#8B7F9E"
               />
               {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
             </View>
@@ -220,30 +220,30 @@ export const CompleteProfileScreen: React.FC = () => {
                   onPress={() => setGender('male')}
                   style={{
                     flex: 1,
-                    paddingVertical: 10,
+                    paddingVertical: 11,
                     borderRadius: RADIUS.md,
-                    backgroundColor: gender === 'male' ? COLORS.accentGold : 'rgba(255, 255, 255, 0.05)',
+                    backgroundColor: gender === 'male' ? '#6D28D9' : '#F3E8FF',
                     alignItems: 'center',
                     borderWidth: 1,
-                    borderColor: gender === 'male' ? COLORS.accentGold : 'rgba(255, 255, 255, 0.15)'
+                    borderColor: gender === 'male' ? '#6D28D9' : 'rgba(109, 40, 217, 0.2)'
                   }}
                 >
-                  <Text style={{ fontSize: 13, fontWeight: '700', color: gender === 'male' ? COLORS.primary : COLORS.white }}>Male</Text>
+                  <Text style={{ fontSize: 13.5, fontWeight: '700', color: gender === 'male' ? '#FFFFFF' : '#6D28D9' }}>Male</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => setGender('female')}
                   style={{
                     flex: 1,
-                    paddingVertical: 10,
+                    paddingVertical: 11,
                     borderRadius: RADIUS.md,
-                    backgroundColor: gender === 'female' ? COLORS.accentGold : 'rgba(255, 255, 255, 0.05)',
+                    backgroundColor: gender === 'female' ? '#6D28D9' : '#F3E8FF',
                     alignItems: 'center',
                     borderWidth: 1,
-                    borderColor: gender === 'female' ? COLORS.accentGold : 'rgba(255, 255, 255, 0.15)'
+                    borderColor: gender === 'female' ? '#6D28D9' : 'rgba(109, 40, 217, 0.2)'
                   }}
                 >
-                  <Text style={{ fontSize: 13, fontWeight: '700', color: gender === 'female' ? COLORS.primary : COLORS.white }}>Female</Text>
+                  <Text style={{ fontSize: 13.5, fontWeight: '700', color: gender === 'female' ? '#FFFFFF' : '#6D28D9' }}>Female</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -255,7 +255,7 @@ export const CompleteProfileScreen: React.FC = () => {
                 value={height}
                 onChangeText={setHeight}
                 placeholder="e.g. 6ft 1in"
-                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+                placeholderTextColor="#8B7F9E"
               />
               {errors.height && <Text style={styles.errorText}>{errors.height}</Text>}
             </View>
@@ -266,7 +266,7 @@ export const CompleteProfileScreen: React.FC = () => {
                 style={[styles.input, { justifyContent: 'center' }]}
                 onPress={() => setReligionDropdownOpen(true)}
               >
-                <Text style={{ color: religion ? COLORS.white : 'rgba(255, 255, 255, 0.3)' }}>
+                <Text style={{ color: religion ? '#1E152A' : '#8B7F9E', fontSize: 13.5, fontWeight: '500' }}>
                   {religion ? religionOptions.find(opt => opt._id === religion)?.label : "Select Religion"}
                 </Text>
               </TouchableOpacity>
@@ -279,7 +279,7 @@ export const CompleteProfileScreen: React.FC = () => {
                 value={community}
                 onChangeText={setCommunity}
                 placeholder="e.g. Punjabi Khatri"
-                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+                placeholderTextColor="#8B7F9E"
               />
             </View>
 
@@ -290,7 +290,7 @@ export const CompleteProfileScreen: React.FC = () => {
                 value={motherTongue}
                 onChangeText={setMotherTongue}
                 placeholder="e.g. English / Hindi"
-                placeholderTextColor="rgba(255, 255, 255, 0.3)"
+                placeholderTextColor="#8B7F9E"
               />
             </View>
           </GlassCard>
@@ -605,31 +605,35 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(109, 40, 217, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
     display: 'flex',
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
   },
   headerTitle: {
     ...TYPOGRAPHY.titleM,
-    fontSize: 16,
-    color: COLORS.white,
+    fontSize: 18,
+    color: '#1E152A',
     fontWeight: 'bold',
   },
   infoCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-    backgroundColor: 'rgba(216, 168, 75, 0.08)',
-    borderColor: 'rgba(216, 168, 75, 0.3)',
+    backgroundColor: 'rgba(109, 40, 217, 0.06)',
+    borderColor: 'rgba(109, 40, 217, 0.25)',
     marginBottom: SPACING.md,
   },
   infoText: {
     ...TYPOGRAPHY.body,
-    fontSize: 10,
-    color: COLORS.white,
+    fontSize: 11,
+    color: '#4C3D65',
     flex: 1,
   },
   section: {
@@ -637,9 +641,10 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...TYPOGRAPHY.subtitle,
-    fontSize: 10,
+    fontSize: 11.5,
     marginBottom: 8,
-    color: COLORS.accentGold,
+    color: '#6D28D9',
+    fontWeight: '800',
   },
   formCard: {
     gap: SPACING.md,
@@ -652,22 +657,26 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   label: {
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: 'bold',
-    color: COLORS.mutedGray,
+    color: '#5C4E75',
     marginBottom: 6,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.6,
   },
   input: {
-    height: 44,
+    height: 48,
     borderRadius: RADIUS.sm,
     borderWidth: 1,
-    borderColor: COLORS.darkGlassBorder,
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    color: COLORS.white,
+    borderColor: 'rgba(109, 40, 217, 0.22)',
+    backgroundColor: '#FFFFFF',
+    color: '#1E152A',
     paddingHorizontal: SPACING.sm,
-    fontSize: 12,
+    fontSize: 13.5,
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
   },
   inputError: {
     borderColor: '#ef4444',
@@ -675,53 +684,57 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: '#ef4444',
-    fontSize: 10,
+    fontSize: 10.5,
     marginTop: 4,
     marginLeft: 2,
     fontWeight: '600',
   },
   uploadInfo: {
     ...TYPOGRAPHY.body,
-    fontSize: 10,
-    color: COLORS.mutedGray,
+    fontSize: 11,
+    color: '#5C4E75',
     marginBottom: 8,
   },
   uploadBox: {
     height: 90,
     borderWidth: 1.5,
     borderStyle: 'dashed',
-    borderColor: COLORS.darkGlassBorder,
+    borderColor: 'rgba(109, 40, 217, 0.3)',
     borderRadius: RADIUS.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    backgroundColor: 'rgba(109, 40, 217, 0.03)',
     alignItems: 'center',
-    justifyContent: 'center',
+    justify: 'center',
     gap: 8,
   },
   uploadBoxDone: {
-    borderColor: COLORS.accentGold,
-    backgroundColor: 'rgba(216, 168, 75, 0.05)',
+    borderColor: '#6D28D9',
+    backgroundColor: 'rgba(109, 40, 217, 0.08)',
   },
   uploadText: {
     fontSize: 11,
-    color: COLORS.mutedGray,
+    color: '#5C4E75',
   },
   uploadTextDone: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: COLORS.accentGold,
+    color: '#6D28D9',
   },
   saveBtn: {
-    height: 52,
+    height: 54,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.accentGold,
+    backgroundColor: '#6D28D9',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: SPACING.md,
-    ...SHADOWS.goldGlow,
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    elevation: 8,
   },
   saveBtnText: {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: 'bold',
-    color: COLORS.primary,
+    color: '#FFFFFF',
   },
 });

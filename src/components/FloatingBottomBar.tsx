@@ -52,7 +52,7 @@ export const FloatingBottomBar: React.FC = () => {
                 style={styles.navItem}
               >
                 <View style={[styles.addButton, isActive && styles.addButtonActive]}>
-                  <Plus size={20} color={COLORS.primary} strokeWidth={3} />
+                  <Plus size={20} color="#FFFFFF" strokeWidth={3} />
                 </View>
                 <View style={styles.dotContainer}>
                   {isActive && <View style={styles.activeDot} />}
@@ -72,7 +72,7 @@ export const FloatingBottomBar: React.FC = () => {
             >
               <Icon
                 size={22}
-                color={isActive ? COLORS.accentGold : COLORS.mutedGray}
+                color={isActive ? '#7C3AED' : COLORS.mutedGray}
                 strokeWidth={isActive ? 2.3 : 1.8}
               />
               <View style={styles.dotContainer}>
@@ -98,13 +98,18 @@ const styles = StyleSheet.create({
   bar: {
     width: '100%',
     height: 60,
-    backgroundColor: '#041F1C', // Deep luxury forest green
+    backgroundColor: '#FFFFFF', // Clean white glass bottom bar
     borderTopWidth: 1,
-    borderTopColor: 'rgba(216, 168, 75, 0.18)', // Elegant gold border at the top
+    borderTopColor: 'rgba(124, 58, 237, 0.15)', // Delicate violet border
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
     paddingBottom: 4, // Spacing for mobile screen indicators
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 8,
   },
   navItem: {
     alignItems: 'center',
@@ -128,12 +133,12 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 8,
-    backgroundColor: COLORS.accentGold,
+    backgroundColor: '#7C3AED',
     alignItems: 'center',
     justifyContent: 'center',
   },
   addButtonActive: {
-    backgroundColor: COLORS.accentGoldLight,
+    backgroundColor: '#6D28D9',
   },
   avatarIcon: {
     width: 24,
@@ -143,7 +148,8 @@ const styles = StyleSheet.create({
     borderColor: COLORS.mutedGray,
   },
   avatarIconActive: {
-    borderColor: COLORS.accentGold,
+    borderColor: '#7C3AED',
     borderWidth: 1.8,
   },
 });
+

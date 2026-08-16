@@ -52,18 +52,18 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       <View style={styles.feedActionRow}>
         <View style={styles.feedActionLeft}>
           <TouchableOpacity activeOpacity={0.7} onPress={handleLike} style={styles.feedActionBtn}>
-            <Heart size={22} color={COLORS.redAccent} fill={COLORS.redAccent} strokeWidth={1.8} />
+            <Heart size={22} color="#DC2626" fill="#DC2626" strokeWidth={1.8} />
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.7} onPress={handleStartChat} style={styles.feedActionBtn}>
-            <MessageCircle size={22} color={COLORS.white} strokeWidth={1.8} />
+            <MessageCircle size={22} color="#6D28D9" strokeWidth={2} />
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.7} onPress={handleSuperLike} style={styles.feedActionBtn}>
-            <Send size={20} color={COLORS.white} strokeWidth={1.8} style={styles.sendIconRotated} />
+            <Send size={20} color="#6D28D9" strokeWidth={2} style={styles.sendIconRotated} />
           </TouchableOpacity>
         </View>
         
         <TouchableOpacity activeOpacity={0.7} onPress={handleOpenDetails} style={styles.feedActionBtn}>
-          <Bookmark size={22} color={COLORS.accentGold} strokeWidth={1.8} />
+          <Bookmark size={22} color="#6D28D9" strokeWidth={2} />
         </TouchableOpacity>
       </View>
 
@@ -71,7 +71,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       <TouchableOpacity activeOpacity={0.9} onPress={handleOpenDetails} style={styles.feedDescContainer}>
         <View style={styles.feedNameRow}>
           <Text style={styles.feedNameText}>{displayName}{profile?.age ? `, ${profile.age}` : ''}</Text>
-          {(profile?.verified || profile?.isVerified) && <ShieldCheck size={14} color={COLORS.accentGold} strokeWidth={2.5} style={{ marginLeft: 5 }} />}
+          {(profile?.verified || profile?.isVerified) && <ShieldCheck size={14} color="#6D28D9" strokeWidth={2.5} style={{ marginLeft: 5 }} />}
         </View>
         
         <Text style={styles.feedStatusText} numberOfLines={2}>
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: COLORS.darkGlassBorder,
+    borderColor: 'rgba(109, 40, 217, 0.2)',
     position: 'relative',
     ...SHADOWS.soft,
   },
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   imageOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(7, 47, 43, 0.25)',
+    backgroundColor: 'rgba(15, 10, 30, 0.15)',
   },
   imageOverlayPill: {
     position: 'absolute',
@@ -124,15 +124,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: RADIUS.full,
-    backgroundColor: 'rgba(7, 47, 43, 0.85)',
+    backgroundColor: '#6D28D9',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(255, 255, 255, 0.3)',
     zIndex: 10,
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   imageOverlayText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: COLORS.white,
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
   topRow: {
     position: 'absolute',
@@ -151,28 +156,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: RADIUS.full,
-    backgroundColor: 'rgba(7, 47, 43, 0.9)',
+    backgroundColor: 'rgba(109, 40, 217, 0.9)',
     borderWidth: 1,
-    borderColor: COLORS.darkGlassBorder,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   verifiedText: {
-    fontSize: 8,
+    fontSize: 8.5,
     fontWeight: '900',
-    color: COLORS.accentGold,
+    color: '#FFFFFF',
     letterSpacing: 1,
   },
   tierBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: RADIUS.full,
-    backgroundColor: 'rgba(14, 69, 63, 0.9)',
+    backgroundColor: 'rgba(109, 40, 217, 0.9)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   tierText: {
-    fontSize: 8,
+    fontSize: 8.5,
     fontWeight: 'bold',
-    color: COLORS.white,
+    color: '#FFFFFF',
     letterSpacing: 0.5,
   },
   feedActionRow: {
@@ -204,17 +209,19 @@ const styles = StyleSheet.create({
   },
   feedNameText: {
     ...TYPOGRAPHY.titleM,
-    fontSize: 15,
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#1E152A',
   },
   feedStatusText: {
     ...TYPOGRAPHY.body,
-    fontSize: 12,
-    lineHeight: 18,
-    color: COLORS.lightGray,
+    fontSize: 12.5,
+    lineHeight: 19,
+    color: '#4C3D65',
   },
   boldText: {
     fontWeight: 'bold',
-    color: COLORS.white,
+    color: '#1E152A',
   },
   feedMetaRow: {
     flexDirection: 'row',
@@ -222,12 +229,12 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   feedMetaText: {
-    fontSize: 10,
-    color: COLORS.mutedGray,
+    fontSize: 10.5,
+    color: '#5C4E75',
   },
   moreText: {
-    fontSize: 10,
-    color: COLORS.mutedGray,
+    fontSize: 10.5,
+    color: '#6D28D9',
     fontWeight: 'bold',
   },
 });

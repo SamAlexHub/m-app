@@ -8,8 +8,8 @@ html, body, #root {
   width: 100%;
   margin: 0;
   padding: 0;
-  background-color: #072F2B;
-  color: #ffffff;
+  background-color: #F3EEFA;
+  color: #1D1732;
   font-family: 'Plus Jakarta Sans', sans-serif;
   overflow-x: hidden;
 }
@@ -25,8 +25,8 @@ body, #root {
 
 @layer base {
   body {
-    background-color: #072F2B;
-    color: #ffffff;
+    background-color: #F3EEFA;
+    color: #1D1732;
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
 

@@ -1,39 +1,43 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, CheckSquare, Square, Fingerprint, CheckCircle2 } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, ActivityIndicator, Image } from 'react-native';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, User, Fingerprint } from 'lucide-react-native';
 import { useAppStore } from '../store/useAppStore';
-import { GlassCard } from '../components/GlassCard';
 import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../theme/tokens';
 import { apiService } from '../services/api';
 
+// Bundled Expo Asset for 3D Pixar Cute Couple Login Hero
+import loginCuteCoupleImg from '../../assets/3d/login_cute_couple.png';
+
 export const AuthScreen: React.FC = () => {
   const { setScreen, setAuthToken, setCurrentUser, updateCurrentUserProfile, showCustomAlert } = useAppStore();
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('signup');
   
   // Form states
-  const [email, setEmail] = useState('victoria@sterling.com');
-  const [password, setPassword] = useState('your_secure_password_123');
-  const [confirmPassword, setConfirmPassword] = useState('your_secure_password_123');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
-
-  // 6-Digit Email OTP Verification State (kept for reference, no longer used at signup)
-  const [emailOtpSent, setEmailOtpSent] = useState(false);
-  const [emailOtp, setEmailOtp] = useState('');
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [infoMsg, setInfoMsg] = useState('');
 
-  // Handle Email & Password Submit
+  // Handle Email & Password Submit (API calls commented out - direct bypass to Home)
   const handleAuthSubmit = async () => {
     setErrorMsg('');
     setInfoMsg('');
 
+    // Directly navigate to Home Screen
+    setScreen('home');
+
+    /* API call functionality commented out:
+    if (authMode === 'signup' && !name.trim()) {
+      setErrorMsg('Please enter your User Name');
+      return;
+    }
+
     if (!email || !email.includes('@')) {
-      setErrorMsg('Please enter a valid email address');
+      setErrorMsg('Please enter a valid Phone or Email');
       return;
     }
 
@@ -42,34 +46,33 @@ export const AuthScreen: React.FC = () => {
       return;
     }
 
-    if (authMode === 'signup' && password !== confirmPassword) {
-      setErrorMsg('Passwords do not match');
-      return;
-    }
-
     try {
       setLoading(true);
       if (authMode === 'signup') {
-        // Registration: directly create account and navigate to Home
         const res = await apiService.register({ email: email.trim(), password });
         if (res.token) setAuthToken(res.token);
         if (res.user) setCurrentUser(res.user);
-        updateCurrentUserProfile({ name: '', profession: '', company: '', height: '', photos: Array(5).fill('') });
+        updateCurrentUserProfile({
+          name: name.trim() || 'Valued Member',
+          profession: '',
+          company: '',
+          height: '',
+          photos: Array(5).fill(''),
+        });
         showCustomAlert({
           title: 'Welcome to EverVow!',
-          message: 'Your account has been created successfully.\n\nPlease verify your email address from the Home screen to unlock all VIP features.',
+          message: 'Your account has been created successfully.\n\nWelcome to your private matrimonial experience.',
           type: 'success',
-          confirmText: 'Go to Home',
+          confirmText: 'Explore Matches',
           onConfirm: () => setScreen('home'),
         });
       } else {
-        // Step 3: Login User (POST /api/v1/auth/login)
         const res = await apiService.login(email.trim(), password);
         if (res.token) setAuthToken(res.token);
         if (res.user) setCurrentUser(res.user);
         if (res.profile) {
           updateCurrentUserProfile({
-            name: `${res.profile.firstName || ''} ${res.profile.lastName || ''}`.trim(),
+            name: `${res.profile.firstName || ''} ${res.profile.lastName || ''}`.trim() || 'Victoria Sterling',
             height: res.profile.height || '',
             religion: res.profile.religion?._id || res.profile.religion || '',
             community: res.profile.caste || '',
@@ -97,195 +100,178 @@ export const AuthScreen: React.FC = () => {
               ? [...res.profile.photos, ...Array(5 - res.profile.photos.length).fill('')].slice(0, 5) 
               : Array(5).fill(''),
           });
-        } else {
-          updateCurrentUserProfile({ name: '', profession: '', company: '', height: '', photos: Array(5).fill('') });
         }
-        setInfoMsg('Login successful! Redirecting...');
+        setInfoMsg('Sign In successful! Redirecting...');
         setTimeout(() => {
           setScreen('home');
-        }, 400);
+        }, 300);
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Authentication failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
+    */
   };
 
   return (
     <View style={styles.container}>
-      {/* Dark Luxury Gradient Overlays */}
-      <View style={styles.topWash} />
-      <View style={styles.bottomShade} />
+      {/* Soft Pastel Gradient Wash Backdrops */}
+      <View style={styles.topPastelWash} />
+      <View style={styles.bottomPastelWash} />
 
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header Confidential Badge */}
+        {/* Floating Top Header Privacy Badge */}
         <View style={styles.header}>
           <View style={styles.confidentialBadge}>
-            <ShieldCheck size={14} color={COLORS.accentGold} strokeWidth={2} />
-            <Text style={styles.confidentialText}>STRICT CONFIDENTIALITY GUARANTEED</Text>
+            <ShieldCheck size={12} color="#7C3AED" strokeWidth={2} />
+            <Text style={styles.confidentialText}>100% PRIVATE & VERIFIED</Text>
           </View>
         </View>
 
-        {/* Main Luxury Glass Card */}
-        <GlassCard style={styles.card}>
-          {/* Card Title & Description */}
+        {/* Central Floating 3D Cute Couple Hero Illustration */}
+        <View style={styles.heroWrapper}>
+          <View style={styles.heroGlowCircle} />
+          <Image
+            source={loginCuteCoupleImg}
+            style={styles.heroImage}
+            resizeMode="cover"
+          />
+        </View>
+
+        {/* Main Content Area (Matching Exact Reference Screenshot Layout) */}
+        <View style={styles.formContainer}>
+          {/* Title & Subtitle */}
           <Text style={styles.titleText}>
-            {authMode === 'login' ? 'Welcome Back' : 'Join Evervow'}
+            {authMode === 'signup' ? 'Sign Up' : 'Sign In'}
           </Text>
-          <Text style={styles.subtext}>
-            {authMode === 'login'
-              ? 'Sign in to access your private match invitations'
-              : 'Create your luxury matrimonial profile in minutes'}
+          <Text style={styles.subtitleText}>
+            {authMode === 'signup'
+              ? 'Create your luxury account to start discovering curated family matches.'
+              : 'Welcome back! Enter your details to view your private invitations.'}
           </Text>
 
-          {/* Mode Selector Switcher (Log In vs Register) */}
-          <View style={styles.pillContainer}>
+          {/* Mode Switcher Tabs */}
+          <View style={styles.switcherContainer}>
             <TouchableOpacity
               onPress={() => {
-                setAuthMode('login');
-                setEmailOtpSent(false);
+                setAuthMode('signup');
                 setErrorMsg('');
                 setInfoMsg('');
               }}
-              style={[styles.pill, authMode === 'login' && styles.pillActive]}
+              style={[styles.switcherTab, authMode === 'signup' && styles.switcherTabActive]}
             >
-              <Text style={[styles.pillText, authMode === 'login' && styles.pillTextActive]}>Sign In</Text>
+              <Text style={[styles.switcherText, authMode === 'signup' && styles.switcherTextActive]}>Sign Up</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => {
-                setAuthMode('signup');
-                setEmailOtpSent(false);
+                setAuthMode('login');
                 setErrorMsg('');
                 setInfoMsg('');
               }}
-              style={[styles.pill, authMode === 'signup' && styles.pillActive]}
+              style={[styles.switcherTab, authMode === 'login' && styles.switcherTabActive]}
             >
-              <Text style={[styles.pillText, authMode === 'signup' && styles.pillTextActive]}>Register</Text>
+              <Text style={[styles.switcherText, authMode === 'login' && styles.switcherTextActive]}>Sign In</Text>
             </TouchableOpacity>
           </View>
 
           {/* Feedback Banners */}
           {errorMsg ? <Text style={styles.errorText}>⚠️ {errorMsg}</Text> : null}
-          {infoMsg ? <Text style={styles.infoText}>ℹ️ {infoMsg}</Text> : null}
+          {infoMsg ? <Text style={styles.infoText}>✨ {infoMsg}</Text> : null}
 
-          {/* Email Verification Step for Registration - removed, verify later from home */}
-          <>
-            {/* Email Address Input */}
-            <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
-              <View style={styles.inputBox}>
-                <Mail size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-                <TextInput
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  placeholder="victoria@sterling.com"
-                  placeholderTextColor={COLORS.mutedGray}
-                  style={styles.inputText}
-                />
-              </View>
+          {/* Clean White Pill Input Fields (Exact match to reference model) */}
+          {authMode === 'signup' && (
+            <View style={styles.inputPillBox}>
+              <User size={16} color="#7C3AED" style={{ marginRight: 10 }} />
+              <TextInput
+                value={name}
+                onChangeText={setName}
+                placeholder="User Name"
+                placeholderTextColor="#9CA3AF"
+                style={styles.inputText}
+              />
             </View>
+          )}
 
-            {/* Password Input */}
-            <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>PASSWORD</Text>
-              <View style={styles.inputBox}>
-                <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-                <TextInput
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  placeholder="••••••••"
-                  placeholderTextColor={COLORS.mutedGray}
-                  style={styles.inputText}
-                />
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                  {showPassword ? (
-                    <EyeOff size={16} color={COLORS.mutedGray} />
-                  ) : (
-                    <Eye size={16} color={COLORS.mutedGray} />
-                  )}
-                </TouchableOpacity>
-              </View>
-            </View>
+          <View style={styles.inputPillBox}>
+            <Mail size={16} color="#7C3AED" style={{ marginRight: 10 }} />
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholder="Phone or Email"
+              placeholderTextColor="#9CA3AF"
+              style={styles.inputText}
+            />
+          </View>
 
-            {/* Confirm Password (Sign Up Mode) */}
-            {authMode === 'signup' && (
-              <View style={styles.inputWrapper}>
-                <Text style={styles.inputLabel}>CONFIRM PASSWORD</Text>
-                <View style={styles.inputBox}>
-                  <Lock size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-                  <TextInput
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry={!showConfirmPassword}
-                    placeholder="••••••••"
-                    placeholderTextColor={COLORS.mutedGray}
-                    style={styles.inputText}
-                  />
-                  <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                    {showConfirmPassword ? (
-                      <EyeOff size={16} color={COLORS.mutedGray} />
-                    ) : (
-                      <Eye size={16} color={COLORS.mutedGray} />
-                    )}
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
-          </>
-
-
-          {/* Remember Me Toggle */}
-          <View style={styles.optionsRow}>
-            <TouchableOpacity
-              style={styles.rememberBox}
-              onPress={() => setRememberMe(!rememberMe)}
-              activeOpacity={0.7}
-            >
-              {rememberMe ? (
-                <CheckSquare size={16} color={COLORS.accentGold} />
+          <View style={styles.inputPillBox}>
+            <Lock size={16} color="#7C3AED" style={{ marginRight: 10 }} />
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              placeholder="Password"
+              placeholderTextColor="#9CA3AF"
+              style={styles.inputText}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              {showPassword ? (
+                <EyeOff size={16} color="#9CA3AF" />
               ) : (
-                <Square size={16} color={COLORS.mutedGray} />
+                <Eye size={16} color="#9CA3AF" />
               )}
-              <Text style={styles.rememberText}>Remember Login Credentials</Text>
             </TouchableOpacity>
           </View>
-        </GlassCard>
-      </ScrollView>
 
-      {/* Bottom Action Controls */}
-      <View style={styles.bottomControls}>
-        <TouchableOpacity
-          activeOpacity={0.88}
-          onPress={handleAuthSubmit}
-          style={styles.primaryButton}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color={COLORS.primary} size="small" />
-          ) : (
-            <>
+          {/* Theme-Matched Primary Action Button */}
+          <TouchableOpacity
+            activeOpacity={0.88}
+            onPress={handleAuthSubmit}
+            style={styles.primaryButton}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
               <Text style={styles.primaryButtonText}>
-                {authMode === 'signup' ? 'Create My Account' : 'Enter Private Lounge'}
+                {authMode === 'signup' ? 'Sign Up' : 'Sign In'}
               </Text>
-              <ArrowRight size={18} color={COLORS.primary} strokeWidth={2.6} style={styles.buttonIcon} />
-            </>
-          )}
-        </TouchableOpacity>
+            )}
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setScreen('home')} style={styles.fingerprintBtn}>
-          <Fingerprint size={16} color={COLORS.accentGold} strokeWidth={1.8} />
-          <Text style={styles.fingerprintText}>Biometric Passcode Sign-In</Text>
-        </TouchableOpacity>
-      </View>
+          {/* Switch Mode Footer Link */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              setAuthMode(authMode === 'signup' ? 'login' : 'signup');
+              setErrorMsg('');
+              setInfoMsg('');
+            }}
+            style={styles.switchModeLink}
+          >
+            <Text style={styles.switchModeText}>
+              {authMode === 'signup' ? (
+                <>Already have an account? <Text style={styles.switchModeBold}>Sign In</Text></>
+              ) : (
+                <>Don't have an account? <Text style={styles.switchModeBold}>Sign Up</Text></>
+              )}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Quick Biometric Access */}
+          <TouchableOpacity onPress={() => setScreen('home')} style={styles.biometricBtn}>
+            <Fingerprint size={15} color="#7C3AED" strokeWidth={1.8} />
+            <Text style={styles.biometricText}>Quick Biometric Access</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -293,28 +279,26 @@ export const AuthScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.lg,
+    backgroundColor: '#F3EEFA', // Ethereal light pastel backdrop
+    position: 'relative',
   },
-  topWash: {
+  topPastelWash: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '54%',
-    backgroundColor: '#0A3A34',
-    opacity: 0.96,
+    top: -60,
+    left: '5%',
+    width: '90%',
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: 'rgba(238, 205, 245, 0.55)',
   },
-  bottomShade: {
+  bottomPastelWash: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '46%',
-    backgroundColor: '#041F1C',
-    opacity: 0.58,
+    bottom: -80,
+    right: '0%',
+    width: '95%',
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(215, 230, 255, 0.45)',
   },
   scrollView: {
     flex: 1,
@@ -324,158 +308,204 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.xl,
   },
   header: {
-    paddingTop: SPACING.xs,
     alignItems: 'center',
+    marginBottom: SPACING.xs,
   },
   confidentialBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingVertical: 5,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
     borderWidth: 1,
-    borderColor: COLORS.darkGlassBorder,
+    borderColor: 'rgba(124, 58, 237, 0.25)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
   },
   confidentialText: {
-    ...TYPOGRAPHY.subtitle,
     fontSize: 9,
+    fontWeight: '800',
+    color: '#7C3AED',
+    letterSpacing: 1.4,
   },
-  card: {
+  heroWrapper: {
+    position: 'relative',
+    width: 160,
+    height: 160,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: SPACING.xs,
+  },
+  heroGlowCircle: {
+    position: 'absolute',
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderWidth: 1,
+    borderColor: 'rgba(230, 215, 250, 0.9)',
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 4,
+  },
+  heroImage: {
+    width: 146,
+    height: 146,
+    borderRadius: 73,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  formContainer: {
     width: '100%',
     maxWidth: 380,
-    marginTop: SPACING.md,
+    alignItems: 'center',
+    marginTop: SPACING.xs,
   },
   titleText: {
-    ...TYPOGRAPHY.titleL,
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1D1732',
     textAlign: 'center',
+    marginBottom: 4,
   },
-  subtext: {
-    ...TYPOGRAPHY.body,
-    fontSize: 12,
+  subtitleText: {
+    fontSize: 13,
+    lineHeight: 19,
+    color: '#6B6480',
     textAlign: 'center',
-    marginTop: 4,
+    maxWidth: 320,
     marginBottom: SPACING.md,
   },
-  pillContainer: {
+  switcherContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    width: '100%',
+    maxWidth: 260,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: RADIUS.full,
     padding: 4,
     marginBottom: SPACING.md,
+    borderWidth: 1,
+    borderColor: 'rgba(220, 205, 240, 0.7)',
   },
-  pill: {
+  switcherTab: {
     flex: 1,
     paddingVertical: 8,
     borderRadius: RADIUS.full,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  pillActive: {
-    backgroundColor: COLORS.accentGold,
-    ...SHADOWS.goldGlow,
+  switcherTabActive: {
+    backgroundColor: '#7C3AED',
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  pillText: {
-    fontSize: 11,
-    color: COLORS.mutedGray,
+  switcherText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B6480',
+  },
+  switcherTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+  },
+  errorText: {
+    fontSize: 11.5,
+    color: '#DC2626',
+    textAlign: 'center',
+    marginBottom: 10,
     fontWeight: '600',
   },
-  pillTextActive: {
-    color: COLORS.primary,
-    fontWeight: 'bold',
+  infoText: {
+    fontSize: 11.5,
+    color: '#7C3AED',
+    textAlign: 'center',
+    marginBottom: 10,
+    fontWeight: '600',
   },
-  inputWrapper: {
-    marginBottom: SPACING.md,
-  },
-  inputLabel: {
-    ...TYPOGRAPHY.subtitle,
-    fontSize: 9,
-    marginBottom: 4,
-  },
-  inputBox: {
+  inputPillBox: {
+    width: '100%',
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: 'rgba(124, 58, 237, 0.22)',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    height: 48,
-    borderRadius: RADIUS.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: 20,
+    marginBottom: 14,
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   inputText: {
     flex: 1,
-    color: COLORS.white,
-    fontSize: 13,
-  },
-  optionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: SPACING.sm,
-  },
-  rememberBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  rememberText: {
-    fontSize: 11,
-    color: COLORS.lightGray,
-  },
-  errorText: {
-    fontSize: 11,
-    color: '#FF6B6B',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  infoText: {
-    fontSize: 11,
-    color: COLORS.accentGold,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  bottomControls: {
-    width: '100%',
-    alignItems: 'center',
-    paddingBottom: SPACING.xs,
-    marginTop: SPACING.md,
+    color: '#1D1732',
+    fontSize: 14,
+    fontWeight: '500',
   },
   primaryButton: {
     width: '100%',
-    maxWidth: 340,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: COLORS.accentGold,
-    flexDirection: 'row',
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#7C3AED',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: SPACING.lg,
-    ...SHADOWS.goldGlow,
+    marginTop: SPACING.xs,
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.38,
+    shadowRadius: 14,
+    elevation: 6,
   },
   primaryButtonText: {
-    flexShrink: 1,
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '800',
-    color: COLORS.primary,
+    color: '#FFFFFF',
     textAlign: 'center',
   },
-  buttonIcon: {
-    marginLeft: SPACING.sm,
+  switchModeLink: {
+    marginTop: SPACING.md,
+    alignItems: 'center',
+    paddingVertical: 4,
   },
-  fingerprintBtn: {
+  switchModeText: {
+    fontSize: 12.5,
+    color: '#6B6480',
+  },
+  switchModeBold: {
+    fontWeight: '700',
+    color: '#7C3AED',
+    textDecorationLine: 'underline',
+  },
+  biometricBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: SPACING.sm,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.xs,
+    gap: 6,
+    marginTop: SPACING.md,
+    paddingTop: SPACING.xs,
   },
-  fingerprintText: {
-    fontSize: 12,
-    color: COLORS.lightGray,
+  biometricText: {
+    fontSize: 11.5,
+    color: '#6B6480',
+    fontWeight: '500',
   },
 });
+
+

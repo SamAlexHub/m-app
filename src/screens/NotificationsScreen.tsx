@@ -12,7 +12,7 @@ export const NotificationsScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setScreen('home')} style={styles.backBtn}>
-          <ArrowLeft size={18} color={COLORS.white} strokeWidth={2} />
+          <ArrowLeft size={18} color={COLORS.darkText} strokeWidth={2.4} />
         </TouchableOpacity>
         <View style={styles.badge}>
           <Bell size={12} color={COLORS.accentGold} strokeWidth={1.8} />
@@ -23,44 +23,44 @@ export const NotificationsScreen: React.FC = () => {
 
       <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>Notifications & Alerts</Text>
-      <Text style={styles.sub}>Your Private Match Updates</Text>
+        <Text style={styles.sub}>Your Private Match Updates</Text>
 
-      <View style={styles.list}>
-        {notifications.map((n) => (
-          <GlassCard
-            key={n.id}
-            glow={!n.read}
-            onClick={() => {
-              markNotificationAsRead(n.id);
-              setSelectedProfileId('p1');
-              setScreen('match-details');
-            }}
-            style={styles.notifCard}
-          >
-            <View style={styles.notifRow}>
-              {n.avatar ? (
-                <Image source={{ uri: n.avatar }} style={styles.avatar} />
-              ) : (
-                <View style={styles.iconBox}>
-                  <Bell size={16} color={COLORS.primary} strokeWidth={2} />
-                </View>
-              )}
+        <View style={styles.list}>
+          {notifications.map((n) => (
+            <GlassCard
+              key={n.id}
+              glow={!n.read}
+              onClick={() => {
+                markNotificationAsRead(n.id);
+                setSelectedProfileId('p1');
+                setScreen('match-details');
+              }}
+              style={styles.notifCard}
+            >
+              <View style={styles.notifRow}>
+                {n.avatar ? (
+                  <Image source={{ uri: n.avatar }} style={styles.avatar} />
+                ) : (
+                  <View style={styles.iconBox}>
+                    <Bell size={16} color="#FFFFFF" strokeWidth={2} />
+                  </View>
+                )}
 
-              <View style={styles.textCol}>
-                <View style={styles.cardHeader}>
-                  <Text style={styles.cardTitle}>{n.title}</Text>
-                  <Text style={styles.timeText}>{n.time}</Text>
+                <View style={styles.textCol}>
+                  <View style={styles.cardHeader}>
+                    <Text style={styles.cardTitle}>{n.title}</Text>
+                    <Text style={styles.timeText}>{n.time}</Text>
+                  </View>
+                  <Text style={styles.msgText}>{n.message}</Text>
                 </View>
-                <Text style={styles.msgText}>{n.message}</Text>
+
+                {!n.read && <View style={styles.dot} />}
               </View>
-
-              {!n.read && <View style={styles.dot} />}
-            </View>
-          </GlassCard>
-        ))}
-      </View>
-    </ScrollView>
-  </View>
+            </GlassCard>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -92,9 +92,13 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(109, 40, 217, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
   },
   badge: {
     flexDirection: 'row',
@@ -115,6 +119,7 @@ const styles = StyleSheet.create({
     ...TYPOGRAPHY.titleL,
     fontSize: 24,
     textAlign: 'center',
+    color: COLORS.darkText,
   },
   sub: {
     ...TYPOGRAPHY.subtitle,
@@ -135,16 +140,16 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    borderWidth: 1,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1.5,
     borderColor: COLORS.accentGold,
   },
   iconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: COLORS.accentGold,
     alignItems: 'center',
     justifyContent: 'center',
@@ -159,18 +164,21 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontFamily: 'serif',
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: 'bold',
-    color: COLORS.white,
+    color: '#1E152A',
   },
   timeText: {
-    fontSize: 9,
-    color: COLORS.mutedGray,
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#6D28D9',
   },
   msgText: {
     ...TYPOGRAPHY.body,
-    fontSize: 10,
+    fontSize: 11.5,
     marginTop: 2,
+    color: '#4C3D65',
+    lineHeight: 16,
   },
   dot: {
     width: 8,

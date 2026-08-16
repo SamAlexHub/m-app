@@ -138,7 +138,7 @@ export const ProfileScreen: React.FC = () => {
       {/* Custom Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setScreen('home')} style={styles.headerBtn}>
-          <ArrowLeft size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
+          <ArrowLeft size={18} color="#1E152A" strokeWidth={2.4} style={{ alignSelf: 'center' }} />
         </TouchableOpacity>
         
         <Text style={styles.headerUsername}>{isOwnProfile ? "My Profile" : username}</Text>
@@ -146,16 +146,16 @@ export const ProfileScreen: React.FC = () => {
         <View style={styles.headerRightActions}>
           {!isOwnProfile && (
             <TouchableOpacity onPress={() => setDetailsModalOpen(true)} style={styles.headerBtn}>
-              <Eye size={18} color={COLORS.accentGold} strokeWidth={2.2} style={{ alignSelf: 'center' }} />
+              <Eye size={18} color="#6D28D9" strokeWidth={2.2} style={{ alignSelf: 'center' }} />
             </TouchableOpacity>
           )}
           {isOwnProfile ? (
             <TouchableOpacity onPress={handleLogout} style={[styles.headerBtn, { marginLeft: 8 }]}>
-              <Power size={18} color={COLORS.redAccent} strokeWidth={2} style={{ alignSelf: 'center' }} />
+              <Power size={18} color="#DC2626" strokeWidth={2} style={{ alignSelf: 'center' }} />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={[styles.headerBtn, { marginLeft: 8 }]}>
-              <Ellipsis size={20} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
+              <Ellipsis size={20} color="#1E152A" strokeWidth={2} style={{ alignSelf: 'center' }} />
             </TouchableOpacity>
           )}
         </View>
@@ -164,7 +164,7 @@ export const ProfileScreen: React.FC = () => {
       <ScrollView style={styles.scrollFeed} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {loading ? (
           <View style={{ padding: 40, alignItems: 'center' }}>
-            <Text style={{ color: COLORS.white }}>Loading profile...</Text>
+            <Text style={{ color: '#1E152A', fontSize: 13, fontWeight: '600' }}>Loading profile...</Text>
           </View>
         ) : (
           <>
@@ -175,17 +175,17 @@ export const ProfileScreen: React.FC = () => {
             {mainPhotoUri ? (
               <Image source={{ uri: mainPhotoUri }} style={styles.avatarImg} />
             ) : (
-              <View style={[styles.avatarImg, { backgroundColor: 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={[styles.avatarImg, { backgroundColor: '#F3E8FF', alignItems: 'center', justifyContent: 'center' }]}>
                 {isOwnProfile ? (
-                  <Upload size={24} color="rgba(255, 255, 255, 0.2)" />
+                  <Upload size={24} color="#6D28D9" />
                 ) : (
-                  <User size={24} color="rgba(255, 255, 255, 0.2)" />
+                  <User size={24} color="#6D28D9" />
                 )}
               </View>
             )}
             {isOwnProfile && (
               <TouchableOpacity onPress={() => handleEditPhoto(0)} style={styles.pencilOverlayAvatar}>
-                <Pencil size={11} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
+                <Pencil size={11} color="#FFFFFF" strokeWidth={2.5} style={{ alignSelf: 'center' }} />
               </TouchableOpacity>
             )}
           </View>
@@ -196,7 +196,7 @@ export const ProfileScreen: React.FC = () => {
           <View style={styles.nameRow}>
             <Text style={styles.nameText}>{displayName}</Text>
             {((isOwnProfile && isProfileVerified) || (!isOwnProfile && (profile.userInfo?.isVerified || profile.verified || profile.isVerified))) && (
-              <ShieldCheck size={18} color={COLORS.accentGold} strokeWidth={2.5} style={{ marginLeft: 5 }} />
+              <ShieldCheck size={18} color="#6D28D9" strokeWidth={2.5} style={{ marginLeft: 5 }} />
             )}
           </View>
           <Text style={styles.subtitleText}>{renderText(profile.occupation || profile.profession, '')} {profile.company ? `at ${renderText(profile.company, '')}` : ''}</Text>
@@ -247,17 +247,17 @@ export const ProfileScreen: React.FC = () => {
                 <Image source={{ uri: photo1Uri }} style={styles.gridPhoto} />
               ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
-                  <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <Upload size={18} color="#6D28D9" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               ) : (
                 <View style={styles.photoPlaceholder}>
-                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <ImageOff size={18} color="#5C4E75" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && photo1Uri ? (
                 <View style={styles.pencilOverlayGrid}>
-                  <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
+                  <Pencil size={10} color="#FFFFFF" strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
               ) : null}
             </TouchableOpacity>
@@ -272,17 +272,17 @@ export const ProfileScreen: React.FC = () => {
                 <Image source={{ uri: photo3Uri }} style={styles.gridPhoto} />
               ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
-                  <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <Upload size={18} color="#6D28D9" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               ) : (
                 <View style={styles.photoPlaceholder}>
-                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <ImageOff size={18} color="#5C4E75" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && photo3Uri ? (
                 <View style={styles.pencilOverlayGrid}>
-                  <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
+                  <Pencil size={10} color="#FFFFFF" strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
               ) : null}
             </TouchableOpacity>
@@ -300,17 +300,17 @@ export const ProfileScreen: React.FC = () => {
                 <Image source={{ uri: photo2Uri }} style={styles.gridPhoto} />
               ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
-                  <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <Upload size={18} color="#6D28D9" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               ) : (
                 <View style={styles.photoPlaceholder}>
-                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <ImageOff size={18} color="#5C4E75" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && photo2Uri ? (
                 <View style={styles.pencilOverlayGrid}>
-                  <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
+                  <Pencil size={10} color="#FFFFFF" strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
               ) : null}
             </TouchableOpacity>
@@ -325,17 +325,17 @@ export const ProfileScreen: React.FC = () => {
                 <Image source={{ uri: photo4Uri }} style={styles.gridPhoto} />
               ) : isOwnProfile ? (
                 <View style={styles.photoPlaceholder}>
-                  <Upload size={18} color="rgba(255, 255, 255, 0.2)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <Upload size={18} color="#6D28D9" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                   <Text style={styles.photoPlaceholderText}>Add Photo</Text>
                 </View>
               ) : (
                 <View style={styles.photoPlaceholder}>
-                  <ImageOff size={18} color="rgba(255, 255, 255, 0.1)" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
+                  <ImageOff size={18} color="#5C4E75" strokeWidth={1.5} style={{ alignSelf: 'center' }} />
                 </View>
               )}
               {isOwnProfile && photo4Uri ? (
                 <View style={styles.pencilOverlayGrid}>
-                  <Pencil size={10} color={COLORS.primary} strokeWidth={2.5} style={{ alignSelf: 'center' }} />
+                  <Pencil size={10} color="#FFFFFF" strokeWidth={2.5} style={{ alignSelf: 'center' }} />
                 </View>
               ) : null}
             </TouchableOpacity>
@@ -345,99 +345,99 @@ export const ProfileScreen: React.FC = () => {
         )}
       </ScrollView>
 
-      {/* Profile Details Modal Popup */}
-      <Modal visible={detailsModalOpen} animationType="slide" transparent>
+      {/* Details Drawer Modal */}
+      <Modal visible={detailsModalOpen} animationType="slide" transparent onRequestClose={() => setDetailsModalOpen(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Detailed Profile Insights</Text>
+              <Text style={styles.modalTitle}>Full Matrimonial Dossier</Text>
               <TouchableOpacity onPress={() => setDetailsModalOpen(false)} style={styles.closeBtn}>
-                <X size={16} color={COLORS.white} style={{ alignSelf: 'center' }} />
+                <X size={14} color="#6D28D9" />
               </TouchableOpacity>
             </View>
-            
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
-              {/* Category 1: Family Background */}
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {/* Bio Section */}
+              <View style={styles.modalSection}>
+                <Text style={styles.modalSecTitle}>Personal Bio & Ethos</Text>
+                <Text style={styles.modalText}>{renderText(profile.personalizedIntro || profile.bio, 'No bio provided.')}</Text>
+              </View>
+
+              {/* Physical & Personal */}
+              <View style={styles.modalSection}>
+                <Text style={styles.modalSecTitle}>Personal Details</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Religion:</Text> {renderText(profile.religion?._id || profile.religion, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Caste/Community:</Text> {renderText(profile.caste || profile.community, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Mother Tongue:</Text> {renderText(profile.motherTongue, 'N/A')}</Text>
+              </View>
+
+              {/* Education & Profession */}
+              <View style={styles.modalSection}>
+                <Text style={styles.modalSecTitle}>Career & Education</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Education:</Text> {renderText(profile.education, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Occupation:</Text> {renderText(profile.occupation || profile.profession, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Company:</Text> {renderText(profile.company, 'N/A')}</Text>
+              </View>
+
+              {/* Family Details */}
               <View style={styles.modalSection}>
                 <Text style={styles.modalSecTitle}>Family Background</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Heritage:</Text> {renderText(profile.familyDetails?.background || profile.familyBackground)}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Father's Profession:</Text> {renderText(profile.familyDetails?.father || profile.fatherProfession)}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Mother's Profession:</Text> {renderText(profile.familyDetails?.mother || profile.motherProfession)}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Family Values:</Text> {renderText(profile.familyDetails?.familyValues || profile.familyValues)}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Native Place:</Text> {renderText(profile.familyDetails?.location || profile.ancestralOrigin)}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Father's Profession:</Text> {renderText(profile.fatherProfession || profile.familyDetails?.father, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Mother's Profession:</Text> {renderText(profile.motherProfession || profile.familyDetails?.mother, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Family Background:</Text> {renderText(profile.familyBackground || profile.familyDetails?.background, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Family Values:</Text> {renderText(profile.familyValues || profile.familyDetails?.familyValues, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Ancestral Origin:</Text> {renderText(profile.ancestralOrigin || profile.familyDetails?.location, 'N/A')}</Text>
               </View>
 
-              {/* Category 2: Academic & Career */}
+              {/* Astro Details */}
               <View style={styles.modalSection}>
-                <Text style={styles.modalSecTitle}>Education & Profession</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Highest Education:</Text> {renderText(profile.education)}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Occupation:</Text> {renderText(profile.profession || profile.occupation)}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Company:</Text> {renderText(profile.company)}</Text>
-              </View>
-
-              {/* Category 3: Vedic Astro details */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSecTitle}>Horoscope & Astro Kundali</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Zodiac Sign:</Text> {renderText(profile.horoscope?.zodiac || profile.zodiacSign)}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Rashi / Moon Sign:</Text> {renderText(profile.horoscope?.rashi || profile.moonSign)}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Nakshatra:</Text> {renderText(profile.horoscope?.nakshatra || profile.nakshatra)}</Text>
-                <Text style={styles.modalText}><Text style={styles.bold}>Manglik Status:</Text> {
-                  profile.horoscope?.manglik !== undefined ? (profile.horoscope.manglik ? "Manglik" : "Non-Manglik") : 
-                  (profile.isManglik !== undefined ? (profile.isManglik ? "Manglik" : "Non-Manglik") : 'Not specified')
-                }</Text>
+                <Text style={styles.modalSecTitle}>Horoscope & Astro</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Zodiac Sign:</Text> {renderText(profile.zodiacSign || profile.horoscope?.zodiac, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Moon Sign (Rashi):</Text> {renderText(profile.moonSign || profile.horoscope?.rashi, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Nakshatra:</Text> {renderText(profile.nakshatra || profile.horoscope?.nakshatra, 'N/A')}</Text>
+                <Text style={styles.modalText}><Text style={styles.bold}>Manglik Status:</Text> {profile.isManglik || profile.horoscope?.manglik ? 'Yes' : 'No'}</Text>
               </View>
             </ScrollView>
           </View>
         </View>
       </Modal>
 
-      {/* Personalized Connection Modal Popup */}
-      <Modal visible={connectModalOpen} animationType="fade" transparent>
+      {/* Personalised Connection Invitation Modal */}
+      <Modal visible={connectModalOpen} animationType="fade" transparent onRequestClose={() => setConnectModalOpen(false)}>
         <View style={styles.centerModalOverlay}>
-          <GlassCard style={styles.centerModalContent}>
-            <Text style={styles.centerModalTitle}>Introduce Yourself</Text>
+          <View style={styles.centerModalContent}>
+            <Text style={styles.centerModalTitle}>Send Royal Invitation</Text>
             <Text style={styles.centerModalSub}>
-              Send a personalized message to {profile.name} along with your concierge connection request:
+              Attach a personal note to introduce yourself and your family to {displayName}.
             </Text>
 
             <TextInput
               style={styles.introTextInput}
               value={introText}
               onChangeText={setIntroText}
+              placeholder="Express genuine family values, interests, or warm greetings..."
+              placeholderTextColor="#8B7F9E"
               multiline
-              numberOfLines={6}
-              placeholder="Tell them about yourself, your career, expectations..."
-              placeholderTextColor="rgba(255, 255, 255, 0.35)"
             />
 
             <View style={styles.centerModalActions}>
-              <TouchableOpacity
-                onPress={() => setConnectModalOpen(false)}
-                style={styles.cancelBtn}
-              >
+              <TouchableOpacity onPress={() => setConnectModalOpen(false)} style={styles.cancelBtn}>
                 <Text style={styles.cancelBtnText}>Cancel</Text>
               </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleSendInvitation}
-                style={styles.sendBtn}
-              >
-                <Text style={styles.sendBtnText}>Send Request</Text>
+              <TouchableOpacity onPress={handleSendInvitation} style={styles.sendBtn}>
+                <Text style={styles.sendBtnText}>Send Invitation</Text>
               </TouchableOpacity>
             </View>
-          </GlassCard>
+          </View>
         </View>
       </Modal>
 
-      {/* Email Verification Modal Popup */}
-      <EmailOtpModal visible={emailModalOpen} onClose={() => setEmailModalOpen(false)} />
-
-      {/* Upload Photo Modal Popup */}
+      {/* Upload Photo Modal */}
       <UploadPhotoModal
         visible={uploadModalOpen}
         onClose={() => setUploadModalOpen(false)}
         photoIndex={editingPhotoIndex}
-        currentPhotoUrl={profile.photos?.[editingPhotoIndex]}
+        currentPhotoUrl={profile.photos?.[editingPhotoIndex] || ''}
         onSavePhoto={handleSavePhoto}
       />
     </View>
@@ -447,14 +447,14 @@ export const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#FFFFFF',
   },
   scrollFeed: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: SPACING.md,
-    paddingBottom: 110,
+    paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
@@ -463,33 +463,35 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.md,
     paddingBottom: SPACING.sm,
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#FFFFFF',
     zIndex: 10,
+  },
+  headerBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: 'rgba(109, 40, 217, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+  },
+  headerUsername: {
+    ...TYPOGRAPHY.titleM,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1E152A',
   },
   headerRightActions: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  headerBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    display: 'flex',
-  },
-  headerUsername: {
-    ...TYPOGRAPHY.titleM,
-    fontSize: 15,
-    color: COLORS.white,
-    letterSpacing: 0.5,
-  },
   avatarWrapper: {
     alignItems: 'center',
-    justifyContent: 'center',
     marginVertical: SPACING.md,
   },
   avatarContainer: {
@@ -500,93 +502,77 @@ const styles = StyleSheet.create({
   avatarImg: {
     width: 140,
     height: 140,
-    borderRadius: 28,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: '#6D28D9',
   },
   pencilOverlayAvatar: {
     position: 'absolute',
-    bottom: -6,
-    right: -6,
+    bottom: -4,
+    right: -4,
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: COLORS.accentGold,
-    borderWidth: 2,
-    borderColor: COLORS.primary,
+    backgroundColor: '#6D28D9',
     alignItems: 'center',
     justifyContent: 'center',
-    display: 'flex',
-    ...SHADOWS.soft,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
   },
   pencilOverlayGrid: {
     position: 'absolute',
-    bottom: 8,
-    right: 8,
+    bottom: 6,
+    right: 6,
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: COLORS.accentGold,
-    borderWidth: 1.5,
-    borderColor: COLORS.primary,
+    backgroundColor: '#6D28D9',
     alignItems: 'center',
     justifyContent: 'center',
-    display: 'flex',
-    ...SHADOWS.soft,
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
   },
   detailsBlock: {
     alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: SPACING.md,
   },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 4,
   },
   nameText: {
     ...TYPOGRAPHY.titleL,
     fontSize: 22,
-    color: COLORS.white,
+    fontWeight: 'bold',
+    color: '#1E152A',
   },
   subtitleText: {
-    ...TYPOGRAPHY.caption,
-    fontSize: 11,
-    marginTop: 4,
-    color: COLORS.mutedGray,
+    ...TYPOGRAPHY.body,
+    fontSize: 13,
+    color: '#4C3D65',
+    marginTop: 2,
     textAlign: 'center',
-  },
-  emailVerifyBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: 'rgba(216, 168, 75, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(216, 168, 75, 0.35)',
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: RADIUS.md,
-    marginBottom: SPACING.md,
-  },
-  emailVerifyTitle: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: COLORS.accentGold,
-  },
-  emailVerifySub: {
-    fontSize: 10,
-    color: COLORS.lightGray,
   },
   statsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#FFFFFF',
     borderRadius: RADIUS.lg,
-    paddingVertical: 14,
+    paddingVertical: SPACING.md,
     marginBottom: SPACING.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(109, 40, 217, 0.2)',
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
   },
   statsCol: {
     alignItems: 'center',
@@ -595,16 +581,17 @@ const styles = StyleSheet.create({
   statsDivider: {
     width: 1,
     height: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: 'rgba(109, 40, 217, 0.15)',
   },
   statsValue: {
     ...TYPOGRAPHY.titleM,
     fontSize: 16,
-    color: COLORS.white,
+    fontWeight: 'bold',
+    color: '#1E152A',
   },
   statsLabel: {
-    fontSize: 10,
-    color: COLORS.mutedGray,
+    fontSize: 10.5,
+    color: '#5C4E75',
     marginTop: 3,
     fontWeight: '600',
   },
@@ -613,32 +600,40 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   completeBtn: {
-    height: 50,
+    height: 52,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.accentGold,
+    backgroundColor: '#6D28D9',
     alignItems: 'center',
     justifyContent: 'center',
-    ...SHADOWS.goldGlow,
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    elevation: 8,
   },
   completeBtnText: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: COLORS.primary,
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#FFFFFF',
     letterSpacing: 0.5,
   },
   connectBtn: {
-    height: 50,
+    height: 52,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.accentGold,
+    backgroundColor: '#6D28D9',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.xl,
-    ...SHADOWS.goldGlow,
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    elevation: 8,
   },
   connectBtnText: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: COLORS.primary,
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#FFFFFF',
     letterSpacing: 0.5,
   },
   photoGrid: {
@@ -657,23 +652,28 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: RADIUS.lg,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(109, 40, 217, 0.2)',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: 'rgba(15, 10, 30, 0.65)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: RADIUS.xl,
     borderTopRightRadius: RADIUS.xl,
-    padding: SPACING.md,
-    maxHeight: '75%',
+    padding: SPACING.lg,
+    maxHeight: '80%',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(109, 40, 217, 0.25)',
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 10,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -681,70 +681,74 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: SPACING.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    borderBottomColor: 'rgba(109, 40, 217, 0.15)',
     paddingBottom: SPACING.sm,
   },
   modalTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: COLORS.accentGold,
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1E152A',
   },
   closeBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#F3E8FF',
     alignItems: 'center',
     justifyContent: 'center',
     display: 'flex',
   },
   modalSection: {
     marginBottom: SPACING.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    padding: SPACING.sm,
+    backgroundColor: '#F3EEFA',
+    padding: SPACING.md,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.04)',
+    borderColor: 'rgba(109, 40, 217, 0.15)',
   },
   modalSecTitle: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: COLORS.accentGold,
+    fontSize: 11.5,
+    fontWeight: '800',
+    color: '#6D28D9',
     marginBottom: SPACING.xs,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   modalText: {
-    fontSize: 11,
-    color: COLORS.white,
-    lineHeight: 18,
+    fontSize: 12.5,
+    color: '#4C3D65',
+    lineHeight: 19,
     marginBottom: 4,
   },
   bold: {
     fontWeight: 'bold',
-    color: COLORS.mutedGray,
+    color: '#1E152A',
   },
   photoPlaceholder: {
     flex: 1,
     borderRadius: RADIUS.lg,
     borderWidth: 1.5,
     borderStyle: 'dashed',
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderColor: 'rgba(109, 40, 217, 0.3)',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
   },
   photoPlaceholderText: {
-    fontSize: 9,
-    fontWeight: 'bold',
-    color: COLORS.mutedGray,
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: '#6D28D9',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   centerModalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: 'rgba(15, 10, 30, 0.65)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: SPACING.lg,
@@ -753,37 +757,43 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 380,
     padding: SPACING.lg,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: '#FFFFFF',
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(109, 40, 217, 0.25)',
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
+    elevation: 12,
   },
   centerModalTitle: {
     ...TYPOGRAPHY.titleM,
-    color: COLORS.accentGold,
+    color: '#1E152A',
     fontSize: 18,
+    fontWeight: '800',
     marginBottom: SPACING.xs,
     textAlign: 'center',
   },
   centerModalSub: {
     ...TYPOGRAPHY.body,
-    fontSize: 12,
+    fontSize: 12.5,
     lineHeight: 18,
-    color: COLORS.lightGray,
+    color: '#4C3D65',
     textAlign: 'center',
     marginBottom: SPACING.md,
   },
   introTextInput: {
     width: '100%',
     height: 140,
-    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(109, 40, 217, 0.25)',
     borderRadius: RADIUS.md,
-    color: COLORS.white,
+    color: '#1E152A',
     padding: SPACING.sm,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 13,
+    lineHeight: 19,
     textAlignVertical: 'top',
     marginBottom: SPACING.md,
   },
@@ -793,28 +803,32 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   cancelBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 11,
     borderRadius: RADIUS.full,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(109, 40, 217, 0.2)',
+    backgroundColor: '#F3E8FF',
   },
   cancelBtnText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: COLORS.white,
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#6D28D9',
   },
   sendBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 22,
+    paddingVertical: 11,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.accentGold,
-    ...SHADOWS.goldGlow,
+    backgroundColor: '#6D28D9',
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 4,
   },
   sendBtnText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: COLORS.primary,
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
 });

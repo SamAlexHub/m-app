@@ -54,7 +54,7 @@ export const DiscoverScreen: React.FC = () => {
 
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={() => setScreen('chat')} style={styles.actionIconBtn}>
-            <MessageCircle size={18} color={COLORS.white} strokeWidth={2} style={{ alignSelf: 'center' }} />
+            <MessageCircle size={18} color="#1E152A" strokeWidth={2.2} style={{ alignSelf: 'center' }} />
           </TouchableOpacity>
         </View>
       </View>
@@ -62,7 +62,7 @@ export const DiscoverScreen: React.FC = () => {
       {/* Filter Chips */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsRow}>
         <TouchableOpacity onPress={() => setFilterModalOpen(true)} style={styles.filterBtn}>
-          <SlidersHorizontal size={12} color={COLORS.accentGold} strokeWidth={2} />
+          <SlidersHorizontal size={12} color="#6D28D9" strokeWidth={2.2} />
           <Text style={styles.filterBtnText}>Filters</Text>
         </TouchableOpacity>
 
@@ -92,7 +92,7 @@ export const DiscoverScreen: React.FC = () => {
             />
           ) : (
             <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, height: 400 }}>
-              <Text style={{ color: COLORS.white }}>No profiles available</Text>
+              <Text style={{ color: '#1E152A', fontSize: 14, fontWeight: '600' }}>No profiles available</Text>
             </View>
           )}
         </View>
@@ -138,9 +138,9 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontFamily: 'serif',
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: COLORS.white,
+    color: '#1E152A',
     letterSpacing: 0.5,
   },
   headerActions: {
@@ -149,14 +149,18 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   actionIconBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.secondary,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: COLORS.darkGlassBorder,
+    borderColor: 'rgba(109, 40, 217, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
   },
   storiesContainer: {
     marginBottom: SPACING.md,
@@ -180,11 +184,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   storyCircleGold: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    borderWidth: 1.8,
-    borderColor: COLORS.accentGold,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    borderWidth: 2,
+    borderColor: '#6D28D9',
     padding: 2.2,
   },
   storyAvatar: {
@@ -199,18 +203,18 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: COLORS.accentGold,
+    backgroundColor: '#6D28D9',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
     borderColor: COLORS.primary,
   },
   storyName: {
-    fontSize: 9,
-    color: COLORS.lightGray,
+    fontSize: 9.5,
+    color: '#4C3D65',
     marginTop: 4,
     textAlign: 'center',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   modePill: {
     flexDirection: 'row',
@@ -226,7 +230,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.full,
   },
   pillBtnActive: {
-    backgroundColor: COLORS.accentGold,
+    backgroundColor: '#6D28D9',
     ...SHADOWS.goldGlow,
   },
   pillText: {
@@ -235,7 +239,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   pillTextActive: {
-    color: COLORS.primary,
+    color: '#FFFFFF',
   },
   chipsRow: {
     marginBottom: SPACING.md,
@@ -243,40 +247,53 @@ const styles = StyleSheet.create({
   filterBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    gap: 5,
+    paddingHorizontal: 13,
+    paddingVertical: 7,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: COLORS.darkGlassBorder,
+    borderColor: 'rgba(109, 40, 217, 0.25)',
     marginRight: 8,
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
   },
   filterBtnText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 'bold',
-    color: COLORS.accentGold,
+    color: '#6D28D9',
   },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 13,
+    paddingVertical: 7,
     borderRadius: RADIUS.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: 'rgba(109, 40, 217, 0.2)',
     marginRight: 8,
+    shadowColor: '#6D28D9',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
   },
   chipActive: {
-    backgroundColor: COLORS.accentGold,
-    borderColor: COLORS.accentGold,
+    backgroundColor: '#6D28D9',
+    borderColor: '#6D28D9',
+    shadowOpacity: 0.25,
   },
   chipText: {
-    fontSize: 10,
-    color: COLORS.lightGray,
+    fontSize: 11,
+    color: '#5C4E75',
+    fontWeight: '600',
   },
   chipTextActive: {
-    color: COLORS.primary,
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontWeight: '800',
+  },
+  swipeContainer: {
+    width: '100%',
   },
   gridContainer: {
     flexDirection: 'row',
@@ -289,15 +306,17 @@ const styles = StyleSheet.create({
   gridName: {
     ...TYPOGRAPHY.titleM,
     fontSize: 14,
+    color: '#1E152A',
   },
   gridSub: {
     ...TYPOGRAPHY.caption,
     fontSize: 10,
     marginTop: 2,
+    color: '#4C3D65',
   },
   gridLoc: {
-    fontSize: 9,
-    color: COLORS.accentGold,
+    fontSize: 9.5,
+    color: '#6D28D9',
     fontWeight: 'bold',
     marginTop: 4,
   },

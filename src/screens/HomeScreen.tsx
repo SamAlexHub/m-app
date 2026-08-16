@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(7, 47, 43, 0.65)',
+    backgroundColor: 'rgba(29, 23, 50, 0.55)',
   },
   heroContent: {
     padding: SPACING.md,
@@ -454,14 +454,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: RADIUS.full,
-    backgroundColor: 'rgba(14, 69, 63, 0.9)',
+    backgroundColor: 'rgba(124, 58, 237, 0.9)',
     alignSelf: 'flex-start',
     marginBottom: 6,
   },
   heroBadgeText: {
     fontSize: 9,
     fontWeight: 'bold',
-    color: COLORS.accentGold,
+    color: '#FFFFFF',
   },
   heroTitle: {
     ...TYPOGRAPHY.titleM,
